@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package lipsyncsrv;
+
+// Request for inference generation
+message InferenceRequest {
+    string model_name = 1;
+    int32 frame_id = 2;
+    optional string audio_override = 3;  // base64 encoded audio
+}
+
+// Response containing prediction data and bounds
+message InferenceResponse {
+    bool success = 1;
+    bytes prediction_data = 2;  // JPEG encoded prediction image
+    repeated float bounds = 3;  // Bounds array for compositing
+    int32 processing_time_ms = 4;
+    string model_name = 5;
+    int32 frame_id = 6;
+    bool auto_loaded = 7;
+    string prediction_shape = 8;  // e.g., "320x320x3"
+    optional string error = 9;
+}
+
+// Batch request for multiple frames
+message BatchInferenceRequest {
+    string model_name = 1;
+    repeated int32 frame_ids = 2;
+    optional string audio_override = 3;
+}
+
+// Batch response
+message BatchInferenceResponse {
+    repeated InferenceResponse responses = 1;
+    int32 total_processing_time_ms = 2;
+}
+
+// Model loading request
+message LoadModelRequest {
+    string model_name = 1;
+    string package_path = 2;
+    optional string audio_override = 3;
+}
+
+// Model loading response
+message LoadModelResponse {
+    bool success = 1;
+    string model_name = 2;
+    string message = 3;
+    int32 initialization_time_ms = 4;
+    optional string error = 5;
+}
+
+// Service definition
+service LipSyncService {
+    // Single frame inference
+    rpc GenerateInference(InferenceRequest) returns (InferenceResponse);
+    
+    // Batch inference for multiple frames
+    rpc GenerateBatchInference(BatchInferenceRequest) returns (BatchInferenceResponse);
+    
+    // Streaming inference for real-time applications
+    rpc StreamInference(stream InferenceRequest) returns (stream InferenceResponse);
+    
+    // Model management
+    rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+}

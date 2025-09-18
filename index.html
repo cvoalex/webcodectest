@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCodecs Audio/Video Player Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .video-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        video {
+            max-width: 400px;
+            border: 1px solid #ddd;
+        }
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .frame-item {
+            text-align: center;
+        }
+        .frame-item canvas {
+            border: 1px solid #ddd;
+            width: 100%;
+            height: auto;
+        }
+        .progress {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            background: #4CAF50;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.info { background: #e3f2fd; }
+        .status.success { background: #e8f5e8; }
+        .status.error { background: #ffebee; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover { background: #1976D2; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .cache-info {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebCodecs Audio/Video Player Test</h1>
+        
+        <div class="controls">
+            <h3>Video Source</h3>
+            <input type="text" id="videoUrl" placeholder="Enter MP4 video URL" 
+                   value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" 
+                   style="width: 100%; padding: 8px; margin: 5px 0;">
+            <br>
+            <input type="file" id="videoFile" accept="video/mp4,video/webm" style="margin: 5px 0;">
+            <br>
+            <button onclick="downloadAndProcessVideo()">Download & Process Video</button>
+            <button onclick="processLocalFile()">Process Local File</button>
+            <button onclick="createTestVideo()" style="background: #4CAF50;">🎬 Create Test Video</button>
+            <button onclick="clearCache()">Clear Cache</button>
+            <button onclick="showCacheInfo()">Show Cache Info</button>
+        </div>
+
+        <div class="cache-info" id="cacheInfo" style="display: none;">
+            <h4>Cache Information</h4>
+            <div id="cacheDetails"></div>
+        </div>
+
+        <div class="status" id="status"></div>
+        
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="video-section">
+            <div>
+                <h3>Original Video</h3>
+                <video id="videoElement" controls style="display: none;"></video>
+            </div>
+            <div>
+                <h3>Extraction Settings</h3>
+                <label>
+                    Frame interval (seconds): 
+                    <input type="number" id="frameInterval" value="0.04" min="0.01" step="0.01" style="width: 80px;">
+                    <small style="color: #666;">(0.04s = 25fps)</small>
+                </label>
+                <br><br>
+                <label>
+                    Max frames: 
+                    <input type="number" id="maxFrames" value="250" min="1" style="width: 80px;">
+                    <small style="color: #666;">(10s @ 25fps)</small>
+                </label>
+                <br><br>
+                <label>
+                    Frame quality (0.1-1.0): 
+                    <input type="number" id="frameQuality" value="0.8" min="0.1" max="1" step="0.1" style="width: 80px;">
+                </label>
+            </div>
+        </div>
+
+        <div>
+            <h3>Extracted Frames</h3>
+            <div id="frameCount">No frames extracted yet</div>
+            
+            <div style="margin: 20px 0; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                <h4>Frame Playback</h4>
+                <div style="margin: 10px 0;">
+                    <canvas id="playbackCanvas" style="border: 2px solid #333; max-width: 400px; display: none;"></canvas>
+                </div>
+                <div style="margin: 10px 0;">
+                    <button onclick="playFrames()" id="playBtn">▶ Play Frames (25fps)</button>
+                    <button onclick="pauseFrames()" id="pauseBtn" disabled>⏸ Pause</button>
+                    <button onclick="stopFrames()" id="stopBtn" disabled>⏹ Stop</button>
+                    <span style="margin-left: 20px;">
+                        Frame: <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
+                    </span>
+                </div>
+                <div style="margin: 10px 0;">
+                    <label>
+                        Playback Speed: 
+                        <select id="playbackSpeed" onchange="updatePlaybackSpeed()">
+                            <option value="12">12 fps</option>
+                            <option value="15">15 fps</option>
+                            <option value="24">24 fps</option>
+                            <option value="25" selected>25 fps</option>
+                            <option value="30">30 fps</option>
+                            <option value="60">60 fps</option>
+                        </select>
+                    </label>
+                    <label style="margin-left: 20px;">
+                        <input type="checkbox" id="loopPlayback" checked> Loop playback
+                    </label>
+                </div>
+            </div>
+            
+            <div class="frames-grid" id="framesGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        class WebCodecsVideoPlayer {
+            constructor() {
+                this.videoDecoder = null;
+                this.audioDecoder = null;
+                this.frames = [];
+                this.audioChunks = [];
+                this.videoBuffer = null;
+                this.cacheName = 'webcodecs-av-cache-v1';
+                
+                // Playback properties
+                this.playbackInterval = null;
+                this.currentFrameIndex = 0;
+                this.isPlaying = false;
+                this.playbackFps = 25;
+                this.playbackCanvas = null;
+                this.playbackCtx = null;
+                
+                // Audio properties
+                this.audioContext = null;
+                this.audioChunkDuration = 40; // 40ms chunks
+                this.currentAudioTime = 0;
+                this.audioGainNode = null;
+                
+                // Synchronization
+                this.startTime = 0;
+                this.frameRate = 25; // 25 fps
+                this.frameDuration = 1000 / this.frameRate; // 40ms per frame
+                
+                this.init();
+            }
+
+            async init() {
+                // Check WebCodecs support
+                if (!window.VideoDecoder || !window.AudioDecoder) {
+                    this.showStatus('WebCodecs (Video/Audio) is not supported in this browser', 'error');
+                    return;
+                }
+
+                // Initialize Audio Context
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.audioGainNode = this.audioContext.createGain();
+                    this.audioGainNode.connect(this.audioContext.destination);
+                    this.audioGainNode.gain.value = 0.8; // Set volume to 80%
+                } catch (error) {
+                    console.warn('Audio context initialization failed:', error);
+                }
+
+                // Initialize IndexedDB for AV caching
+                await this.initIndexedDB();
+                this.showStatus('WebCodecs Audio/Video player initialized', 'success');
+            }
+
+            async initIndexedDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('WebCodecsAVCache', 2); // Increment version to 2
+                    
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve();
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        // Frames store
+                        if (!db.objectStoreNames.contains('frames')) {
+                            const frameStore = db.createObjectStore('frames', { keyPath: 'id' });
+                            frameStore.createIndex('videoHash', 'videoHash', { unique: false });
+                        }
+                        
+                        // Audio chunks store
+                        if (!db.objectStoreNames.contains('audioChunks')) {
+                            const audioStore = db.createObjectStore('audioChunks', { keyPath: 'id' });
+                            audioStore.createIndex('videoHash', 'videoHash', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            async downloadVideo(url) {
+                this.showStatus('Downloading video...', 'info');
+                this.showProgress(0);
+                
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const contentLength = response.headers.get('content-length');
+                    const total = parseInt(contentLength, 10);
+                    let loaded = 0;
+
+                    const reader = response.body.getReader();
+                    const chunks = [];
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        chunks.push(value);
+                        loaded += value.length;
+
+                        if (total) {
+                            const progress = (loaded / total) * 100;
+                            this.showProgress(progress);
+                        }
+                    }
+
+                    this.videoBuffer = new Uint8Array(loaded);
+                    let offset = 0;
+                    for (const chunk of chunks) {
+                        this.videoBuffer.set(chunk, offset);
+                        offset += chunk.length;
+                    }
+
+                    this.showStatus(`Video downloaded (${(loaded / 1024 / 1024).toFixed(2)} MB)`, 'success');
+                    return this.videoBuffer;
+                } catch (error) {
+                    this.showStatus(`Download failed: ${error.message}`, 'error');
+                    throw error;
+                }
+            }
+
+            async loadLocalFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.videoBuffer = new Uint8Array(e.target.result);
+                        this.showStatus(`Local file loaded (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+                        resolve(this.videoBuffer);
+                    };
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            async generateVideoHash(buffer) {
+                const hashBuffer = await crypto.subtle.digest('SHA-256', buffer.slice(0, 1024));
+                return Array.from(new Uint8Array(hashBuffer))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+            }
+
+            async checkCache(videoHash) {
+                if (!this.db) return { frames: null, audioChunks: null };
+                
+                const getFrames = () => new Promise((resolve, reject) => {
+                    try {
+                        const transaction = this.db.transaction(['frames'], 'readonly');
+                        const store = transaction.objectStore('frames');
+                        const index = store.index('videoHash');
+                        const request = index.getAll(videoHash);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('Frames store not found, returning empty array');
+                        resolve([]);
+                    }
+                });
+                
+                const getAudioChunks = () => new Promise((resolve, reject) => {
+                    try {
+                        // Check if audioChunks store exists
+                        if (!this.db.objectStoreNames.contains('audioChunks')) {
+                            console.warn('AudioChunks store not found, returning empty array');
+                            resolve([]);
+                            return;
+                        }
+                        
+                        const transaction = this.db.transaction(['audioChunks'], 'readonly');
+                        const store = transaction.objectStore('audioChunks');
+                        const index = store.index('videoHash');
+                        const request = index.getAll(videoHash);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('AudioChunks store not accessible, returning empty array:', error);
+                        resolve([]);
+                    }
+                });
+                
+                const [frames, audioChunks] = await Promise.all([getFrames(), getAudioChunks()]);
+                return { frames, audioChunks };
+            }
+
+            async saveFrameToCache(frameData, videoHash) {
+                if (!this.db) return;
+                
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['frames'], 'readwrite');
+                    const store = transaction.objectStore('frames');
+                    const request = store.put({
+                        id: frameData.id,
+                        videoHash: videoHash,
+                        timestamp: frameData.timestamp,
+                        dataUrl: frameData.dataUrl,
+                        cachedAt: Date.now()
+                    });
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async saveAudioChunkToCache(audioData, videoHash) {
+                if (!this.db) return;
+                
+                return new Promise((resolve, reject) => {
+                    try {
+                        // Check if audioChunks store exists
+                        if (!this.db.objectStoreNames.contains('audioChunks')) {
+                            console.warn('AudioChunks store not found, skipping cache save');
+                            resolve();
+                            return;
+                        }
+                        
+                        const transaction = this.db.transaction(['audioChunks'], 'readwrite');
+                        const store = transaction.objectStore('audioChunks');
+                        const request = store.put({
+                            id: audioData.id,
+                            videoHash: videoHash,
+                            timestamp: audioData.timestamp,
+                            duration: audioData.duration,
+                            audioBuffer: audioData.audioBuffer, // Base64 encoded audio data
+                            sampleRate: audioData.sampleRate,
+                            numberOfChannels: audioData.numberOfChannels,
+                            cachedAt: Date.now()
+                        });
+                        
+                        request.onsuccess = () => resolve();
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('Error saving audio chunk to cache:', error);
+                        resolve(); // Don't fail the whole process
+                    }
+                });
+            }
+
+            async extractAudioAndVideoFrames() {
+                if (!this.videoBuffer) {
+                    this.showStatus('No video loaded', 'error');
+                    return;
+                }
+
+                const frameInterval = parseFloat(document.getElementById('frameInterval').value);
+                const maxFrames = parseInt(document.getElementById('maxFrames').value);
+                const quality = parseFloat(document.getElementById('frameQuality').value);
+
+                this.showStatus('Extracting video frames and audio chunks...', 'info');
+                this.showProgress(0);
+
+                try {
+                    // Generate hash for caching
+                    const videoHash = await this.generateVideoHash(this.videoBuffer);
+                    
+                    // Check cache first
+                    const cached = await this.checkCache(videoHash);
+                    if (cached.frames && cached.frames.length > 0 && cached.audioChunks && cached.audioChunks.length > 0) {
+                        this.showStatus(`Found ${cached.frames.length} cached frames and ${cached.audioChunks.length} audio chunks`, 'success');
+                        this.displayCachedAudioVideo(cached.frames, cached.audioChunks);
+                        return;
+                    }
+
+                    // Use the WORKING method from before for video frames
+                    await this.extractVideoFramesCanvas(frameInterval, maxFrames, quality, videoHash);
+                    
+                    // Extract audio chunks using Web Audio API
+                    await this.extractAudioChunksWebAudio(videoHash);
+
+                    this.showStatus(`Extracted ${this.frames.length} frames and ${this.audioChunks.length} audio chunks`, 'success');
+                    
+                } catch (error) {
+                    this.showStatus(`Audio/Video extraction failed: ${error.message}`, 'error');
+                    console.error(error);
+                }
+            }
+
+            async extractVideoFramesCanvas(frameInterval, maxFrames, quality, videoHash) {
+                // This is the WORKING method from before
+                const videoElement = document.getElementById('videoElement');
+                const blob = new Blob([this.videoBuffer], { type: 'video/mp4' });
+                const url = URL.createObjectURL(blob);
+                
+                videoElement.src = url;
+                videoElement.style.display = 'block';
+                
+                // Wait for video metadata
+                await new Promise((resolve) => {
+                    videoElement.onloadedmetadata = resolve;
+                });
+
+                const duration = videoElement.duration;
+                const frameCount = Math.min(maxFrames, Math.floor(duration / frameInterval));
+                
+                this.frames = [];
+                
+                // Extract frames at specified intervals
+                for (let i = 0; i < frameCount; i++) {
+                    const timestamp = i * frameInterval;
+                    
+                    try {
+                        const canvas = await this.captureFrame(videoElement, timestamp, quality);
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        
+                        const frameData = {
+                            id: `${videoHash}_${timestamp}`,
+                            timestamp: timestamp,
+                            dataUrl: dataUrl
+                        };
+                        
+                        this.frames.push(frameData);
+                        
+                        // Save to cache
+                        await this.saveFrameToCache(frameData, videoHash);
+                        
+                        // Update progress
+                        this.showProgress((i / frameCount) * 50); // 0-50% for video
+                        
+                        // Update display
+                        this.displayFrames();
+                        
+                        // Small delay to prevent blocking
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                        
+                    } catch (error) {
+                        console.warn(`Failed to extract frame at ${timestamp}s:`, error);
+                    }
+                }
+
+                URL.revokeObjectURL(url);
+            }
+
+            async extractAudioChunksWebAudio(videoHash) {
+                // Extract audio using Web Audio API (simpler and more reliable)
+                try {
+                    // Decode the entire audio buffer
+                    const audioBuffer = await this.audioContext.decodeAudioData(this.videoBuffer.buffer.slice());
+                    
+                    const chunkDuration = this.audioChunkDuration / 1000; // Convert to seconds
+                    const chunkSize = Math.floor(audioBuffer.sampleRate * chunkDuration);
+                    const numberOfChunks = Math.ceil(audioBuffer.duration / chunkDuration);
+                    
+                    this.audioChunks = [];
+                    
+                    for (let i = 0; i < numberOfChunks; i++) {
+                        const startTime = i * chunkDuration;
+                        const startSample = Math.floor(startTime * audioBuffer.sampleRate);
+                        const endSample = Math.min(startSample + chunkSize, audioBuffer.length);
+                        
+                        // Create chunk buffer
+                        const chunkBuffer = this.audioContext.createBuffer(
+                            audioBuffer.numberOfChannels,
+                            endSample - startSample,
+                            audioBuffer.sampleRate
+                        );
+                        
+                        // Copy audio data
+                        for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+                            const sourceData = audioBuffer.getChannelData(channel);
+                            const chunkData = chunkBuffer.getChannelData(channel);
+                            for (let sample = 0; sample < chunkBuffer.length; sample++) {
+                                chunkData[sample] = sourceData[startSample + sample] || 0;
+                            }
+                        }
+                        
+                        // Convert to base64 for caching
+                        const audioBufferData = this.audioBufferToBase64(chunkBuffer);
+                        
+                        const chunkData = {
+                            id: `${videoHash}_a_${startTime}`,
+                            timestamp: startTime,
+                            duration: chunkDuration,
+                            audioBuffer: audioBufferData,
+                            sampleRate: audioBuffer.sampleRate,
+                            numberOfChannels: audioBuffer.numberOfChannels
+                        };
+                        
+                        this.audioChunks.push({
+                            ...chunkData,
+                            decodedBuffer: chunkBuffer // Keep decoded buffer for playback
+                        });
+                        
+                        // Save to cache
+                        await this.saveAudioChunkToCache(chunkData, videoHash);
+                        
+                        // Update progress
+                        this.showProgress(50 + (i / numberOfChunks) * 50); // 50-100% for audio
+                    }
+                    
+                } catch (error) {
+                    console.warn('Audio extraction failed:', error);
+                    this.audioChunks = []; // Empty audio chunks if extraction fails
+                }
+            }
+
+            audioBufferToBase64(audioBuffer) {
+                // Convert AudioBuffer to base64 for storage (simplified)
+                const channelData = audioBuffer.getChannelData(0);
+                const uint8Array = new Uint8Array(channelData.buffer);
+                return btoa(String.fromCharCode.apply(null, uint8Array));
+            }
+
+            base64ToAudioBuffer(base64Data, sampleRate, numberOfChannels, length) {
+                // Convert base64 back to AudioBuffer (simplified)
+                const binaryString = atob(base64Data);
+                const uint8Array = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    uint8Array[i] = binaryString.charCodeAt(i);
+                }
+                
+                const audioBuffer = this.audioContext.createBuffer(numberOfChannels, length, sampleRate);
+                const float32Array = new Float32Array(uint8Array.buffer);
+                audioBuffer.copyToChannel(float32Array, 0);
+                
+                return audioBuffer;
+            }
+
+            async extractFrames() {
+                // Canvas fallback method for video frames
+                if (!this.videoBuffer) {
+                    this.showStatus('No video loaded', 'error');
+                    return;
+                }
+
+                const frameInterval = parseFloat(document.getElementById('frameInterval').value);
+                const maxFrames = parseInt(document.getElementById('maxFrames').value);
+                const quality = parseFloat(document.getElementById('frameQuality').value);
+
+                try {
+                    // Generate hash for caching
+                    const videoHash = await this.generateVideoHash(this.videoBuffer);
+
+                    // Create video element for decoding
+                    const videoElement = document.getElementById('videoElement');
+                    const blob = new Blob([this.videoBuffer], { type: 'video/mp4' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    videoElement.src = url;
+                    videoElement.style.display = 'block';
+                    
+                    // Wait for video metadata
+                    await new Promise((resolve) => {
+                        videoElement.onloadedmetadata = resolve;
+                    });
+
+                    const duration = videoElement.duration;
+                    const frameCount = Math.min(maxFrames, Math.floor(duration / frameInterval));
+                    
+                    this.frames = [];
+                    
+                    // Extract frames at specified intervals
+                    for (let i = 0; i < frameCount; i++) {
+                        const timestamp = i * frameInterval;
+                        
+                        try {
+                            const canvas = await this.captureFrame(videoElement, timestamp, quality);
+                            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                            
+                            const frameData = {
+                                id: `${videoHash}_${timestamp}`,
+                                timestamp: timestamp,
+                                dataUrl: dataUrl,
+                                canvas: canvas
+                            };
+                            
+                            this.frames.push(frameData);
+                            
+                            // Save to cache
+                            await this.saveFrameToCache(frameData, videoHash);
+                            
+                            // Update progress
+                            this.showProgress(((i + 1) / frameCount) * 100);
+                            
+                            // Update display
+                            this.displayFrames();
+                            
+                            // Small delay to prevent blocking
+                            await new Promise(resolve => setTimeout(resolve, 10));
+                            
+                        } catch (error) {
+                            console.warn(`Failed to extract frame at ${timestamp}s:`, error);
+                        }
+                    }
+
+                    URL.revokeObjectURL(url);
+                    this.showStatus(`Extracted ${this.frames.length} frames using fallback method`, 'success');
+                    
+                } catch (error) {
+                    this.showStatus(`Frame extraction failed: ${error.message}`, 'error');
+                    console.error(error);
+                }
+            }
+
+            async captureFrame(videoElement, timestamp, quality) {
+                return new Promise((resolve, reject) => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    videoElement.currentTime = timestamp;
+                    
+                    const onSeeked = () => {
+                        try {
+                            canvas.width = videoElement.videoWidth;
+                            canvas.height = videoElement.videoHeight;
+                            ctx.drawImage(videoElement, 0, 0);
+                            
+                            videoElement.removeEventListener('seeked', onSeeked);
+                            resolve(canvas);
+                        } catch (error) {
+                            videoElement.removeEventListener('seeked', onSeeked);
+                            reject(error);
+                        }
+                    };
+                    
+                    videoElement.addEventListener('seeked', onSeeked);
+                    
+                    // Timeout fallback
+                    setTimeout(() => {
+                        videoElement.removeEventListener('seeked', onSeeked);
+                        reject(new Error('Frame capture timeout'));
+                    }, 5000);
+                });
+            }
+
+            displayCachedFrames(cachedFrames) {
+                this.frames = cachedFrames.map(frame => ({
+                    id: frame.id,
+                    timestamp: frame.timestamp,
+                    dataUrl: frame.dataUrl
+                }));
+                this.displayFrames();
+            }
+
+            displayCachedAudioVideo(cachedFrames, cachedAudioChunks) {
+                // Load cached frames
+                this.frames = cachedFrames.map(frame => ({
+                    id: frame.id,
+                    timestamp: frame.timestamp,
+                    dataUrl: frame.dataUrl
+                }));
+                
+                // Load cached audio chunks and decode them
+                this.audioChunks = cachedAudioChunks.map(chunk => {
+                    // Decode audio buffer from base64
+                    const decodedBuffer = this.base64ToAudioBuffer(
+                        chunk.audioBuffer, 
+                        chunk.sampleRate, 
+                        chunk.numberOfChannels,
+                        Math.floor(chunk.duration * chunk.sampleRate)
+                    );
+                    
+                    return {
+                        id: chunk.id,
+                        timestamp: chunk.timestamp,
+                        duration: chunk.duration,
+                        decodedBuffer: decodedBuffer,
+                        sampleRate: chunk.sampleRate,
+                        numberOfChannels: chunk.numberOfChannels
+                    };
+                });
+                
+                this.displayFrames();
+            }
+
+            displayFrames() {
+                const grid = document.getElementById('framesGrid');
+                const countElement = document.getElementById('frameCount');
+                const totalFramesElement = document.getElementById('totalFrames');
+                
+                countElement.textContent = `${this.frames.length} frames extracted`;
+                totalFramesElement.textContent = this.frames.length;
+                
+                // Initialize playback canvas
+                this.initPlaybackCanvas();
+                
+                grid.innerHTML = '';
+                
+                this.frames.forEach((frame, index) => {
+                    const frameDiv = document.createElement('div');
+                    frameDiv.className = 'frame-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = frame.dataUrl;
+                    img.style.width = '100%';
+                    img.style.border = '1px solid #ddd';
+                    img.style.cursor = 'pointer';
+                    
+                    // Click to show frame in playback canvas
+                    img.onclick = () => this.showFrame(index);
+                    
+                    const label = document.createElement('div');
+                    label.textContent = `Frame ${index + 1} (${frame.timestamp.toFixed(1)}s)`;
+                    label.style.fontSize = '12px';
+                    label.style.marginTop = '5px';
+                    
+                    frameDiv.appendChild(img);
+                    frameDiv.appendChild(label);
+                    grid.appendChild(frameDiv);
+                });
+            }
+
+            initPlaybackCanvas() {
+                if (this.frames.length === 0) return;
+                
+                this.playbackCanvas = document.getElementById('playbackCanvas');
+                this.playbackCtx = this.playbackCanvas.getContext('2d');
+                
+                // Create an image from the first frame to get dimensions
+                const img = new Image();
+                img.onload = () => {
+                    // Set canvas size based on first frame
+                    const maxWidth = 400;
+                    const scale = maxWidth / img.width;
+                    this.playbackCanvas.width = img.width;
+                    this.playbackCanvas.height = img.height;
+                    this.playbackCanvas.style.width = `${Math.min(img.width, maxWidth)}px`;
+                    this.playbackCanvas.style.height = `${Math.min(img.height, maxWidth * (img.height / img.width))}px`;
+                    
+                    // Show first frame
+                    this.showFrame(0);
+                    this.playbackCanvas.style.display = 'block';
+                };
+                img.src = this.frames[0].dataUrl;
+            }
+
+            showFrame(index) {
+                if (!this.playbackCanvas || !this.frames[index]) return;
+                
+                const img = new Image();
+                img.onload = () => {
+                    this.playbackCtx.clearRect(0, 0, this.playbackCanvas.width, this.playbackCanvas.height);
+                    this.playbackCtx.drawImage(img, 0, 0);
+                    
+                    // Update current frame indicator
+                    document.getElementById('currentFrame').textContent = index + 1;
+                };
+                img.src = this.frames[index].dataUrl;
+                this.currentFrameIndex = index;
+            }
+
+            startPlayback() {
+                if (this.frames.length === 0) {
+                    this.showStatus('No frames available for playback', 'error');
+                    return;
+                }
+
+                if (this.isPlaying) return;
+                
+                // Resume audio context if suspended
+                if (this.audioContext && this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+                
+                this.isPlaying = true;
+                this.startTime = performance.now();
+                this.currentFrameIndex = 0;
+                this.currentAudioTime = 0;
+                
+                // Start synchronized audio/video playback
+                this.synchedPlayback();
+                
+                // Update UI
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = false;
+                
+                this.showStatus(`Playing synchronized audio/video at ${this.playbackFps} fps`, 'info');
+            }
+
+            synchedPlayback() {
+                if (!this.isPlaying) return;
+                
+                const currentTime = performance.now();
+                const elapsedTime = (currentTime - this.startTime) / 1000; // Convert to seconds
+                
+                // Update video frame
+                const targetFrameIndex = Math.floor(elapsedTime * this.frameRate);
+                if (targetFrameIndex !== this.currentFrameIndex && targetFrameIndex < this.frames.length) {
+                    this.showFrame(targetFrameIndex);
+                    this.currentFrameIndex = targetFrameIndex;
+                }
+                
+                // Schedule and play audio chunks
+                this.scheduleAudioChunks(elapsedTime);
+                
+                // Check for end of playback
+                if (targetFrameIndex >= this.frames.length) {
+                    const loopPlayback = document.getElementById('loopPlayback').checked;
+                    if (loopPlayback) {
+                        this.startTime = performance.now(); // Restart
+                        this.currentFrameIndex = 0;
+                        this.currentAudioTime = 0;
+                    } else {
+                        this.stopPlayback();
+                        return;
+                    }
+                }
+                
+                // Continue playback
+                requestAnimationFrame(() => this.synchedPlayback());
+            }
+
+            scheduleAudioChunks(currentTime) {
+                if (!this.audioContext || this.audioChunks.length === 0) return;
+                
+                // Find audio chunks that should be playing around current time
+                const scheduleAhead = 0.1; // Schedule 100ms ahead
+                const scheduleWindow = currentTime + scheduleAhead;
+                
+                this.audioChunks.forEach(chunk => {
+                    const chunkStartTime = chunk.timestamp;
+                    const chunkEndTime = chunkStartTime + chunk.duration;
+                    
+                    // Check if this chunk should be scheduled
+                    if (chunkStartTime <= scheduleWindow && chunkEndTime > currentTime) {
+                        // Only schedule if not already scheduled
+                        if (!chunk.scheduled || chunk.scheduledFor !== Math.floor(currentTime * 10)) {
+                            this.playAudioChunk(chunk, Math.max(0, chunkStartTime - currentTime));
+                            chunk.scheduled = true;
+                            chunk.scheduledFor = Math.floor(currentTime * 10);
+                        }
+                    }
+                });
+            }
+
+            playAudioChunk(chunk, delay = 0) {
+                if (!this.audioContext || !chunk.decodedBuffer) return;
+                
+                try {
+                    const source = this.audioContext.createBufferSource();
+                    source.buffer = chunk.decodedBuffer;
+                    source.connect(this.audioGainNode);
+                    
+                    const startTime = this.audioContext.currentTime + delay;
+                    source.start(startTime);
+                    
+                    // Clean up after playback
+                    source.onended = () => {
+                        chunk.scheduled = false;
+                    };
+                } catch (error) {
+                    console.warn('Audio chunk playback failed:', error);
+                }
+            }
+
+            pausePlayback() {
+                if (!this.isPlaying) return;
+                
+                this.isPlaying = false;
+                
+                // Stop all scheduled audio
+                if (this.audioContext) {
+                    // Note: Individual audio sources will stop naturally
+                    this.audioChunks.forEach(chunk => {
+                        chunk.scheduled = false;
+                    });
+                }
+                
+                // Update UI
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+                this.showStatus('Playback paused', 'info');
+            }
+
+            stopPlayback() {
+                this.isPlaying = false;
+                this.currentFrameIndex = 0;
+                this.currentAudioTime = 0;
+                
+                // Stop all audio
+                if (this.audioContext) {
+                    this.audioChunks.forEach(chunk => {
+                        chunk.scheduled = false;
+                    });
+                }
+                
+                // Show first frame
+                if (this.frames.length > 0) {
+                    this.showFrame(0);
+                }
+                
+                // Update UI
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = true;
+                
+                this.showStatus('Playback stopped', 'info');
+            }
+
+            setPlaybackSpeed(fps) {
+                this.playbackFps = fps;
+                
+                // If currently playing, restart with new speed
+                if (this.isPlaying) {
+                    this.pausePlayback();
+                    this.startPlayback();
+                }
+            }
+
+            async clearCache() {
+                if (!this.db) return;
+                
+                const clearFrames = () => new Promise((resolve, reject) => {
+                    try {
+                        const transaction = this.db.transaction(['frames'], 'readwrite');
+                        const store = transaction.objectStore('frames');
+                        const request = store.clear();
+                        request.onsuccess = () => resolve();
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('Error clearing frames cache:', error);
+                        resolve();
+                    }
+                });
+                
+                const clearAudioChunks = () => new Promise((resolve, reject) => {
+                    try {
+                        if (!this.db.objectStoreNames.contains('audioChunks')) {
+                            resolve(); // Store doesn't exist, nothing to clear
+                            return;
+                        }
+                        
+                        const transaction = this.db.transaction(['audioChunks'], 'readwrite');
+                        const store = transaction.objectStore('audioChunks');
+                        const request = store.clear();
+                        request.onsuccess = () => resolve();
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('Error clearing audio cache:', error);
+                        resolve();
+                    }
+                });
+                
+                await Promise.all([clearFrames(), clearAudioChunks()]);
+                this.showStatus('Cache cleared (frames and audio)', 'success');
+            }
+
+            async getCacheInfo() {
+                if (!this.db) return null;
+                
+                const getFrameInfo = () => new Promise((resolve, reject) => {
+                    try {
+                        const transaction = this.db.transaction(['frames'], 'readonly');
+                        const store = transaction.objectStore('frames');
+                        const request = store.getAll();
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('Error getting frame info:', error);
+                        resolve([]);
+                    }
+                });
+                
+                const getAudioInfo = () => new Promise((resolve, reject) => {
+                    try {
+                        if (!this.db.objectStoreNames.contains('audioChunks')) {
+                            resolve([]);
+                            return;
+                        }
+                        
+                        const transaction = this.db.transaction(['audioChunks'], 'readonly');
+                        const store = transaction.objectStore('audioChunks');
+                        const request = store.getAll();
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    } catch (error) {
+                        console.warn('Error getting audio info:', error);
+                        resolve([]);
+                    }
+                });
+                
+                const [frames, audioChunks] = await Promise.all([getFrameInfo(), getAudioInfo()]);
+                
+                return {
+                    totalFrames: frames.length,
+                    totalAudioChunks: audioChunks.length,
+                    frameSize: frames.reduce((size, frame) => size + (frame.dataUrl?.length || 0), 0),
+                    audioSize: audioChunks.reduce((size, chunk) => size + (chunk.audioBuffer?.length || 0), 0),
+                    videos: [...new Set(frames.map(f => f.videoHash))].length
+                };
+            }
+
+            showStatus(message, type = 'info') {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+
+            showProgress(percent) {
+                const container = document.getElementById('progressContainer');
+                const bar = document.getElementById('progressBar');
+                
+                if (percent > 0 && percent < 100) {
+                    container.style.display = 'block';
+                    bar.style.width = `${percent}%`;
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+        }
+
+        // Global instance
+        let extractor;
+
+        // Initialize when page loads
+        window.onload = () => {
+            extractor = new WebCodecsVideoPlayer();
+        };
+
+        // UI Functions
+        async function downloadAndProcessVideo() {
+            const url = document.getElementById('videoUrl').value.trim();
+            if (!url) {
+                alert('Please enter a video URL');
+                return;
+            }
+
+            try {
+                await extractor.downloadVideo(url);
+                await extractor.extractAudioAndVideoFrames();
+            } catch (error) {
+                console.error('Error processing video:', error);
+            }
+        }
+
+        async function processLocalFile() {
+            const fileInput = document.getElementById('videoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a video file');
+                return;
+            }
+
+            try {
+                await extractor.loadLocalFile(file);
+                await extractor.extractAudioAndVideoFrames();
+            } catch (error) {
+                console.error('Error processing local file:', error);
+            }
+        }
+
+        async function clearCache() {
+            try {
+                await extractor.clearCache();
+                document.getElementById('framesGrid').innerHTML = '';
+                document.getElementById('frameCount').textContent = 'No frames extracted yet';
+            } catch (error) {
+                console.error('Error clearing cache:', error);
+            }
+        }
+
+        async function showCacheInfo() {
+            try {
+                const info = await extractor.getCacheInfo();
+                const cacheDiv = document.getElementById('cacheInfo');
+                const detailsDiv = document.getElementById('cacheDetails');
+                
+                if (info) {
+                    const totalSize = (info.frameSize + info.audioSize) / 1024 / 1024;
+                    detailsDiv.innerHTML = `
+                        <p><strong>Total cached frames:</strong> ${info.totalFrames}</p>
+                        <p><strong>Total cached audio chunks:</strong> ${info.totalAudioChunks}</p>
+                        <p><strong>Frame data size:</strong> ${(info.frameSize / 1024 / 1024).toFixed(2)} MB</p>
+                        <p><strong>Audio data size:</strong> ${(info.audioSize / 1024 / 1024).toFixed(2)} MB</p>
+                        <p><strong>Total estimated size:</strong> ${totalSize.toFixed(2)} MB</p>
+                        <p><strong>Videos cached:</strong> ${info.videos}</p>
+                    `;
+                    cacheDiv.style.display = 'block';
+                } else {
+                    detailsDiv.innerHTML = '<p>Cache information not available</p>';
+                    cacheDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error getting cache info:', error);
+            }
+        }
+
+        // Playback control functions
+        function playFrames() {
+            extractor.startPlayback();
+        }
+
+        function pauseFrames() {
+            extractor.pausePlayback();
+        }
+
+        function stopFrames() {
+            extractor.stopPlayback();
+        }
+
+        function updatePlaybackSpeed() {
+            const speed = parseInt(document.getElementById('playbackSpeed').value);
+            extractor.setPlaybackSpeed(speed);
+        }
+    </script>
+</body>
+</html>

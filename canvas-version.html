@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Video Frame Extraction Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .video-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        video {
+            max-width: 400px;
+            border: 1px solid #ddd;
+        }
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .frame-item {
+            text-align: center;
+        }
+        .frame-item canvas {
+            border: 1px solid #ddd;
+            width: 100%;
+            height: auto;
+        }
+        .progress {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            background: #4CAF50;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.info { background: #e3f2fd; }
+        .status.success { background: #e8f5e8; }
+        .status.error { background: #ffebee; }
+        .status.warning { background: #fff3e0; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover { background: #1976D2; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .cache-info {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .performance-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .method-indicator {
+            background: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Canvas Video Frame Extraction Test</h1>
+        
+        <div class="method-indicator">
+            🎨 CANVAS + VIDEO METHOD (Universal Compatibility)
+        </div>
+        
+        <div class="controls">
+            <h3>Video Source</h3>
+            <input type="text" id="videoUrl" placeholder="Enter video URL" 
+                   value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" 
+                   style="width: 100%; padding: 8px; margin: 5px 0;">
+            <br>
+            <input type="file" id="videoFile" accept="video/*" style="margin: 5px 0;">
+            <br>
+            <button onclick="downloadAndProcessVideo()">Download & Process Video</button>
+            <button onclick="processLocalFile()">Process Local File</button>
+            <button onclick="clearCache()">Clear Cache</button>
+            <button onclick="showCacheInfo()">Show Cache Info</button>
+        </div>
+
+        <div class="performance-info" id="performanceInfo" style="display: none;">
+            <h4>Performance Metrics</h4>
+            <div id="performanceDetails"></div>
+        </div>
+
+        <div class="cache-info" id="cacheInfo" style="display: none;">
+            <h4>Cache Information</h4>
+            <div id="cacheDetails"></div>
+        </div>
+
+        <div class="status" id="status"></div>
+        
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="video-section">
+            <div>
+                <h3>Original Video</h3>
+                <video id="videoElement" controls style="display: none;"></video>
+            </div>
+            <div>
+                <h3>Extraction Settings</h3>
+                <label>
+                    Frame interval (seconds): 
+                    <input type="number" id="frameInterval" value="1" min="0.1" step="0.1" style="width: 80px;">
+                </label>
+                <br><br>
+                <label>
+                    Max frames: 
+                    <input type="number" id="maxFrames" value="10" min="1" style="width: 80px;">
+                </label>
+                <br><br>
+                <label>
+                    Frame quality (0.1-1.0): 
+                    <input type="number" id="frameQuality" value="0.8" min="0.1" max="1" step="0.1" style="width: 80px;">
+                </label>
+            </div>
+        </div>
+
+        <div>
+            <h3>Extracted Frames</h3>
+            <div id="frameCount">No frames extracted yet</div>
+            
+            <div style="margin: 20px 0; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                <h4>Frame Playback</h4>
+                <div style="margin: 10px 0;">
+                    <canvas id="playbackCanvas" style="border: 2px solid #333; max-width: 400px; display: none;"></canvas>
+                </div>
+                <div style="margin: 10px 0;">
+                    <button onclick="playFrames()" id="playBtn">▶ Play Frames (25fps)</button>
+                    <button onclick="pauseFrames()" id="pauseBtn" disabled>⏸ Pause</button>
+                    <button onclick="stopFrames()" id="stopBtn" disabled>⏹ Stop</button>
+                    <span style="margin-left: 20px;">
+                        Frame: <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
+                    </span>
+                </div>
+                <div style="margin: 10px 0;">
+                    <label>
+                        Playback Speed: 
+                        <select id="playbackSpeed" onchange="updatePlaybackSpeed()">
+                            <option value="12">12 fps</option>
+                            <option value="15">15 fps</option>
+                            <option value="24">24 fps</option>
+                            <option value="25" selected>25 fps</option>
+                            <option value="30">30 fps</option>
+                            <option value="60">60 fps</option>
+                        </select>
+                    </label>
+                    <label style="margin-left: 20px;">
+                        <input type="checkbox" id="loopPlayback" checked> Loop playback
+                    </label>
+                </div>
+            </div>
+            
+            <div class="frames-grid" id="framesGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        class CanvasVideoFrameExtractor {
+            constructor() {
+                this.frames = [];
+                this.videoBuffer = null;
+                this.cacheName = 'canvas-video-frames-cache-v1';
+                
+                // Playback properties
+                this.playbackInterval = null;
+                this.currentFrameIndex = 0;
+                this.isPlaying = false;
+                this.playbackFps = 25;
+                this.playbackCanvas = null;
+                this.playbackCtx = null;
+                
+                // Performance tracking
+                this.performanceMetrics = {
+                    totalTime: 0,
+                    frameCount: 0,
+                    avgTimePerFrame: 0,
+                    cacheHit: false
+                };
+                
+                this.init();
+            }
+
+            async init() {
+                // Initialize IndexedDB for frame caching
+                await this.initIndexedDB();
+                this.showStatus('Canvas frame extractor initialized (Universal Compatibility)', 'success');
+            }
+
+            async initIndexedDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('CanvasVideoFrameCache', 1);
+                    
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve();
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains('frames')) {
+                            const store = db.createObjectStore('frames', { keyPath: 'id' });
+                            store.createIndex('videoHash', 'videoHash', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            async downloadVideo(url) {
+                this.showStatus('Downloading video...', 'info');
+                this.showProgress(0);
+                
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const contentLength = response.headers.get('content-length');
+                    const total = parseInt(contentLength, 10);
+                    let loaded = 0;
+
+                    const reader = response.body.getReader();
+                    const chunks = [];
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        chunks.push(value);
+                        loaded += value.length;
+
+                        if (total) {
+                            const progress = (loaded / total) * 100;
+                            this.showProgress(progress);
+                        }
+                    }
+
+                    this.videoBuffer = new Uint8Array(loaded);
+                    let offset = 0;
+                    for (const chunk of chunks) {
+                        this.videoBuffer.set(chunk, offset);
+                        offset += chunk.length;
+                    }
+
+                    this.showStatus(`Video downloaded (${(loaded / 1024 / 1024).toFixed(2)} MB)`, 'success');
+                    return this.videoBuffer;
+                } catch (error) {
+                    this.showStatus(`Download failed: ${error.message}`, 'error');
+                    throw error;
+                }
+            }
+
+            async loadLocalFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.videoBuffer = new Uint8Array(e.target.result);
+                        this.showStatus(`Local file loaded (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+                        resolve(this.videoBuffer);
+                    };
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            async generateVideoHash(buffer) {
+                const hashBuffer = await crypto.subtle.digest('SHA-256', buffer.slice(0, 1024));
+                return Array.from(new Uint8Array(hashBuffer))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+            }
+
+            async checkCache(videoHash) {
+                if (!this.db) return null;
+                
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['frames'], 'readonly');
+                    const store = transaction.objectStore('frames');
+                    const index = store.index('videoHash');
+                    const request = index.getAll(videoHash);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async saveFrameToCache(frameData, videoHash) {
+                if (!this.db) return;
+                
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['frames'], 'readwrite');
+                    const store = transaction.objectStore('frames');
+                    const request = store.put({
+                        id: frameData.id,
+                        videoHash: videoHash,
+                        timestamp: frameData.timestamp,
+                        dataUrl: frameData.dataUrl,
+                        cachedAt: Date.now()
+                    });
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async extractFrames() {
+                if (!this.videoBuffer) {
+                    this.showStatus('No video loaded', 'error');
+                    return;
+                }
+
+                const frameInterval = parseFloat(document.getElementById('frameInterval').value);
+                const maxFrames = parseInt(document.getElementById('maxFrames').value);
+                const quality = parseFloat(document.getElementById('frameQuality').value);
+
+                // Reset performance metrics
+                this.performanceMetrics = {
+                    totalTime: 0,
+                    frameCount: 0,
+                    avgTimePerFrame: 0,
+                    cacheHit: false
+                };
+
+                const startTime = performance.now();
+
+                this.showStatus('Extracting frames using Canvas + Video method...', 'info');
+                this.showProgress(0);
+
+                try {
+                    // Generate hash for caching
+                    const videoHash = await this.generateVideoHash(this.videoBuffer);
+                    
+                    // Check cache first
+                    const cachedFrames = await this.checkCache(videoHash);
+                    if (cachedFrames && cachedFrames.length > 0) {
+                        this.performanceMetrics.cacheHit = true;
+                        this.performanceMetrics.totalTime = performance.now() - startTime;
+                        this.showStatus(`Found ${cachedFrames.length} cached frames`, 'success');
+                        this.displayCachedFrames(cachedFrames);
+                        this.showPerformanceInfo();
+                        return;
+                    }
+
+                    // Create video element for extraction
+                    const videoElement = document.getElementById('videoElement');
+                    const blob = new Blob([this.videoBuffer], { type: 'video/mp4' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    videoElement.src = url;
+                    videoElement.style.display = 'block';
+                    
+                    // Wait for video metadata
+                    await new Promise((resolve) => {
+                        videoElement.onloadedmetadata = resolve;
+                    });
+
+                    const duration = videoElement.duration;
+                    const frameCount = Math.min(maxFrames, Math.floor(duration / frameInterval));
+                    
+                    this.frames = [];
+                    
+                    // Create canvas for frame extraction
+                    const extractionCanvas = document.createElement('canvas');
+                    const extractionCtx = extractionCanvas.getContext('2d');
+                    
+                    // Set canvas dimensions to match video
+                    extractionCanvas.width = videoElement.videoWidth;
+                    extractionCanvas.height = videoElement.videoHeight;
+
+                    // Extract frames at specified intervals
+                    for (let i = 0; i < frameCount; i++) {
+                        const timestamp = i * frameInterval;
+                        
+                        try {
+                            const frameStartTime = performance.now();
+                            
+                            // Use Canvas + Video seeking method
+                            await this.captureFrameCanvas(videoElement, extractionCanvas, extractionCtx, timestamp);
+                            const dataUrl = extractionCanvas.toDataURL('image/jpeg', quality);
+                            
+                            const frameEndTime = performance.now();
+                            const frameTime = frameEndTime - frameStartTime;
+                            
+                            const frameData = {
+                                id: `${videoHash}_${timestamp}`,
+                                timestamp: timestamp,
+                                dataUrl: dataUrl
+                            };
+                            
+                            this.frames.push(frameData);
+                            
+                            // Update performance metrics
+                            this.performanceMetrics.frameCount++;
+                            this.performanceMetrics.totalTime += frameTime;
+                            
+                            // Save to cache
+                            await this.saveFrameToCache(frameData, videoHash);
+                            
+                            // Update progress
+                            this.showProgress(((i + 1) / frameCount) * 100);
+                            
+                            // Update display
+                            this.displayFrames();
+                            
+                            // Small delay to prevent blocking
+                            await new Promise(resolve => setTimeout(resolve, 10));
+                            
+                        } catch (error) {
+                            console.warn(`Failed to extract frame at ${timestamp}s:`, error);
+                        }
+                    }
+
+                    URL.revokeObjectURL(url);
+                    
+                    // Calculate final performance metrics
+                    this.performanceMetrics.totalTime = performance.now() - startTime;
+                    this.performanceMetrics.avgTimePerFrame = this.performanceMetrics.totalTime / this.performanceMetrics.frameCount;
+                    
+                    this.showStatus(`Extracted ${this.frames.length} frames using Canvas method`, 'success');
+                    this.showPerformanceInfo();
+                    
+                } catch (error) {
+                    this.showStatus(`Frame extraction failed: ${error.message}`, 'error');
+                    console.error(error);
+                }
+            }
+
+            async captureFrameCanvas(videoElement, canvas, ctx, timestamp) {
+                return new Promise((resolve, reject) => {
+                    const onSeeked = () => {
+                        try {
+                            // Clear canvas and draw current video frame
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                            
+                            videoElement.removeEventListener('seeked', onSeeked);
+                            resolve();
+                        } catch (error) {
+                            videoElement.removeEventListener('seeked', onSeeked);
+                            reject(error);
+                        }
+                    };
+                    
+                    videoElement.addEventListener('seeked', onSeeked);
+                    videoElement.currentTime = timestamp;
+                    
+                    // Timeout fallback
+                    setTimeout(() => {
+                        videoElement.removeEventListener('seeked', onSeeked);
+                        reject(new Error('Canvas frame capture timeout'));
+                    }, 5000);
+                });
+            }
+
+            showPerformanceInfo() {
+                const perfDiv = document.getElementById('performanceInfo');
+                const detailsDiv = document.getElementById('performanceDetails');
+                
+                const metrics = this.performanceMetrics;
+                
+                detailsDiv.innerHTML = `
+                    <p><strong>Extraction Method:</strong> Canvas + Video Seeking</p>
+                    <p><strong>Cache Hit:</strong> ${metrics.cacheHit ? 'Yes (instant)' : 'No (fresh extraction)'}</p>
+                    <p><strong>Total Time:</strong> ${metrics.totalTime.toFixed(2)}ms</p>
+                    <p><strong>Frames Processed:</strong> ${metrics.frameCount}</p>
+                    <p><strong>Average Time per Frame:</strong> ${metrics.avgTimePerFrame.toFixed(2)}ms</p>
+                    <p><strong>Estimated FPS for Extraction:</strong> ${(1000 / metrics.avgTimePerFrame).toFixed(1)} fps</p>
+                `;
+                
+                perfDiv.style.display = 'block';
+            }
+
+            displayCachedFrames(cachedFrames) {
+                this.frames = cachedFrames.map(frame => ({
+                    id: frame.id,
+                    timestamp: frame.timestamp,
+                    dataUrl: frame.dataUrl
+                }));
+                this.displayFrames();
+            }
+
+            displayFrames() {
+                const grid = document.getElementById('framesGrid');
+                const countElement = document.getElementById('frameCount');
+                const totalFramesElement = document.getElementById('totalFrames');
+                
+                countElement.textContent = `${this.frames.length} frames extracted`;
+                totalFramesElement.textContent = this.frames.length;
+                
+                // Initialize playback canvas
+                this.initPlaybackCanvas();
+                
+                grid.innerHTML = '';
+                
+                this.frames.forEach((frame, index) => {
+                    const frameDiv = document.createElement('div');
+                    frameDiv.className = 'frame-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = frame.dataUrl;
+                    img.style.width = '100%';
+                    img.style.border = '1px solid #ddd';
+                    img.style.cursor = 'pointer';
+                    
+                    // Click to show frame in playback canvas
+                    img.onclick = () => this.showFrame(index);
+                    
+                    const label = document.createElement('div');
+                    label.textContent = `Frame ${index + 1} (${frame.timestamp.toFixed(1)}s)`;
+                    label.style.fontSize = '12px';
+                    label.style.marginTop = '5px';
+                    
+                    frameDiv.appendChild(img);
+                    frameDiv.appendChild(label);
+                    grid.appendChild(frameDiv);
+                });
+            }
+
+            initPlaybackCanvas() {
+                if (this.frames.length === 0) return;
+                
+                this.playbackCanvas = document.getElementById('playbackCanvas');
+                this.playbackCtx = this.playbackCanvas.getContext('2d');
+                
+                // Create an image from the first frame to get dimensions
+                const img = new Image();
+                img.onload = () => {
+                    // Set canvas size based on first frame
+                    const maxWidth = 400;
+                    const scale = maxWidth / img.width;
+                    this.playbackCanvas.width = img.width;
+                    this.playbackCanvas.height = img.height;
+                    this.playbackCanvas.style.width = `${Math.min(img.width, maxWidth)}px`;
+                    this.playbackCanvas.style.height = `${Math.min(img.height, maxWidth * (img.height / img.width))}px`;
+                    
+                    // Show first frame
+                    this.showFrame(0);
+                    this.playbackCanvas.style.display = 'block';
+                };
+                img.src = this.frames[0].dataUrl;
+            }
+
+            showFrame(index) {
+                if (!this.playbackCanvas || !this.frames[index]) return;
+                
+                const img = new Image();
+                img.onload = () => {
+                    this.playbackCtx.clearRect(0, 0, this.playbackCanvas.width, this.playbackCanvas.height);
+                    this.playbackCtx.drawImage(img, 0, 0);
+                    
+                    // Update current frame indicator
+                    document.getElementById('currentFrame').textContent = index + 1;
+                };
+                img.src = this.frames[index].dataUrl;
+                this.currentFrameIndex = index;
+            }
+
+            startPlayback() {
+                if (this.frames.length === 0) {
+                    this.showStatus('No frames available for playback', 'error');
+                    return;
+                }
+
+                if (this.isPlaying) return;
+                
+                this.isPlaying = true;
+                const interval = 1000 / this.playbackFps;
+                
+                this.playbackInterval = setInterval(() => {
+                    this.showFrame(this.currentFrameIndex);
+                    this.currentFrameIndex++;
+                    
+                    if (this.currentFrameIndex >= this.frames.length) {
+                        const loopPlayback = document.getElementById('loopPlayback').checked;
+                        if (loopPlayback) {
+                            this.currentFrameIndex = 0;
+                        } else {
+                            this.stopPlayback();
+                        }
+                    }
+                }, interval);
+                
+                // Update UI
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = false;
+                
+                this.showStatus(`Playing frames at ${this.playbackFps} fps`, 'info');
+            }
+
+            pausePlayback() {
+                if (!this.isPlaying) return;
+                
+                clearInterval(this.playbackInterval);
+                this.isPlaying = false;
+                
+                // Update UI
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+                this.showStatus('Playback paused', 'info');
+            }
+
+            stopPlayback() {
+                clearInterval(this.playbackInterval);
+                this.isPlaying = false;
+                this.currentFrameIndex = 0;
+                
+                // Show first frame
+                if (this.frames.length > 0) {
+                    this.showFrame(0);
+                }
+                
+                // Update UI
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = true;
+                
+                this.showStatus('Playback stopped', 'info');
+            }
+
+            setPlaybackSpeed(fps) {
+                this.playbackFps = fps;
+                
+                // If currently playing, restart with new speed
+                if (this.isPlaying) {
+                    this.pausePlayback();
+                    this.startPlayback();
+                }
+            }
+
+            async clearCache() {
+                if (!this.db) return;
+                
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['frames'], 'readwrite');
+                    const store = transaction.objectStore('frames');
+                    const request = store.clear();
+                    
+                    request.onsuccess = () => {
+                        this.showStatus('Cache cleared', 'success');
+                        resolve();
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async getCacheInfo() {
+                if (!this.db) return null;
+                
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['frames'], 'readonly');
+                    const store = transaction.objectStore('frames');
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => {
+                        const frames = request.result;
+                        const info = {
+                            totalFrames: frames.length,
+                            totalSize: frames.reduce((size, frame) => size + frame.dataUrl.length, 0),
+                            videos: [...new Set(frames.map(f => f.videoHash))].length
+                        };
+                        resolve(info);
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            showStatus(message, type = 'info') {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+
+            showProgress(percent) {
+                const container = document.getElementById('progressContainer');
+                const bar = document.getElementById('progressBar');
+                
+                if (percent > 0 && percent < 100) {
+                    container.style.display = 'block';
+                    bar.style.width = `${percent}%`;
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+        }
+
+        // Global instance
+        let extractor;
+
+        // Initialize when page loads
+        window.onload = () => {
+            extractor = new CanvasVideoFrameExtractor();
+        };
+
+        // UI Functions
+        async function downloadAndProcessVideo() {
+            const url = document.getElementById('videoUrl').value.trim();
+            if (!url) {
+                alert('Please enter a video URL');
+                return;
+            }
+
+            try {
+                await extractor.downloadVideo(url);
+                await extractor.extractFrames();
+            } catch (error) {
+                console.error('Error processing video:', error);
+            }
+        }
+
+        async function processLocalFile() {
+            const fileInput = document.getElementById('videoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a video file');
+                return;
+            }
+
+            try {
+                await extractor.loadLocalFile(file);
+                await extractor.extractFrames();
+            } catch (error) {
+                console.error('Error processing local file:', error);
+            }
+        }
+
+        async function clearCache() {
+            try {
+                await extractor.clearCache();
+                document.getElementById('framesGrid').innerHTML = '';
+                document.getElementById('frameCount').textContent = 'No frames extracted yet';
+                document.getElementById('performanceInfo').style.display = 'none';
+            } catch (error) {
+                console.error('Error clearing cache:', error);
+            }
+        }
+
+        async function showCacheInfo() {
+            try {
+                const info = await extractor.getCacheInfo();
+                const cacheDiv = document.getElementById('cacheInfo');
+                const detailsDiv = document.getElementById('cacheDetails');
+                
+                if (info) {
+                    detailsDiv.innerHTML = `
+                        <p><strong>Total cached frames:</strong> ${info.totalFrames}</p>
+                        <p><strong>Estimated size:</strong> ${(info.totalSize / 1024 / 1024).toFixed(2)} MB</p>
+                        <p><strong>Videos cached:</strong> ${info.videos}</p>
+                    `;
+                    cacheDiv.style.display = 'block';
+                } else {
+                    detailsDiv.innerHTML = '<p>Cache information not available</p>';
+                    cacheDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error getting cache info:', error);
+            }
+        }
+
+        // Playback control functions
+        function playFrames() {
+            extractor.startPlayback();
+        }
+
+        function pauseFrames() {
+            extractor.pausePlayback();
+        }
+
+        function stopFrames() {
+            extractor.stopPlayback();
+        }
+
+        function updatePlaybackSpeed() {
+            const speed = parseInt(document.getElementById('playbackSpeed').value);
+            extractor.setPlaybackSpeed(speed);
+        }
+    </script>
+</body>
+</html>

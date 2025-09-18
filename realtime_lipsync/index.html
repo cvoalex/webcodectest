@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Lip Sync Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            height: 60px;
+            background: #2d2d2d;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 24px;
+            height: 24px;
+            background: #00a67e;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+        }
+
+        .status-dot.connected {
+            background: #00ff88;
+        }
+
+        .main-container {
+            height: calc(100vh - 60px);
+            display: flex;
+        }
+
+        /* Left Panel - Video and Controls */
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+        }
+
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .controls-panel {
+            height: 120px;
+            background: #2d2d2d;
+            border-top: 1px solid #404040;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .session-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: #00a67e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #008a6a;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dd3333;
+        }
+
+        .btn-secondary {
+            background: #404040;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555555;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .text-input {
+            flex: 1;
+            max-width: 400px;
+            padding: 10px 15px;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            background: #1a1a1a;
+            color: white;
+            font-size: 14px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #00a67e;
+        }
+
+        /* Right Panel - Stats and Events */
+        .right-panel {
+            width: 380px;
+            background: #2d2d2d;
+            border-left: 1px solid #404040;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #404040;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stats-container {
+            padding: 20px;
+            border-bottom: 1px solid #404040;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .stat-label {
+            color: #aaa;
+        }
+
+        .stat-value {
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+        }
+
+        .buffer-visualizer {
+            height: 40px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buffer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00a67e, #00ff88);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .buffer-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .events-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .event-item {
+            background: #1a1a1a;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #00a67e;
+            font-size: 12px;
+        }
+
+        .event-item.client {
+            border-left-color: #4a9eff;
+        }
+
+        .event-item.server {
+            border-left-color: #00ff88;
+        }
+
+        .event-item.error {
+            border-left-color: #ff4444;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .event-type {
+            color: #00ff88;
+        }
+
+        .event-time {
+            color: #aaa;
+            font-size: 11px;
+        }
+
+        .event-details {
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .transcript-container {
+            background: #1a1a1a;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .transcript-content {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #ffffff;
+        }
+
+        /* Model selector */
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .model-select {
+            padding: 8px 12px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            background: #1a1a1a;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .right-panel {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .right-panel {
+                width: 100%;
+                height: 50%;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #404040;
+            border-top: 2px solid #00a67e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">AI</div>
+        <h1 class="title">Real-time Lip Sync Console</h1>
+        <div class="status-indicator">
+            <span id="status-text">Disconnected</span>
+            <div id="status-dot" class="status-dot"></div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Left Panel: Video and Controls -->
+        <div class="left-panel">
+            <div class="video-container">
+                <canvas id="video-canvas" class="video-canvas" width="512" height="512"></canvas>
+                <div class="video-overlay">
+                    <div>FPS: <span id="fps-counter">0</span></div>
+                    <div>Latency: <span id="latency-counter">0ms</span></div>
+                    <div>Model: <span id="current-model">Loading...</span></div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="session-controls">
+                    <button id="start-session-btn" class="btn btn-primary">
+                        <span>🎤</span>
+                        Start Session
+                    </button>
+                    <button id="stop-session-btn" class="btn btn-danger" disabled>
+                        <span>⏹️</span>
+                        Stop Session
+                    </button>
+                    <input 
+                        id="text-input" 
+                        class="text-input" 
+                        type="text" 
+                        placeholder="Type a message to send..." 
+                        disabled
+                    >
+                    <button id="send-text-btn" class="btn btn-secondary" disabled>
+                        <span>📤</span>
+                        Send
+                    </button>
+                </div>
+
+                <div class="model-selector">
+                    <label for="model-select">Model:</label>
+                    <select id="model-select" class="model-select">
+                        <option value="test_optimized_package_fixed_1">Model 1</option>
+                        <option value="test_optimized_package_fixed_2">Model 2</option>
+                        <option value="test_optimized_package_fixed_3">Model 3</option>
+                        <option value="test_optimized_package_fixed_4">Model 4</option>
+                        <option value="test_optimized_package_fixed_5">Model 5</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Stats and Events -->
+        <div class="right-panel">
+            <div class="panel-header">System Statistics</div>
+            
+            <div class="stats-container">
+                <div class="stat-row">
+                    <span class="stat-label">Audio Buffer:</span>
+                    <span class="stat-value"><span id="audio-buffer-fill">0</span>/3000</span>
+                </div>
+                <div class="buffer-visualizer">
+                    <div id="audio-buffer-bar" class="buffer-fill" style="width: 0%"></div>
+                    <div class="buffer-label">Audio Buffer</div>
+                </div>
+
+                <div class="stat-row" style="margin-top: 15px;">
+                    <span class="stat-label">Frame Buffer:</span>
+                    <span class="stat-value"><span id="frame-buffer-fill">0</span>/3000</span>
+                </div>
+                <div class="buffer-visualizer">
+                    <div id="frame-buffer-bar" class="buffer-fill" style="width: 0%"></div>
+                    <div class="buffer-label">Frame Buffer</div>
+                </div>
+
+                <div class="stat-row" style="margin-top: 15px;">
+                    <span class="stat-label">Generation FPS:</span>
+                    <span class="stat-value" id="generation-fps">0.0</span>
+                </div>
+
+                <div class="stat-row">
+                    <span class="stat-label">GPU Memory:</span>
+                    <span class="stat-value" id="gpu-memory">0 MB</span>
+                </div>
+
+                <div class="stat-row">
+                    <span class="stat-label">Inference Time:</span>
+                    <span class="stat-value" id="inference-time">0ms</span>
+                </div>
+            </div>
+
+            <div class="panel-header">Real-time Transcript</div>
+            <div class="transcript-container">
+                <div id="transcript-content" class="transcript-content">
+                    Waiting for speech...
+                </div>
+            </div>
+
+            <div class="panel-header">Event Log</div>
+            <div class="events-container" id="events-container">
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-type">system.init</span>
+                        <span class="event-time">--:--:--</span>
+                    </div>
+                    <div class="event-details">Console initialized. Ready to start session.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import the main application -->
+    <script src="./model_video_manager.js"></script>
+    <script src="./face_compositor.js"></script>
+    <script type="module" src="./realtime_lipsync_app.js"></script>
+</body>
+</html>

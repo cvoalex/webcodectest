@@ -1,0 +1,38 @@
+{
+  "name": "realtime-lipsync-console",
+  "version": "1.0.0",
+  "description": "Real-time lip sync console with OpenAI Realtime API integration",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "frame-generator": "python frame_generator.py",
+    "grpc-service": "cd ../fast_service && python grpc_server.py",
+    "start-all": "concurrently \"npm run dev\" \"npm run frame-generator\" \"npm run grpc-service\"",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "openai",
+    "realtime-api",
+    "lip-sync", 
+    "webrtc",
+    "grpc",
+    "real-time",
+    "ai",
+    "speech-to-speech"
+  ],
+  "author": "SyncTalk2D Project",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

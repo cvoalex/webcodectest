@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Lip Sync Frame Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .status-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #6c757d;
+        }
+        .status-item.connected {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .status-item.disconnected {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .status-item.active {
+            border-left-color: #007bff;
+            background: #d1ecf1;
+        }
+        .audio-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .buffer-display {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .buffer-grid {
+            display: grid;
+            grid-template-columns: repeat(100, 1fr);
+            gap: 1px;
+            height: 100px;
+            align-items: end;
+            overflow: hidden;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .buffer-slot {
+            background: #e9ecef;
+            border-radius: 2px;
+            transition: all 0.2s;
+            min-height: 2px;
+            min-width: 2px;
+        }
+        .buffer-slot.filled {
+            background: #007bff;
+            box-shadow: 0 0 2px rgba(0,123,255,0.5);
+        }
+        .buffer-slot.current {
+            background: #28a745;
+            box-shadow: 0 0 4px rgba(40,167,69,0.8);
+            transform: scaleY(1.5);
+        }
+        .frame-display {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .frame-canvas {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            max-width: 100%;
+            background: #000;
+        }
+        .frame-buffer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .frame-buffer-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .frame-buffer-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            background: #000;
+        }
+        .frame-buffer-item.current {
+            background: #d1ecf1;
+            border: 2px solid #007bff;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        button.danger { background: #dc3545; }
+        button.danger:hover { background: #c82333; }
+        button.test-button {
+            background: #17a2b8;
+            color: white;
+            margin-right: 10px;
+        }
+        button.test-button:hover {
+            background: #138496;
+        }
+        button.help-button {
+            background: #ffc107;
+            color: #212529;
+            margin-right: 10px;
+        }
+        button.help-button:hover {
+            background: #e0a800;
+        }
+        button.success { background: #28a745; }
+        button.success:hover { background: #218838; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .log-panel {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Real-time Lip Sync Frame Generator</h1>
+        
+        <div class="controls">
+            <h3>Connection & Controls</h3>
+            
+            <div class="status-panel">
+                <div class="status-item" id="wsStatus">
+                    <strong>WebSocket:</strong> <span>Disconnected</span>
+                </div>
+                <div class="status-item" id="audioStatus">
+                    <strong>Audio:</strong> <span>Stopped</span>
+                </div>
+                <div class="status-item" id="modelStatus">
+                    <strong>Model:</strong> <span>default_model</span>
+                </div>
+                <div class="status-item" id="frameStatus">
+                    <strong>Frame Gen:</strong> <span>Idle</span>
+                </div>
+            </div>
+
+            <div class="audio-controls">
+                <div style="margin-bottom: 10px;">
+                    <label for="micSelect">Choose Microphone:</label>
+                    <select id="micSelect" style="margin-left: 10px; padding: 5px;">
+                        <option value="">Default</option>
+                    </select>
+                    <button onclick="refreshMicrophones()" style="margin-left: 5px; padding: 5px;">🔄</button>
+                </div>
+                <button onclick="testMicrophone()" id="testMicBtn" class="test-button">🎤 Test Microphone</button>
+                <button onclick="showTroubleshootingHelp()" id="helpBtn" class="help-button">❓ Mic Help</button>
+                <button onclick="connectWebSocket()" id="connectBtn">Connect to Server</button>
+                <button onclick="startAudioCapture()" id="startBtn" disabled>Start Audio</button>
+                <button onclick="stopAudioCapture()" id="stopBtn" class="danger" disabled>Stop Audio</button>
+                <button onclick="clearBuffers()" id="clearBtn">Clear Buffers</button>
+                
+                <label style="margin-left: 20px;">
+                    Model: 
+                    <select id="modelSelect" onchange="changeModel()">
+                        <option value="default_model" selected>default_model</option>
+                        <option value="test_optimized_package_fixed_1">test_optimized_package_fixed_1</option>
+                        <option value="demo_model">demo_model</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="audioBufferFill">0</div>
+                <div class="metric-label">Audio Buffer (500 max)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="frameBufferFill">0</div>
+                <div class="metric-label">Frame Buffer (500 max)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="framesGenerated">0</div>
+                <div class="metric-label">Frames Generated</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="frameRate">0</div>
+                <div class="metric-label">Current FPS</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="overallFPS">0</div>
+                <div class="metric-label">Overall FPS</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="latency">0</div>
+                <div class="metric-label">Latency (ms)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="avgLatency">0ms</div>
+                <div class="metric-label">Avg Latency</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="currentAudioLevel">0%</div>
+                <div class="metric-label">Audio Level</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="serverRequests">0</div>
+                <div class="metric-label">Server Requests</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="serverAvgTime">0ms</div>
+                <div class="metric-label">Server Avg Time</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="pendingRequests">0</div>
+                <div class="metric-label">Pending Requests</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="audioActivity">No</div>
+                <div class="metric-label">Audio Activity</div>
+            </div>
+        </div>
+
+        <div class="buffer-display">
+            <h3>Audio Buffer (20 seconds @ 40ms chunks)</h3>
+            <div class="buffer-grid" id="audioBufferGrid">
+                <!-- 100 display slots showing rolling window of last 100 chunks -->
+            </div>
+            <p style="margin-top: 10px; font-size: 12px; color: #6c757d;">
+                Blue: filled slots | Green: current processing | Height: audio level
+            </p>
+        </div>
+
+        <div class="frame-display">
+            <h3>Current Frame</h3>
+            <canvas id="currentFrameCanvas" class="frame-canvas" width="512" height="512"></canvas>
+            
+            <h4 style="margin-top: 25px;">Frame Buffer (Recent Frames)</h4>
+            <div class="frame-buffer-grid" id="frameBufferGrid">
+                <!-- Frame buffer display -->
+            </div>
+        </div>
+
+        <div class="buffer-display">
+            <h3>System Log</h3>
+            <div class="log-panel" id="logPanel"></div>
+        </div>
+    </div>
+
+    <script>
+        class RealtimeLipSyncGenerator {
+            constructor() {
+        // WebSocket connection
+        this.ws = null;
+        this.wsUrl = 'ws://localhost:8082';
+        this.isConnected = false;                // Audio processing
+                this.audioContext = null;
+                this.mediaStream = null;
+                this.processor = null;
+                this.isRecording = false;
+                
+                // Buffers
+                this.audioBuffer = new Array(500).fill(null); // 20 seconds @ 40ms chunks
+                this.frameBuffer = new Array(500).fill(null); // Recent frames
+                this.audioBufferIndex = 0;
+                this.frameBufferIndex = 0;
+                
+                // Frame generation tracking
+                this.generatedFramePositions = new Set(); // Track which audio positions have frames generated
+                this.frameRequestTimes = new Map(); // Track when frame requests are sent for latency calculation
+                this.firstFrameTime = null; // Track when first frame was received
+                this.latencyHistory = []; // Keep recent latency measurements
+                this.lastFrameRequestTime = 0; // Track when we last sent a frame request
+                this.minFrameInterval = 50; // Minimum 50ms between frame requests (max 20 FPS)
+                
+                // Configuration
+                this.chunkSize = 40; // 40ms chunks
+                this.sampleRate = 24000; // 24kHz for lip sync model
+                this.samplesPerChunk = Math.floor(this.sampleRate * this.chunkSize / 1000); // 960 samples
+                
+                // For createScriptProcessor, we need a power of 2 buffer size
+                // 960 samples isn't a power of 2, so we'll use 1024 and process in chunks
+                this.processorBufferSize = 1024; // Closest power of 2 >= 960
+                this.currentModel = 'default_model';
+                
+                // Performance metrics
+                this.frameCount = 0;
+                this.startTime = 0;
+                this.lastFrameTime = 0;
+                
+                this.initializeUI();
+                this.populateMicrophoneList();
+                this.log('🚀 Real-time Lip Sync Generator initialized');
+            }
+
+            initializeUI() {
+                // Initialize audio buffer visualization (show only last 100 slots for visibility)
+                const audioGrid = document.getElementById('audioBufferGrid');
+                for (let i = 0; i < 100; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'buffer-slot';
+                    slot.id = `audio-slot-display-${i}`;
+                    audioGrid.appendChild(slot);
+                }
+                
+                // Initialize frame buffer visualization
+                this.updateFrameBufferDisplay();
+            }
+
+            async populateMicrophoneList() {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                    
+                    const micSelect = document.getElementById('micSelect');
+                    // Clear existing options except default
+                    micSelect.innerHTML = '<option value="">Default</option>';
+                    
+                    let headsetFound = false;
+                    audioInputs.forEach((device, index) => {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Microphone ${index + 1}`;
+                        micSelect.appendChild(option);
+                        
+                        // Auto-select Arctis 7 Chat microphone if found
+                        if (device.label && 
+                            device.label.toLowerCase().includes('arctis') && 
+                            device.label.toLowerCase().includes('chat') &&
+                            device.label.toLowerCase().includes('headset')) {
+                            option.selected = true;
+                            headsetFound = true;
+                            this.log(`🎯 Auto-selected: ${device.label}`);
+                        }
+                    });
+                    
+                    if (!headsetFound) {
+                        this.log(`🎙️ Found ${audioInputs.length} microphone(s), no Arctis 7 Chat auto-selected`);
+                    } else {
+                        this.log(`🎙️ Found ${audioInputs.length} microphone(s), Arctis 7 Chat selected as default`);
+                    }
+                } catch (error) {
+                    this.log('⚠️ Could not enumerate microphones: ' + error.message);
+                }
+            }
+
+            getSelectedMicrophoneConstraints() {
+                const micSelect = document.getElementById('micSelect');
+                const selectedDeviceId = micSelect.value;
+                
+                const baseConstraints = {
+                    sampleRate: this.sampleRate,
+                    channelCount: 1,
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false
+                };
+                
+                if (selectedDeviceId) {
+                    baseConstraints.deviceId = { exact: selectedDeviceId };
+                    this.log(`🎯 Using selected microphone: ${micSelect.options[micSelect.selectedIndex].text}`);
+                } else {
+                    this.log('🎯 Using default microphone');
+                }
+                
+                return baseConstraints;
+            }
+
+            async connectWebSocket() {
+                try {
+                    this.log('🔌 Connecting to WebSocket server...');
+                    this.ws = new WebSocket(this.wsUrl);
+                    
+                    this.ws.onopen = () => {
+                        this.isConnected = true;
+                        this.updateStatus('wsStatus', 'Connected', 'connected');
+                        this.log('✅ WebSocket connected to ' + this.wsUrl);
+                        document.getElementById('connectBtn').disabled = true;
+                        document.getElementById('startBtn').disabled = false;
+                    };
+                    
+                    this.ws.onmessage = (event) => {
+                        // Handle text/JSON messages only
+                        try {
+                            // Always log what we're receiving for debugging
+                            console.log('📨 Raw WebSocket data received:', event.data.substring(0, 500) + (event.data.length > 500 ? '...' : ''));
+                            
+                            const message = JSON.parse(event.data);
+                            
+                            // Log parsed message details
+                            console.log('📨 Parsed WebSocket message:', {
+                                success: message.success,
+                                type: message.type,
+                                model_name: message.model_name,
+                                frame_id: message.frame_id,
+                                has_prediction_data: !!message.prediction_data,
+                                keys: Object.keys(message)
+                            });
+                            
+                            this.handleWebSocketMessage(message);
+                        } catch (e) {
+                            console.error('❌ JSON parse error:', e);
+                            console.log('📨 Failed to parse data (first 200 chars):', event.data.substring(0, 200));
+                            this.log('📨 JSON parse failed - attempting emergency extraction');
+                            
+                            // Emergency extraction for frame data
+                            if (event.data.includes('prediction_data') && event.data.includes('success')) {
+                                try {
+                                    // Try to extract and display the frame anyway
+                                    const match = event.data.match(/"prediction_data":"([^"]+)"/);
+                                    const frameIdMatch = event.data.match(/"frame_id":(\d+)/);
+                                    const modelMatch = event.data.match(/"model_name":"([^"]+)"/);
+                                    
+                                    if (match && frameIdMatch) {
+                                        const frameData = match[1];
+                                        const frameId = parseInt(frameIdMatch[1]);
+                                        const modelName = modelMatch ? modelMatch[1] : 'unknown';
+                                        
+                                        console.log(`🆘 Emergency frame extraction: frame ${frameId}, model ${modelName}`);
+                                        this.log(`🖼️ Emergency frame extraction for frame ${frameId}`);
+                                        
+                                        // Create a synthetic response object
+                                        const syntheticResponse = {
+                                            success: true,
+                                            frame_id: frameId,
+                                            model_name: modelName,
+                                            prediction_data: frameData
+                                        };
+                                        
+                                        this.displayFrame(syntheticResponse);
+                                        this.updateMetrics(syntheticResponse);
+                                    }
+                                } catch (emergencyError) {
+                                    console.error('❌ Emergency frame extraction failed:', emergencyError);
+                                    this.log('❌ Emergency extraction failed: ' + emergencyError.message);
+                                }
+                            }
+                        }
+                    };
+                    
+                    this.ws.onclose = () => {
+                        this.isConnected = false;
+                        this.updateStatus('wsStatus', 'Disconnected', 'disconnected');
+                        this.log('❌ WebSocket disconnected');
+                        document.getElementById('connectBtn').disabled = false;
+                        document.getElementById('startBtn').disabled = true;
+                    };
+                    
+                    this.ws.onerror = (error) => {
+                        this.log('💥 WebSocket error: ' + error);
+                    };
+                    
+                } catch (error) {
+                    this.log('💥 Connection failed: ' + error.message);
+                }
+            }
+
+            handleWebSocketMessage(message) {
+                // Don't log the full message if it contains large frame data
+                if (message.prediction_data) {
+                    console.log('📥 Frame response received:', {
+                        success: message.success,
+                        frame_id: message.frame_id,
+                        model_name: message.model_name,
+                        has_prediction_data: true,
+                        data_size: message.prediction_data.length
+                    });
+                } else {
+                    console.log('📥 Received WebSocket message:', message);
+                }
+                
+                if (message.success && message.prediction_data) {
+                    // Frame generation response
+                    this.log(`✅ Frame ${message.frame_id} generated successfully`);
+                    this.displayFrame(message);
+                    this.updateMetrics(message);
+                } else if (message.type === 'stats') {
+                    // Server statistics - update metrics
+                    this.updateMetric('serverRequests', message.total_requests);
+                    this.updateMetric('serverAvgTime', message.average_time_ms.toFixed(1) + 'ms');
+                    this.updateMetric('connectedClients', message.connected_clients);
+                    
+                    // Only log stats occasionally to avoid spam
+                    if (message.total_requests % 20 === 0) {
+                        console.log(`📊 Server stats: ${message.total_requests} requests, avg ${message.average_time_ms.toFixed(1)}ms`);
+                    }
+                } else if (message.error) {
+                    console.log('❌ Server error:', message.error);
+                    this.log('❌ Server error: ' + message.error);
+                } else {
+                    // Debug: Log unknown message structure (but limit size)
+                    const logMessage = message.prediction_data ? 
+                        {...message, prediction_data: `[${message.prediction_data.length} chars]`} : 
+                        message;
+                    console.log('📨 Unknown message structure:', logMessage);
+                    this.log('📨 Unknown message: ' + JSON.stringify(logMessage).substring(0, 100) + '...');
+                }
+            }
+
+            displayFrame(response) {
+                if (response.prediction_data) {
+                    // Create an image element to load the frame
+                    const img = new Image();
+                    img.onload = () => {
+                        // Draw the image on the canvas
+                        const canvas = document.getElementById('currentFrameCanvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Clear canvas and draw the new frame
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        console.log(`🖼️ Frame ${response.frame_id} displayed on canvas`);
+                    };
+                    img.src = 'data:image/jpeg;base64,' + response.prediction_data;
+                    
+                    // Add frame to buffer
+                    this.frameBuffer[this.frameBufferIndex] = {
+                        frameId: response.frame_id,
+                        timestamp: Date.now(),
+                        data: response.prediction_data
+                    };
+                    this.frameBufferIndex = (this.frameBufferIndex + 1) % 500;
+                    
+                    // Update frame buffer display
+                    this.updateFrameBufferDisplay();
+                    
+                    // Update frame counter
+                    this.updateMetric('framesGenerated', response.frame_id + 1);
+                    this.updateMetric('frameBufferFill', this.frameBuffer.filter(f => f !== null).length);
+                    this.log(`🖼️ Frame ${response.frame_id} received (${response.processing_time_ms ? response.processing_time_ms.toFixed(1) : 'N/A'}ms)`);
+                    
+                    console.log(`🎬 Frame ${response.frame_id} added to buffer at index ${this.frameBufferIndex - 1}`);
+                }
+            }
+
+            updateMetrics(response) {
+                if (response.processing_time_ms) {
+                    this.updateMetric('processingTime', response.processing_time_ms.toFixed(1) + 'ms');
+                }
+                if (response.model_name) {
+                    this.updateMetric('modelUsed', response.model_name);
+                }
+                
+                // Calculate FPS and latency
+                const now = Date.now();
+                
+                // Calculate instantaneous FPS (time between frames)
+                if (this.lastFrameTime > 0) {
+                    const timeDiff = now - this.lastFrameTime;
+                    const instantFPS = 1000 / timeDiff;
+                    this.updateMetric('frameRate', instantFPS.toFixed(1)); // Update the correct metric
+                }
+                
+                // Calculate overall FPS (total frames / total time)
+                if (!this.firstFrameTime) {
+                    this.firstFrameTime = now;
+                }
+                const totalTime = (now - this.firstFrameTime) / 1000; // seconds
+                if (totalTime > 0) {
+                    const overallFPS = response.frame_id / totalTime;
+                    this.updateMetric('overallFPS', overallFPS.toFixed(1));
+                }
+                
+                // Calculate latency (time from frame request to response)
+                if (response.frame_id !== undefined && this.frameRequestTimes) {
+                    const requestTime = this.frameRequestTimes.get(response.frame_id);
+                    if (requestTime) {
+                        const latency = now - requestTime;
+                        this.updateMetric('latency', latency);
+                        this.frameRequestTimes.delete(response.frame_id); // Clean up
+                        
+                        // Keep running average of latency
+                        if (!this.latencyHistory) this.latencyHistory = [];
+                        this.latencyHistory.push(latency);
+                        if (this.latencyHistory.length > 10) this.latencyHistory.shift();
+                        const avgLatency = this.latencyHistory.reduce((a, b) => a + b, 0) / this.latencyHistory.length;
+                        this.updateMetric('avgLatency', avgLatency.toFixed(1) + 'ms');
+                    } else {
+                        console.warn(`⚠️ No request time found for frame ${response.frame_id}`);
+                    }
+                    
+                    // Clean up old request times to prevent memory leaks
+                    if (this.frameRequestTimes.size > 100) {
+                        const oldestKeys = Array.from(this.frameRequestTimes.keys()).slice(0, 50);
+                        oldestKeys.forEach(key => this.frameRequestTimes.delete(key));
+                        console.warn(`🧹 Cleaned up ${oldestKeys.length} old frame request times`);
+                    }
+                }
+                
+                this.lastFrameTime = now;
+            }
+
+            async startAudioCapture() {
+                try {
+                    this.log('🎤 Starting audio capture...');
+                    
+                    // Initialize audio context
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: this.sampleRate
+                    });
+                    
+                    // Try to get microphone access with fallback
+                    let mediaStream;
+                    try {
+                        // First try with selected microphone constraints
+                        mediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: this.getSelectedMicrophoneConstraints()
+                        });
+                    } catch (e) {
+                        console.warn('Selected microphone failed, trying basic audio:', e);
+                        // Fallback to basic audio
+                        mediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: true
+                        });
+                    }
+                    
+                    this.mediaStream = mediaStream;
+                    
+                    // Debug: Check audio tracks
+                    const audioTracks = this.mediaStream.getAudioTracks();
+                    console.log('Audio tracks:', audioTracks);
+                    if (audioTracks.length > 0) {
+                        console.log('Audio track settings:', audioTracks[0].getSettings());
+                        console.log('Audio track constraints:', audioTracks[0].getConstraints());
+                    }
+                    
+                    // Create audio processing pipeline
+                    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+                    this.processor = this.audioContext.createScriptProcessor(this.processorBufferSize, 1, 1);
+                    
+                    // Buffer to accumulate samples for exact 40ms chunks
+                    this.sampleAccumulator = [];
+                    
+                    // Add audio level monitoring
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    source.connect(this.analyser);
+                    
+                    this.processor.onaudioprocess = (event) => {
+                        this.processAudioBuffer(event.inputBuffer);
+                    };
+                    
+                    source.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+                    
+                    // Test microphone level
+                    this.testMicrophoneLevel();
+                    
+                    this.isRecording = true;
+                    this.startTime = Date.now();
+                    this.updateStatus('audioStatus', 'Recording', 'active');
+                    this.updateStatus('frameStatus', 'Processing', 'active');
+                    
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                    
+                    this.log('✅ Audio capture started (24kHz, 40ms chunks)');
+                    this.log('🎤 Try speaking into your microphone to test audio levels');
+                    this.log('📊 Watch the Audio Level metric and console for audio detection');
+                    
+                } catch (error) {
+                    this.log('💥 Audio capture failed: ' + error.message);
+                }
+            }
+
+            processAudioBuffer(audioBuffer) {
+                console.log(`processAudioBuffer called: isRecording=${this.isRecording}, isConnected=${this.isConnected}`);
+                if (!this.isRecording || !this.isConnected) return;
+                
+                // Add new samples to our accumulator buffer
+                const channelData = audioBuffer.getChannelData(0);
+                console.log(`Audio input: ${channelData.length} samples, rms=${Math.sqrt(channelData.reduce((sum, val) => sum + val*val, 0) / channelData.length).toFixed(4)}`);
+                
+                for (let i = 0; i < channelData.length; i++) {
+                    this.sampleAccumulator.push(channelData[i]);
+                }
+                
+                // Process complete 40ms chunks (960 samples)
+                while (this.sampleAccumulator.length >= this.samplesPerChunk) {
+                    const chunk = this.sampleAccumulator.splice(0, this.samplesPerChunk);
+                    this.processAudioChunk(chunk);
+                }
+            }
+
+            processAudioChunk(audioSamples) {
+                if (!this.isRecording || !this.isConnected) return;
+                
+                // Calculate audio level using same method as microphone test
+                const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                this.analyser.getByteFrequencyData(dataArray);
+                const audioLevel = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+                
+                // Convert audio samples to Int16Array
+                const int16Data = new Int16Array(audioSamples.length);
+                
+                for (let i = 0; i < audioSamples.length; i++) {
+                    const clampedValue = Math.max(-1, Math.min(1, audioSamples[i]));
+                    int16Data[i] = clampedValue * 32767;
+                }
+                
+                // Convert to base64
+                const uint8Data = new Uint8Array(int16Data.buffer);
+                const base64Audio = btoa(String.fromCharCode.apply(null, uint8Data));
+                
+                // Add to circular buffer with audio level for visualization
+                this.audioBuffer[this.audioBufferIndex] = {
+                    data: base64Audio,
+                    timestamp: Date.now(),
+                    index: this.audioBufferIndex,
+                    level: audioLevel // Store audio level for visualization
+                };
+                
+                // Debug: Log audio processing
+                console.log(`Audio chunk processed: index=${this.audioBufferIndex}, samples=${audioSamples.length}, rms=${audioLevel.toFixed(4)}`);
+                
+                // Update audio level metric (audioLevel is now 0-255, convert to percentage)
+                this.updateMetric('currentAudioLevel', (audioLevel / 255 * 100).toFixed(1) + '%');
+                
+                // Update buffer visualization
+                this.updateAudioBufferDisplay();
+                
+                // Generate frames for all positions that now have sufficient context
+                this.generatePendingFrames();
+                
+                // Update audio activity status after checking
+                const hasActivity = this.hasRecentAudioActivity();
+                this.updateMetric('audioActivity', hasActivity ? 'Yes' : 'No');
+                
+                // Advance buffer index
+                this.audioBufferIndex = (this.audioBufferIndex + 1) % 500;
+                
+                // Update metrics
+                const filledSlots = this.audioBuffer.filter(slot => slot !== null).length;
+                this.updateMetric('audioBufferFill', filledSlots);
+            }
+
+            generatePendingFrames() {
+                // Generate frames for all positions that have 16 consecutive chunks available
+                // This allows us to "catch up" and generate multiple frames per audio chunk if needed
+                
+                let framesGenerated = 0;
+                const maxFramesPerChunk = 1; // Reduced to 1 - only generate 1 frame per audio chunk
+                
+                // Don't generate any frames if we have too many pending
+                const pendingRequests = this.frameRequestTimes ? this.frameRequestTimes.size : 0;
+                if (pendingRequests > 5) {
+                    console.log(`⏸️ Skipping frame generation - ${pendingRequests} pending requests`);
+                    return;
+                }
+                
+                // Check if there's any meaningful audio in recent chunks
+                if (!this.hasRecentAudioActivity()) {
+                    // Only log occasionally to avoid spam
+                    if (this.audioBufferIndex % 50 === 0) {
+                        console.log(`🔇 Skipping frame generation - no audio activity detected`);
+                    }
+                    return;
+                }
+                
+                // Clean up old generated positions to prevent memory leaks
+                if (this.generatedFramePositions.size > 1000) {
+                    // Keep only recent positions (last 500)
+                    const positions = Array.from(this.generatedFramePositions);
+                    const keepPositions = positions.slice(-500);
+                    this.generatedFramePositions.clear();
+                    keepPositions.forEach(pos => this.generatedFramePositions.add(pos));
+                    console.warn(`🧹 Cleaned up generated frame positions, kept ${keepPositions.length}`);
+                }
+                
+                // Start checking from the oldest possible frame position
+                for (let checkOffset = 15; checkOffset >= 7 && framesGenerated < maxFramesPerChunk; checkOffset--) {
+                    const framePosition = (this.audioBufferIndex - checkOffset + 500) % 500;
+                    
+                    if (this.canGenerateFrameAt(framePosition) && !this.hasFrameBeenGenerated(framePosition)) {
+                        this.sendAudioForFrameGenerationAt(framePosition);
+                        framesGenerated++;
+                    }
+                }
+                
+                if (framesGenerated > 0) {
+                    console.log(`🎬 Generated ${framesGenerated} frames this audio chunk`);
+                }
+            }
+
+            hasRecentAudioActivity() {
+                // Check the last 10 audio chunks for meaningful audio activity
+                const checksToPerform = Math.min(10, this.audioBufferIndex + 1);
+                let maxLevel = 0;
+                let chunksWithAudio = 0;
+                
+                for (let i = 0; i < checksToPerform; i++) {
+                    const checkIndex = (this.audioBufferIndex - i + 500) % 500;
+                    const chunk = this.audioBuffer[checkIndex];
+                    
+                    if (chunk && chunk.level !== undefined) {
+                        maxLevel = Math.max(maxLevel, chunk.level);
+                        if (chunk.level > 2.0) { // Threshold for meaningful audio (2.0 on 0-255 scale)
+                            chunksWithAudio++;
+                        }
+                    }
+                }
+                
+                // Require at least 2 chunks with audio activity in the last 10 chunks
+                // and a maximum level above a reasonable threshold
+                const hasActivity = chunksWithAudio >= 2 && maxLevel > 1.0;
+                
+                // Debug logging occasionally
+                if (this.audioBufferIndex % 100 === 0) {
+                    console.log(`🔊 Audio activity check: max=${maxLevel.toFixed(4)}, chunks=${chunksWithAudio}/10, active=${hasActivity}`);
+                }
+                
+                return hasActivity;
+            }
+
+            canGenerateFrameAt(framePosition) {
+                // Check if we can generate a frame at the specified position
+                // Need 8 prior + current + 7 future = 16 chunks
+                const startIndex = (framePosition - 8 + 500) % 500;
+                
+                let consecutiveCount = 0;
+                for (let i = 0; i < 16; i++) {
+                    const index = (startIndex + i) % 500;
+                    if (this.audioBuffer[index] !== null) {
+                        consecutiveCount++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                return consecutiveCount >= 16;
+            }
+
+            hasFrameBeenGenerated(framePosition) {
+                // Check if we've already generated a frame for this audio position
+                // Use a simple tracking mechanism
+                if (!this.generatedFramePositions) {
+                    this.generatedFramePositions = new Set();
+                }
+                
+                return this.generatedFramePositions.has(framePosition);
+            }
+
+            sendAudioForFrameGenerationAt(framePosition) {
+                // Check time-based throttling
+                const now = Date.now();
+                if (now - this.lastFrameRequestTime < this.minFrameInterval) {
+                    console.log(`⏱️ Skipping frame request - too soon (${now - this.lastFrameRequestTime}ms < ${this.minFrameInterval}ms)`);
+                    return;
+                }
+                
+                // Generate frame for the specified audio position
+                const startIndex = (framePosition - 8 + 500) % 500; // 8 chunks prior to frame
+                
+                console.log(`🎬 Generating frame for audio position ${framePosition}`);
+                
+                const chunks = [];
+                for (let i = 0; i < 16; i++) {
+                    const index = (startIndex + i) % 500;
+                    if (this.audioBuffer[index] && this.audioBuffer[index].data) {
+                        const chunkData = this.audioBuffer[index].data;
+                        if (chunkData && chunkData.length > 0) {
+                            chunks.push(chunkData);
+                        } else {
+                            console.log(`❌ Empty chunk data at index ${index} for frame generation`);
+                            return; // Don't generate if empty chunks
+                        }
+                    } else {
+                        console.log(`❌ Missing chunk at index ${index} for frame generation`);
+                        return; // Don't generate if missing chunks
+                    }
+                }
+                
+                if (chunks.length === 16) {
+                    // Concatenate all 16 chunks into one audio stream for 640ms context
+                    const concatenatedChunks = chunks.join(''); // Join all base64 chunks
+                    
+                    // Debug: Check if concatenated data is valid
+                    if (!concatenatedChunks || concatenatedChunks.length === 0) {
+                        console.log(`❌ Empty concatenated chunks for frame ${this.frameCount}`);
+                        return;
+                    }
+                    
+                    console.log(`🎵 Concatenated audio: ${concatenatedChunks.length} chars for frame ${this.frameCount}`);
+                    
+                    // Test mode: use same base video frame but different frame_id for each request
+                    const testMode = true; // Set to false for normal frame cycling
+                    
+                    const frameRequest = {
+                        model_name: this.currentModel,
+                        frame_id: testMode ? (this.frameCount % 10) : (this.frameCount % 3305), // Test: cycle 0-9, Normal: cycle all frames
+                        audio_override: concatenatedChunks, // Send all 16 chunks
+                        audio_position: framePosition // Track which audio position this frame represents
+                    };
+                    
+                    console.log(`🚀 Sending frame request ${this.frameCount} for audio position ${framePosition}`);
+                    
+                    // Record when this frame request was sent for latency calculation
+                    if (!this.frameRequestTimes) {
+                        this.frameRequestTimes = new Map();
+                    }
+                    this.frameRequestTimes.set(this.frameCount, now);
+                    
+                    // Monitor pending requests
+                    const pendingRequests = this.frameRequestTimes.size;
+                    if (pendingRequests > 3) {
+                        console.warn(`⚠️ ${pendingRequests} pending frame requests - might be overwhelming server`);
+                        this.updateMetric('pendingRequests', pendingRequests);
+                        
+                        // Skip sending if too many pending
+                        if (pendingRequests > 8) {
+                            console.warn(`🛑 Skipping frame request - too many pending (${pendingRequests})`);
+                            return;
+                        }
+                    }
+                    
+                    this.ws.send(JSON.stringify(frameRequest));
+                    this.lastFrameRequestTime = now; // Update throttle timer
+                    
+                    // Mark this position as generated
+                    if (!this.generatedFramePositions) {
+                        this.generatedFramePositions = new Set();
+                    }
+                    this.generatedFramePositions.add(framePosition);
+                    
+                    this.frameCount++;
+                    this.log(`📤 Frame request ${this.frameCount - 1} sent for audio position ${framePosition}`);
+                } else {
+                    console.log(`⏳ Not enough chunks (${chunks.length}/16) for frame generation at position ${framePosition}`);
+                }
+            }
+
+            addToFrameBuffer(frameData) {
+                this.frameBuffer[this.frameBufferIndex] = {
+                    data: frameData.frame_data,
+                    timestamp: frameData.timestamp,
+                    model: frameData.model_name,
+                    bounds: frameData.bounds
+                };
+                
+                this.frameBufferIndex = (this.frameBufferIndex + 1) % 500;
+                this.updateFrameBufferDisplay();
+            }
+
+            updateFrameBufferDisplay() {
+                const grid = document.getElementById('frameBufferGrid');
+                grid.innerHTML = '';
+                
+                const recentFrames = this.frameBuffer.filter(frame => frame !== null);
+                const displayCount = Math.min(10, recentFrames.length);
+                
+                for (let i = 0; i < displayCount; i++) {
+                    const frameIndex = (this.frameBufferIndex - i - 1 + 500) % 500;
+                    const frame = this.frameBuffer[frameIndex];
+                    
+                    if (frame) {
+                        const item = document.createElement('div');
+                        item.className = 'frame-buffer-item';
+                        if (i === 0) item.className += ' current';
+                        
+                        const img = document.createElement('img');
+                        img.src = 'data:image/jpeg;base64,' + frame.data;
+                        img.alt = `Frame ${frame.timestamp}`;
+                        
+                        const label = document.createElement('div');
+                        label.textContent = `Frame ${frameIndex}`;
+                        label.style.fontSize = '11px';
+                        label.style.marginTop = '5px';
+                        
+                        item.appendChild(img);
+                        item.appendChild(label);
+                        grid.appendChild(item);
+                    }
+                }
+            }
+
+            updateAudioBufferDisplay() {
+                let filledCount = 0;
+                
+                // Show last 100 slots in a rolling window
+                for (let displayIndex = 0; displayIndex < 100; displayIndex++) {
+                    const bufferIndex = (this.audioBufferIndex - 99 + displayIndex + 500) % 500;
+                    const slot = document.getElementById(`audio-slot-display-${displayIndex}`);
+                    
+                    if (slot) {
+                        if (this.audioBuffer[bufferIndex] !== null) {
+                            const audioData = this.audioBuffer[bufferIndex];
+                            const level = audioData.level || 0;
+                            
+                            slot.className = 'buffer-slot filled';
+                            filledCount++;
+                            
+                            // Set height based on audio level (0-100% of container)
+                            // level is now 0-255 from frequency domain analysis
+                            const heightPercent = Math.min(100, Math.max(5, (level / 255) * 100)); // Scale 0-255 to 0-100%
+                            slot.style.height = `${heightPercent}%`;
+                            
+                            if (bufferIndex === this.audioBufferIndex) {
+                                slot.className = 'buffer-slot current';
+                                slot.style.height = `${Math.max(heightPercent, 20)}%`; // Ensure current slot is visible
+                            }
+                        } else {
+                            slot.className = 'buffer-slot';
+                            slot.style.height = '2px';
+                        }
+                    }
+                }
+                console.log(`Buffer display updated: ${filledCount} filled slots in display, current index: ${this.audioBufferIndex}`);
+            }
+
+            updateFrameMetrics() {
+                this.frameCount++;
+                const now = Date.now();
+                
+                if (this.startTime > 0) {
+                    const elapsed = (now - this.startTime) / 1000;
+                    const fps = this.frameCount / elapsed;
+                    this.updateMetric('frameRate', fps.toFixed(1));
+                }
+                
+                if (this.lastFrameTime > 0) {
+                    const latency = now - this.lastFrameTime;
+                    this.updateMetric('latency', latency);
+                }
+                
+                this.lastFrameTime = now;
+            }
+
+            changeModel() {
+                const modelSelect = document.getElementById('modelSelect');
+                this.currentModel = modelSelect.value;
+                
+                if (this.isConnected) {
+                    this.ws.send(JSON.stringify({
+                        type: 'set_model',
+                        model_name: this.currentModel
+                    }));
+                    
+                    this.log(`🎭 Changed model to: ${this.currentModel}`);
+                    this.updateStatus('modelStatus', this.currentModel, 'connected');
+                }
+            }
+
+            testMicrophoneLevel() {
+                // Test if microphone is providing audio
+                const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                let checkCount = 0;
+                
+                const checkLevel = () => {
+                    this.analyser.getByteFrequencyData(dataArray);
+                    const average = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+                    const max = Math.max(...dataArray);
+                    checkCount++;
+                    
+                    console.log(`🎤 Microphone level check #${checkCount}: average=${average.toFixed(2)}, max=${max}, samples=${dataArray.length}`);
+                    
+                    if (average > 1 || max > 5) {
+                        console.log('✅ Microphone is working - audio detected!');
+                        this.log('✅ Microphone audio detected');
+                        return;
+                    }
+                    
+                    if (checkCount < 10) {
+                        setTimeout(checkLevel, 1000);
+                    } else {
+                        console.log('⚠️ No audio detected after 10 seconds. Check microphone settings.');
+                        this.log('⚠️ No audio detected - check microphone level/muting');
+                    }
+                };
+                
+                setTimeout(checkLevel, 500);
+            }
+
+            stopAudioCapture() {
+                this.isRecording = false;
+                
+                if (this.processor) {
+                    this.processor.disconnect();
+                }
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+                
+                this.updateStatus('audioStatus', 'Stopped', 'disconnected');
+                this.updateStatus('frameStatus', 'Idle', 'disconnected');
+                
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                
+                this.log('⏹️ Audio capture stopped');
+            }
+
+            clearBuffers() {
+                this.audioBuffer.fill(null);
+                this.frameBuffer.fill(null);
+                this.audioBufferIndex = 0;
+                this.frameBufferIndex = 0;
+                this.frameCount = 0;
+                
+                // Clear frame generation tracking
+                if (this.generatedFramePositions) {
+                    this.generatedFramePositions.clear();
+                }
+                if (this.frameRequestTimes) {
+                    this.frameRequestTimes.clear();
+                }
+                this.firstFrameTime = null;
+                this.lastFrameTime = 0;
+                this.lastFrameRequestTime = 0;
+                if (this.latencyHistory) {
+                    this.latencyHistory.length = 0;
+                }
+                
+                this.updateAudioBufferDisplay();
+                this.updateFrameBufferDisplay();
+                
+                // Clear canvas
+                const canvas = document.getElementById('currentFrameCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                this.updateMetric('audioBufferFill', 0);
+                this.updateMetric('frameBufferFill', 0);
+                this.updateMetric('frameRate', 0);
+                this.updateMetric('overallFPS', 0);
+                this.updateMetric('latency', 0);
+                this.updateMetric('avgLatency', '0ms');
+                this.updateMetric('framesGenerated', 0);
+                
+                this.log('🧹 Buffers cleared');
+            }
+
+            async testMicrophoneStandalone() {
+                try {
+                    this.log('🎤 Testing microphone (standalone)...');
+                    
+                    // First, enumerate available audio devices
+                    try {
+                        const devices = await navigator.mediaDevices.enumerateDevices();
+                        const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                        this.log(`🎙️ Found ${audioInputs.length} audio input device(s):`);
+                        audioInputs.forEach((device, index) => {
+                            this.log(`  ${index + 1}. ${device.label || `Device ${device.deviceId.substring(0, 8)}...`}`);
+                        });
+                    } catch (e) {
+                        this.log('⚠️ Could not enumerate devices: ' + e.message);
+                    }
+                    
+                    document.getElementById('testMicBtn').disabled = true;
+                    document.getElementById('testMicBtn').textContent = '🎤 Testing...';
+                    
+                    // Create temporary audio context for testing
+                    const testAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Try to get microphone access with fallback
+                    let testMediaStream;
+                    try {
+                        testMediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: this.getSelectedMicrophoneConstraints()
+                        });
+                    } catch (e) {
+                        console.warn('Selected microphone failed, trying basic audio:', e);
+                        testMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    }
+                    
+                    // Create audio processing for level detection
+                    const source = testAudioContext.createMediaStreamSource(testMediaStream);
+                    const analyser = testAudioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+                    
+                    // Get additional microphone info
+                    const audioTracks = testMediaStream.getAudioTracks();
+                    if (audioTracks.length > 0) {
+                        const track = audioTracks[0];
+                        const settings = track.getSettings();
+                        this.log(`🎯 Microphone: ${track.label || 'Unknown'}`);
+                        this.log(`📊 Settings: ${settings.sampleRate}Hz, ${settings.channelCount}ch, Vol:${settings.volume || 'auto'}`);
+                        console.log('Full track settings:', settings);
+                        
+                        // Check if track is enabled and not muted
+                        this.log(`🔊 Track enabled: ${track.enabled}, muted: ${track.muted || 'unknown'}`);
+                    }
+                    
+                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    let testDuration = 0;
+                    let maxLevelDetected = 0;
+                    let samplesWithAudio = 0;
+                    
+                    this.log('🔊 Speak into your microphone now...');
+                    
+                    const testInterval = setInterval(() => {
+                        analyser.getByteFrequencyData(dataArray);
+                        const average = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+                        const max = Math.max(...dataArray);
+                        
+                        if (average > maxLevelDetected) maxLevelDetected = average;
+                        if (average > 1) samplesWithAudio++;
+                        
+                        // Update UI with current level
+                        this.updateMetric('currentAudioLevel', average.toFixed(1));
+                        
+                        console.log(`🎤 Test sample: avg=${average.toFixed(2)}, max=${max}, overall_max=${maxLevelDetected.toFixed(2)}`);
+                        
+                        testDuration += 100;
+                        
+                        if (testDuration >= 5000) { // Test for 5 seconds
+                            clearInterval(testInterval);
+                            
+                            // Clean up
+                            testMediaStream.getTracks().forEach(track => track.stop());
+                            testAudioContext.close();
+                            
+                            // Report results
+                            if (maxLevelDetected > 5) {
+                                this.log(`✅ Microphone test PASSED! Max level: ${maxLevelDetected.toFixed(1)}, Audio samples: ${samplesWithAudio}/50`);
+                                console.log('✅ Microphone is working correctly!');
+                            } else if (maxLevelDetected > 1) {
+                                this.log(`⚠️ Microphone test WEAK. Max level: ${maxLevelDetected.toFixed(1)} (try speaking louder)`);
+                                console.log('⚠️ Microphone detected but very quiet');
+                            } else {
+                                this.log(`❌ Microphone test FAILED. Max level: ${maxLevelDetected.toFixed(1)} (check mute/volume)`);
+                                console.log('❌ No audio detected - check microphone settings');
+                            }
+                            
+                            document.getElementById('testMicBtn').disabled = false;
+                            document.getElementById('testMicBtn').textContent = '🎤 Test Microphone';
+                        }
+                    }, 100);
+                    
+                } catch (error) {
+                    this.log('💥 Microphone test failed: ' + error.message);
+                    console.error('Microphone test error:', error);
+                    
+                    document.getElementById('testMicBtn').disabled = false;
+                    document.getElementById('testMicBtn').textContent = '🎤 Test Microphone';
+                }
+            }
+
+            showTroubleshootingHelp() {
+                this.log('🔧 MICROPHONE TROUBLESHOOTING STEPS:');
+                this.log('');
+                this.log('1️⃣ Check Windows Audio Settings:');
+                this.log('   • Right-click speaker icon in system tray');
+                this.log('   • Select "Open Sound settings"');
+                this.log('   • Under Input, check microphone is not muted');
+                this.log('   • Test microphone volume with "Test your microphone"');
+                this.log('');
+                this.log('2️⃣ Check Browser Permissions:');
+                this.log('   • Look for microphone icon in address bar');
+                this.log('   • Click it and allow microphone access');
+                this.log('   • Refresh page if needed');
+                this.log('');
+                this.log('3️⃣ Check Physical Microphone:');
+                this.log('   • Is microphone plugged in properly?');
+                this.log('   • Is microphone mute button OFF?');
+                this.log('   • Try speaking louder or closer to mic');
+                this.log('');
+                this.log('4️⃣ Try Different Browser:');
+                this.log('   • Chrome/Edge work best with WebAudio');
+                this.log('   • Firefox may have different audio handling');
+                this.log('');
+                this.log('5️⃣ Advanced Check:');
+                this.log('   • Windows Key + R, type "mmsys.cpl"');
+                this.log('   • Recording tab, check default device');
+                this.log('   • Properties > Levels, ensure not 0%');
+                
+                // Also try to show system audio dialog
+                this.log('');
+                this.log('💡 TIP: Windows Sound Settings should open automatically');
+                
+                // Try to open Windows sound settings (won't work in all browsers/security contexts)
+                try {
+                    window.open('ms-settings:sound', '_blank');
+                } catch (e) {
+                    this.log('⚠️ Could not auto-open sound settings. Open manually:');
+                    this.log('   Windows Settings > System > Sound > Input');
+                }
+            }
+
+            updateStatus(elementId, text, className) {
+                const element = document.getElementById(elementId);
+                element.className = `status-item ${className}`;
+                element.querySelector('span').textContent = text;
+            }
+
+            updateMetric(metricId, value) {
+                const element = document.getElementById(metricId);
+                if (element) {
+                    element.textContent = value;
+                } else {
+                    console.warn(`⚠️ Metric element '${metricId}' not found in HTML`);
+                }
+            }
+
+            updateServerStats(stats) {
+                this.updateMetric('frameBufferFill', stats.frame_buffer_fill);
+                this.log(`📊 Server stats - Audio: ${stats.audio_buffer_fill}, Frames: ${stats.frame_buffer_fill}`);
+            }
+
+            log(message) {
+                const logPanel = document.getElementById('logPanel');
+                const timestamp = new Date().toLocaleTimeString();
+                logPanel.innerHTML += `[${timestamp}] ${message}\n`;
+                logPanel.scrollTop = logPanel.scrollHeight;
+            }
+        }
+
+        // Global instance
+        let lipSyncGenerator;
+
+        // Initialize when page loads
+        window.onload = () => {
+            lipSyncGenerator = new RealtimeLipSyncGenerator();
+            // Update model status display
+            lipSyncGenerator.updateStatus('modelStatus', lipSyncGenerator.currentModel, 'idle');
+        };
+
+        // UI Functions
+        function connectWebSocket() {
+            lipSyncGenerator.connectWebSocket();
+        }
+
+        function startAudioCapture() {
+            lipSyncGenerator.startAudioCapture();
+        }
+
+        function stopAudioCapture() {
+            lipSyncGenerator.stopAudioCapture();
+        }
+
+        function clearBuffers() {
+            lipSyncGenerator.clearBuffers();
+        }
+
+        function testMicrophone() {
+            lipSyncGenerator.testMicrophoneStandalone();
+        }
+
+        function showTroubleshootingHelp() {
+            lipSyncGenerator.showTroubleshootingHelp();
+        }
+
+        function refreshMicrophones() {
+            lipSyncGenerator.populateMicrophoneList();
+        }
+
+        function changeModel() {
+            lipSyncGenerator.changeModel();
+        }
+    </script>
+</body>
+</html>

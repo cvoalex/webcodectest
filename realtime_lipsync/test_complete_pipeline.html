@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Lip Sync Pipeline Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .pipeline-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .pipeline-section h2 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .input-group input::placeholder, .input-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #757575, #616161);
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status.success { background: #4CAF50; }
+        .status.pending { background: #FF9800; }
+        .status.error { background: #f44336; }
+        .status.info { background: #2196F3; }
+
+        .visual-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .audio-visualizer, .frame-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #audio-visualizer {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        }
+
+        #frame-canvas {
+            width: 100%;
+            max-width: 320px;
+            height: 320px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            border: 2px solid #4CAF50;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-warning { color: #FF9800; }
+        .log-info { color: #2196F3; }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Complete Lip Sync Pipeline Test</h1>
+        <p class="subtitle">Test the full pipeline: Text → OpenAI TTS → Audio Buffer → gRPC Frame Generation → Real-time Display</p>
+
+        <!-- Step 1: Text Input -->
+        <div class="pipeline-section">
+            <h2>📝 Step 1: Text Input</h2>
+            <div class="input-group">
+                <label for="test-text">Enter text to synthesize:</label>
+                <textarea id="test-text" rows="3" placeholder="Hello, this is a complete test of the text-to-speech lip sync pipeline with real-time frame generation!">Hello, this is a complete test of the text-to-speech lip sync pipeline with real-time frame generation!</textarea>
+            </div>
+            <div class="input-group">
+                <label for="model-select">Select Model:</label>
+                <select id="model-select">
+                    <option value="default_model">default_model (Default)</option>
+                    <option value="test_optimized_package_fixed">test_optimized_package_fixed</option>
+                    <option value="test_optimized_package_fixed_1">test_optimized_package_fixed_1</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="batch-mode">Frame Generation Mode:</label>
+                <select id="batch-mode">
+                    <option value="single">Single Frame (22.6 FPS baseline)</option>
+                    <option value="batch2" selected>Batch 2 Frames (Target: ~45 FPS)</option>
+                    <option value="batch3">Batch 3 Frames (Target: ~67 FPS)</option>
+                    <option value="batch4">Batch 4 Frames (Target: ~90 FPS)</option>
+                    <option value="batch5">Batch 5 Frames (Target: ~112 FPS)</option>
+                </select>
+            </div>
+            <button class="btn" onclick="startCompletePipeline()">🚀 Start Complete Pipeline Test</button>
+            <button class="btn secondary" onclick="clearTest()">🗑️ Clear & Reset</button>
+        </div>
+
+        <!-- Pipeline Status -->
+        <div class="pipeline-section">
+            <h2>📊 Pipeline Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <h3>OpenAI Session</h3>
+                    <span id="openai-status" class="status pending">Not Started</span>
+                </div>
+                <div class="status-item">
+                    <h3>WebRTC Connection</h3>
+                    <span id="webrtc-status" class="status pending">Disconnected</span>
+                </div>
+                <div class="status-item">
+                    <h3>Audio Processing</h3>
+                    <span id="audio-status" class="status pending">Ready</span>
+                </div>
+                <div class="status-item">
+                    <h3>Frame Generation</h3>
+                    <span id="frame-status" class="status pending">Ready</span>
+                </div>
+                <div class="status-item">
+                    <h3>gRPC Connection</h3>
+                    <span id="grpc-status" class="status pending">Not Connected</span>
+                </div>
+                <div class="status-item">
+                    <h3>Pipeline State</h3>
+                    <span id="pipeline-status" class="status pending">Idle</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Display -->
+        <div class="visual-section">
+            <div class="audio-visualizer">
+                <h3>🎵 Audio Buffer (40ms chunks)</h3>
+                <canvas id="audio-visualizer" width="600" height="150"></canvas>
+                <div class="progress-bar">
+                    <div id="audio-progress" class="progress-fill"></div>
+                </div>
+                <p>Buffer Fill: <span id="buffer-fill">0.0%</span></p>
+            </div>
+            
+            <div class="frame-display">
+                <h3>🎬 Generated Frames</h3>
+                <canvas id="frame-canvas" width="320" height="320"></canvas>
+                <p>Frame: <span id="current-frame">0</span> | FPS: <span id="frame-fps">0.0</span></p>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="pipeline-section">
+            <h2>📈 Performance Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="audio-chunks">0</div>
+                    <div class="stat-label">Audio Chunks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="frames-generated">0</div>
+                    <div class="stat-label">Frames Generated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-frame-time">0.0ms</div>
+                    <div class="stat-label">Avg Frame Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-processing-time">0.0s</div>
+                    <div class="stat-label">Total Processing</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="pipeline-latency">0ms</div>
+                    <div class="stat-label">Pipeline Latency</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="memory-usage">0MB</div>
+                    <div class="stat-label">Est. Memory</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="pipeline-section">
+            <h2>📋 Event Log</h2>
+            <div id="log-container" class="log-container">
+                Ready to start complete pipeline test...<br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required modules in correct order -->
+    <script src="audio_buffer_manager.js"></script>
+    <script src="realtime_lipsync_client.js"></script>
+            <!-- ULTIMATE PERFORMANCE: Direct WebSocket Client -->
+        <script src="direct_websocket_client.js?v=batch001"></script>
+
+    <script>
+        // Global variables
+        let client = null;
+        let frameGenerator = null;
+        let messagesSent = 0;
+        let audioChunksReceived = 0;
+        let framesGenerated = 0;
+        let pipelineStartTime = null;
+        let lastFrameTime = 0;
+
+        // DOM elements
+        const logContainer = document.getElementById('log-container');
+        const audioVisualizer = document.getElementById('audio-visualizer');
+        const frameCanvas = document.getElementById('frame-canvas');
+        const audioCtx = audioVisualizer.getContext('2d');
+        const frameCtx = frameCanvas.getContext('2d');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `<span class="log-${type}">[${timestamp}] ${message}</span><br>`;
+            logContainer.innerHTML += logEntry;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(elementId, text, statusClass) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = `status ${statusClass}`;
+        }
+
+        function updateStats() {
+            document.getElementById('audio-chunks').textContent = audioChunksReceived;
+            document.getElementById('frames-generated').textContent = framesGenerated;
+            
+            if (frameGenerator) {
+                const stats = frameGenerator.getStats();
+                document.getElementById('avg-frame-time').textContent = `${stats.averageFrameTime.toFixed(1)}ms`;
+                document.getElementById('frame-fps').textContent = stats.frameRate.toFixed(1);
+            }
+            
+            if (pipelineStartTime) {
+                const elapsed = (performance.now() - pipelineStartTime) / 1000;
+                document.getElementById('total-processing-time').textContent = `${elapsed.toFixed(1)}s`;
+            }
+
+            if (client && client.audioBufferManager) {
+                const fillLevel = client.audioBufferManager.getBufferFillLevel();
+                const fillPercent = Math.min(100, (fillLevel / 20) * 100);
+                document.getElementById('buffer-fill').textContent = `${fillPercent.toFixed(1)}%`;
+                document.getElementById('audio-progress').style.width = `${fillPercent}%`;
+                
+                updateAudioVisualizer(fillLevel);
+            }
+
+            // Estimate memory usage
+            const estimatedMemory = (audioChunksReceived * 0.1) + (framesGenerated * 0.3); // Rough estimate
+            document.getElementById('memory-usage').textContent = `${estimatedMemory.toFixed(1)}MB`;
+        }
+
+        function updateAudioVisualizer(fillLevel) {
+            audioCtx.clearRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+            
+            const barWidth = audioVisualizer.width / 50;
+            const barHeight = audioVisualizer.height - 20;
+            
+            for (let i = 0; i < Math.min(fillLevel, 50); i++) {
+                const x = i * barWidth;
+                const height = barHeight * 0.7;
+                
+                audioCtx.fillStyle = i < 20 ? '#4CAF50' : '#8BC34A';
+                audioCtx.fillRect(x, audioVisualizer.height - height, barWidth - 2, height);
+            }
+        }
+
+        async function startCompletePipeline() {
+            try {
+                const testText = document.getElementById('test-text').value.trim();
+                const modelName = document.getElementById('model-select').value;
+                
+                if (!testText) {
+                    log('❌ Please enter some text to test', 'error');
+                    return;
+                }
+
+                log('🚀 Starting complete lip sync pipeline test...', 'info');
+                pipelineStartTime = performance.now();
+                messagesSent = 0;
+                audioChunksReceived = 0;
+                framesGenerated = 0;
+                
+                updateStatus('pipeline-status', 'Initializing', 'pending');
+
+                // Step 1: Initialize RealtimeLipSyncClient
+                log('📡 Initializing RealtimeLipSyncClient...', 'info');
+                client = new RealtimeLipSyncClient();
+                
+                // Step 2: Initialize DIRECT WebSocket Client - Ultimate Performance!
+                log('🚀 Initializing DIRECT WebSocket Client - Zero overhead mode!', 'info');
+                frameGenerator = new DirectWebSocketClient('ws://localhost:8082', modelName);
+                updateStatus('grpc-status', 'Connecting', 'pending');
+                
+                // Connect frame display - CRITICAL for showing frames!
+                frameGenerator.onFrameReady = function(frameData) {
+                    log(`🎬 DIRECT Frame ready: ${frameData.frameId} (${frameData.processingTime.toFixed(1)}ms)`, 'success');
+                    updateStatus('frame-status', 'Generating', 'success');
+                    
+                    // Display the frame using existing display function
+                    displayFrame(frameData);
+                    
+                    // Calculate latency
+                    const latency = performance.now() - (frameData.timestamp - frameData.processingTime);
+                    document.getElementById('pipeline-latency').textContent = `${latency.toFixed(0)}ms`;
+                };
+
+                // Hook into audio buffer events
+                const originalAddAudio = client.audioBufferManager.addAudioToBuffer;
+                client.audioBufferManager.addAudioToBuffer = function(pcmData) {
+                    audioChunksReceived++;
+                    log(`🎵 Audio chunk received: ${pcmData.length} samples`, 'success');
+                    return originalAddAudio.call(this, pcmData);
+                };
+
+                // Connect WebSocket first
+                await frameGenerator.connect();
+                updateStatus('grpc-status', 'Connected', 'success');
+                log('✅ DIRECT WebSocket connected!', 'success');
+
+                // Connect frame generator to audio buffer directly
+                if (frameGenerator.connectToAudioBuffer) {
+                    await frameGenerator.connectToAudioBuffer(client.audioBufferManager);
+                    log('🔗 Frame generator connected to audio buffer', 'success');
+                } else {
+                    // Fallback: Set up audio connection manually
+                    const originalAddAudio = client.audioBufferManager.addAudioToBuffer;
+                    client.audioBufferManager.addAudioToBuffer = function(pcmData) {
+                        const result = originalAddAudio.call(this, pcmData);
+                        if (this.getBufferFillLevel() >= 1) {
+                            const audioChunks = this.getConsecutiveAudioChunks(1);
+                            if (audioChunks && audioChunks.length > 0) {
+                                // Get batch mode setting
+                                const batchMode = document.getElementById('batch-mode').value;
+                                
+                                if (batchMode === 'single' || !frameGenerator.generateBatchFrames) {
+                                    // Original single frame mode or fallback if batch not available
+                                    frameGenerator.generateFrameFromAudio(audioChunks[0].data).catch(error => {
+                                        console.error('❌ Frame generation error:', error);
+                                    });
+                                } else {
+                                    // Batch mode (only if function exists)
+                                    const batchSize = parseInt(batchMode.replace('batch', ''));
+                                    frameGenerator.generateBatchFrames(batchSize, audioChunks[0].data).catch(error => {
+                                        console.error('❌ Batch frame generation error:', error);
+                                    });
+                                }
+                            }
+                        }
+                        return result;
+                    };
+                    log('🔗 Frame generator connected to audio buffer (fallback)', 'success');
+                }
+
+                // Hook into OpenAI events
+                const originalHandleServerEvent = client.handleServerEvent;
+                client.handleServerEvent = function(event) {
+                    log(`📡 OpenAI Event: ${event.type}`, 'info');
+                    
+                    switch(event.type) {
+                        case 'session.created':
+                            updateStatus('openai-status', 'Active', 'success');
+                            break;
+                        case 'output_audio_buffer.started':
+                            updateStatus('audio-status', 'Receiving', 'success');
+                            break;
+                        case 'response.done':
+                            log(`✅ OpenAI response complete`, 'success');
+                            updateStatus('audio-status', 'Complete', 'success');
+                            break;
+                        case 'error':
+                            log(`❌ OpenAI Error: ${JSON.stringify(event)}`, 'error');
+                            updateStatus('openai-status', 'Error', 'error');
+                            break;
+                    }
+                    
+                    return originalHandleServerEvent.call(this, event);
+                };
+
+                // Step 3: Start WebRTC session
+                log('🔗 Starting WebRTC session with OpenAI...', 'info');
+                updateStatus('webrtc-status', 'Connecting', 'pending');
+                
+                await client.startSession();
+                
+                updateStatus('webrtc-status', 'Connected', 'success');
+                log('✅ WebRTC session established', 'success');
+
+                // Step 4: Wait for session to be ready
+                log('⏳ Waiting for session to be ready...', 'info');
+                await new Promise((resolve) => {
+                    const checkReady = () => {
+                        if (client.isSessionActive) {
+                            resolve();
+                        } else {
+                            setTimeout(checkReady, 100);
+                        }
+                    };
+                    checkReady();
+                });
+
+                // Step 5: Send text and start pipeline
+                log(`📤 Starting pipeline with text: "${testText}"`, 'info');
+                updateStatus('pipeline-status', 'Processing', 'success');
+                
+                client.sendTextMessage(testText);
+                messagesSent++;
+                
+                log('⏳ Pipeline running - generating audio and frames...', 'info');
+
+                // Start monitoring
+                const monitorInterval = setInterval(() => {
+                    updateStats();
+                }, 100);
+
+                // Stop monitoring after response is complete
+                const originalResponseDone = client.handleServerEvent;
+                client.handleServerEvent = function(event) {
+                    if (event.type === 'response.done') {
+                        setTimeout(() => {
+                            clearInterval(monitorInterval);
+                            updateStatus('pipeline-status', 'Complete', 'success');
+                            log('🏁 Complete pipeline test finished!', 'success');
+                            
+                            const totalTime = (performance.now() - pipelineStartTime) / 1000;
+                            log(`📊 Total pipeline time: ${totalTime.toFixed(2)}s`, 'info');
+                        }, 2000);
+                    }
+                    return originalResponseDone.call(this, event);
+                };
+
+            } catch (error) {
+                log(`💥 Pipeline Error: ${error.message}`, 'error');
+                updateStatus('pipeline-status', 'Error', 'error');
+                console.error('Pipeline Error:', error);
+            }
+        }
+
+        function displayFrame(frameData) {
+            try {
+                // Create image from base64 data
+                const img = new Image();
+                img.onload = function() {
+                    // Draw the generated frame on canvas
+                    frameCtx.drawImage(img, 0, 0, frameCanvas.width, frameCanvas.height);
+                };
+                
+                // Set image source from base64 data
+                img.src = `data:image/jpeg;base64,${frameData.imageData}`;
+                
+                // Update frame counter
+                document.getElementById('current-frame').textContent = frameData.frameId;
+                
+            } catch (error) {
+                console.error('Error displaying frame:', error);
+            }
+        }
+
+        function clearTest() {
+            if (client) {
+                client.endSession();
+                client = null;
+            }
+            
+            if (frameGenerator) {
+                frameGenerator.reset();
+                frameGenerator = null;
+            }
+            
+            messagesSent = 0;
+            audioChunksReceived = 0;
+            framesGenerated = 0;
+            pipelineStartTime = null;
+            
+            // Reset all status indicators
+            updateStatus('openai-status', 'Not Started', 'pending');
+            updateStatus('webrtc-status', 'Disconnected', 'pending');
+            updateStatus('audio-status', 'Ready', 'pending');
+            updateStatus('frame-status', 'Ready', 'pending');
+            updateStatus('grpc-status', 'Not Connected', 'pending');
+            updateStatus('pipeline-status', 'Idle', 'pending');
+            
+            // Clear visualizations
+            audioCtx.clearRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+            frameCtx.clearRect(0, 0, frameCanvas.width, frameCanvas.height);
+            
+            // Reset stats
+            updateStats();
+            
+            logContainer.innerHTML = 'Ready to start complete pipeline test...<br>';
+            log('🗑️ Pipeline test cleared and reset', 'info');
+        }
+
+        // Initialize
+        updateStats();
+        log('🎯 Complete Lip Sync Pipeline Test ready!', 'info');
+        log('💡 Enter text and click "Start Complete Pipeline Test" to begin', 'info');
+    </script>
+</body>
+</html>

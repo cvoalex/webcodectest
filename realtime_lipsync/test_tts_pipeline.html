@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗣️ Text-to-Speech Pipeline Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { background: #2d2d2d; padding: 20px; margin: 15px 0; border-radius: 8px; }
+        .status { display: inline-block; padding: 5px 10px; border-radius: 15px; margin: 5px; }
+        .status.success { background: #4CAF50; }
+        .status.error { background: #f44336; }
+        .status.pending { background: #ff9800; }
+        .status.info { background: #2196F3; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+        input[type="text"] { width: 300px; padding: 10px; margin: 5px; border-radius: 4px; border: 1px solid #666; background: #333; color: white; }
+        .log { background: #1a1a1a; padding: 15px; border-radius: 5px; font-family: monospace; max-height: 400px; overflow-y: auto; margin: 10px 0; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+        .stat-box { background: #333; padding: 15px; border-radius: 8px; text-align: center; }
+        .audio-bar { width: 100%; height: 20px; background: #444; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .audio-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s ease; }
+    </style>
+</head>
+<body>
+    <h1>🗣️ Text-to-Speech Pipeline Test</h1>
+    <p>Test the complete text → OpenAI TTS → 40ms audio buffer pipeline</p>
+
+    <div class="test-section">
+        <h3>📝 Step 1: Text Input</h3>
+        <input type="text" id="test-text" placeholder="Enter text to convert to speech..." value="Hello, this is a test of the text to speech system.">
+        <button onclick="testTextToSpeech()">🎤 Start TTS Test</button>
+        <button onclick="clearTest()">🗑️ Clear</button>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <h4>Session Status</h4>
+                <div id="session-status" class="status pending">Not Started</div>
+            </div>
+            <div class="stat-box">
+                <h4>WebRTC Status</h4>
+                <div id="webrtc-status" class="status pending">Disconnected</div>
+            </div>
+            <div class="stat-box">
+                <h4>Audio Buffer</h4>
+                <div id="buffer-status">0 chunks</div>
+                <div class="audio-bar">
+                    <div id="buffer-fill" class="audio-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-box">
+                <h4>Processing</h4>
+                <div id="processing-status" class="status info">Ready</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>🎵 Step 2: Audio Pipeline Monitoring</h3>
+        <div class="stats">
+            <div class="stat-box">
+                <h4>Text Messages Sent</h4>
+                <div id="messages-sent">0</div>
+            </div>
+            <div class="stat-box">
+                <h4>Audio Chunks Received</h4>
+                <div id="chunks-received">0</div>
+            </div>
+            <div class="stat-box">
+                <h4>Buffer Fill Level</h4>
+                <div id="buffer-level">0%</div>
+            </div>
+            <div class="stat-box">
+                <h4>Playback Status</h4>
+                <div id="playback-status" class="status pending">Not Started</div>
+            </div>
+        </div>
+        
+        <h4>📊 Real-time Audio Buffer (40ms chunks)</h4>
+        <canvas id="audio-visualizer" width="600" height="100" style="background: #000; border-radius: 5px;"></canvas>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 Event Log</h3>
+        <div id="event-log" class="log">Ready to test...<br></div>
+    </div>
+
+    <script type="module">
+        import RealtimeLipSyncClient from './realtime_lipsync_client.js';
+        
+        let client = null;
+        let messagesSent = 0;
+        let chunksReceived = 0;
+        let logContainer = document.getElementById('event-log');
+        
+        // UI elements
+        const sessionStatus = document.getElementById('session-status');
+        const webrtcStatus = document.getElementById('webrtc-status');
+        const bufferStatus = document.getElementById('buffer-status');
+        const processingStatus = document.getElementById('processing-status');
+        const messagesSentSpan = document.getElementById('messages-sent');
+        const chunksReceivedSpan = document.getElementById('chunks-received');
+        const bufferLevelSpan = document.getElementById('buffer-level');
+        const playbackStatusSpan = document.getElementById('playback-status');
+        const bufferFill = document.getElementById('buffer-fill');
+        const audioVisualizer = document.getElementById('audio-visualizer');
+        const ctx = audioVisualizer.getContext('2d');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}<br>`;
+            logContainer.innerHTML += logEntry;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(element, text, statusClass) {
+            element.textContent = text;
+            element.className = `status ${statusClass}`;
+        }
+
+        function updateStats() {
+            messagesSentSpan.textContent = messagesSent;
+            chunksReceivedSpan.textContent = chunksReceived;
+            
+            if (client && client.audioBufferManager) {
+                const fillLevel = client.audioBufferManager.getBufferFillLevel();
+                const fillPercent = Math.min(100, (fillLevel / 20) * 100); // 20 = threshold
+                
+                bufferStatus.textContent = `${fillLevel} chunks`;
+                bufferLevelSpan.textContent = `${fillPercent.toFixed(1)}%`;
+                bufferFill.style.width = `${fillPercent}%`;
+                
+                // Update visualizer
+                updateAudioVisualizer(fillLevel);
+            }
+        }
+
+        function updateAudioVisualizer(fillLevel) {
+            ctx.clearRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+            
+            // Draw buffer bars
+            const barWidth = audioVisualizer.width / 50; // 50 bars max
+            const barHeight = audioVisualizer.height - 20;
+            
+            // Get actual audio amplitude data if available
+            let audioData = [];
+            if (client && client.audioBufferManager && client.audioBufferManager.getRecentAudioData) {
+                audioData = client.audioBufferManager.getRecentAudioData();
+            }
+            
+            for (let i = 0; i < Math.min(fillLevel, 50); i++) {
+                const x = i * barWidth;
+                
+                // Use actual audio data if available, otherwise show static filled bars
+                let height;
+                if (audioData.length > 0) {
+                    const dataIndex = Math.floor((i / 50) * audioData.length);
+                    const amplitude = audioData[dataIndex] || 0;
+                    height = barHeight * (0.1 + amplitude * 0.9); // Scale amplitude to bar height
+                } else {
+                    // Static representation when no real-time data available
+                    height = barHeight * 0.7; // Fixed height for filled chunks
+                }
+                
+                ctx.fillStyle = i < 20 ? '#4CAF50' : '#8BC34A'; // Color change at threshold
+                ctx.fillRect(x, audioVisualizer.height - height, barWidth - 2, height);
+            }
+            
+            // Draw threshold line
+            ctx.strokeStyle = '#ff9800';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(20 * barWidth, 0);
+            ctx.lineTo(20 * barWidth, audioVisualizer.height);
+            ctx.stroke();
+        }
+
+        window.testTextToSpeech = async function() {
+            try {
+                const testText = document.getElementById('test-text').value.trim();
+                if (!testText) {
+                    log('❌ Please enter some text to test', 'error');
+                    return;
+                }
+
+                log('🚀 Starting text-to-speech pipeline test...', 'info');
+                updateStatus(sessionStatus, 'Starting...', 'pending');
+                
+                // Step 1: Initialize client
+                log('📡 Initializing RealtimeLipSyncClient...', 'info');
+                client = new RealtimeLipSyncClient();
+                
+                // Hook into audio buffer events
+                const originalAddAudio = client.audioBufferManager.addAudioToBuffer;
+                client.audioBufferManager.addAudioToBuffer = function(pcmData) {
+                    chunksReceived++;
+                    log(`🎵 Audio chunk received: ${pcmData.length} samples`, 'success');
+                    return originalAddAudio.call(this, pcmData);
+                };
+
+                // Hook into data channel events for debugging
+                const originalHandleServerEvent = client.handleServerEvent;
+
+                
+                client.handleServerEvent = function(event) {
+                    log(`📡 OpenAI Event: ${event.type}`, 'info');
+                    
+                    // Log specific events
+                    switch(event.type) {
+                        case 'response.audio.delta':
+                            log(`🎵 Audio delta: ${event.delta ? event.delta.length : 0} bytes`, 'success');
+                            break;
+                        case 'response.audio_transcript.delta':
+                            log(`📝 Transcript: "${event.delta || ''}"`, 'info');
+                            break;
+                        case 'error':
+                            log(`❌ OpenAI Error: ${JSON.stringify(event)}`, 'error');
+                            break;
+                        case 'response.done':
+                            log(`✅ Response complete`, 'success');
+                            // Stop monitoring after response is complete
+                            setTimeout(() => {
+                                if (monitorInterval) {
+                                    clearInterval(monitorInterval);
+                                    log('🛑 Monitoring stopped - response complete', 'info');
+                                }
+                            }, 2000); // Wait 2 seconds to show final stats
+                            break;
+                    }
+                    
+                    return originalHandleServerEvent.call(this, event);
+                };
+                
+                // Step 2: Start WebRTC session
+                log('🔗 Starting WebRTC session with OpenAI...', 'info');
+                updateStatus(webrtcStatus, 'Connecting...', 'pending');
+                
+                await client.startSession();
+                
+                updateStatus(sessionStatus, 'Active', 'success');
+                updateStatus(webrtcStatus, 'Connected', 'success');
+                log('✅ WebRTC session established', 'success');
+                
+                // Step 3: Wait for data channel to be ready
+                log('⏳ Waiting for data channel to be ready...', 'info');
+                await new Promise((resolve) => {
+                    const checkReady = () => {
+                        if (client.isSessionActive) {
+                            log('✅ Data channel is ready', 'success');
+                            resolve();
+                        } else {
+                            setTimeout(checkReady, 100);
+                        }
+                    };
+                    checkReady();
+                });
+                
+                // Step 4: Send text message
+                log(`📤 Sending text message: "${testText}"`, 'info');
+                updateStatus(processingStatus, 'Sending Text...', 'pending');
+                
+                client.sendTextMessage(testText);
+                messagesSent++;
+                
+                updateStatus(processingStatus, 'Waiting for Audio...', 'pending');
+                log('⏳ Waiting for OpenAI TTS response...', 'info');
+                
+                // Start monitoring
+                let monitorInterval = setInterval(() => {
+                    updateStats();
+                    
+                    if (chunksReceived > 0) {
+                        updateStatus(processingStatus, 'Receiving Audio', 'success');
+                        
+                        if (client.audioBufferManager.getBufferFillLevel() >= 20) {
+                            updateStatus(playbackStatusSpan, 'Ready to Play', 'success');
+                            log('✅ Audio buffer reached playback threshold!', 'success');
+                        }
+                    }
+                }, 100);
+                
+                // Stop monitoring after 30 seconds
+                setTimeout(() => {
+                    clearInterval(monitorInterval);
+                    if (chunksReceived === 0) {
+                        log('⏰ Test timeout - no audio received in 30s', 'error');
+                        updateStatus(processingStatus, 'Timeout', 'error');
+                    }
+                }, 30000);
+                
+            } catch (error) {
+                log(`💥 Error: ${error.message}`, 'error');
+                updateStatus(sessionStatus, 'Error', 'error');
+                updateStatus(webrtcStatus, 'Error', 'error');
+                console.error('TTS Test Error:', error);
+            }
+        };
+
+        window.clearTest = function() {
+            if (client) {
+                client.endSession();
+                client = null;
+            }
+            
+            messagesSent = 0;
+            chunksReceived = 0;
+            
+            updateStatus(sessionStatus, 'Not Started', 'pending');
+            updateStatus(webrtcStatus, 'Disconnected', 'pending');
+            updateStatus(processingStatus, 'Ready', 'info');
+            updateStatus(playbackStatusSpan, 'Not Started', 'pending');
+            
+            logContainer.innerHTML = 'Ready to test...<br>';
+            updateStats();
+            
+            ctx.clearRect(0, 0, audioVisualizer.width, audioVisualizer.height);
+            
+            log('🗑️ Test cleared and reset', 'info');
+        };
+
+        // Initialize
+        updateStats();
+        log('🎯 Text-to-Speech Pipeline Test ready!', 'info');
+        log('💡 Enter text and click "Start TTS Test" to begin', 'info');
+    </script>
+</body>
+</html>

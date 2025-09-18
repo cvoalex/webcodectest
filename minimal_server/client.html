@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Binary Protocol Real-time Lip Sync</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .status-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #6c757d;
+        }
+        .status-item.connected {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .status-item.disconnected {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .status-item.active {
+            border-left-color: #007bff;
+            background: #d1ecf1;
+        }
+        .audio-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .buffer-display {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .buffer-grid {
+            display: grid;
+            grid-template-columns: repeat(100, 1fr);
+            gap: 1px;
+            height: 100px;
+            align-items: end;
+            overflow: hidden;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .buffer-slot {
+            background: #e9ecef;
+            border-radius: 2px;
+            transition: all 0.2s;
+            min-height: 2px;
+            min-width: 2px;
+        }
+        .buffer-slot.filled {
+            background: #007bff;
+            box-shadow: 0 0 2px rgba(0,123,255,0.5);
+        }
+        .buffer-slot.current {
+            background: #28a745;
+            box-shadow: 0 0 4px rgba(40,167,69,0.8);
+            transform: scaleY(1.5);
+        }
+        .frame-display {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .frame-canvas {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            max-width: 100%;
+            background: #000;
+        }
+        .frame-buffer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .frame-buffer-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .frame-buffer-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            background: #000;
+        }
+        .frame-buffer-item.current {
+            background: #d1ecf1;
+            border: 2px solid #007bff;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        button.danger { background: #dc3545; }
+        button.danger:hover { background: #c82333; }
+        button.test-button {
+            background: #17a2b8;
+            color: white;
+            margin-right: 10px;
+        }
+        button.test-button:hover {
+            background: #138496;
+        }
+        button.help-button {
+            background: #ffc107;
+            color: #212529;
+            margin-right: 10px;
+        }
+        button.help-button:hover {
+            background: #e0a800;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="url"] {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .log-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-entry.error {
+            color: #dc3545;
+        }
+        .log-entry.success {
+            color: #28a745;
+        }
+        .log-entry.info {
+            color: #17a2b8;
+        }
+        .binary-specific {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .log-panel {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+        }
+        .protocol-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .protocol-binary {
+            background: #17a2b8;
+            color: white;
+        }
+        .protocol-json {
+            background: #ffc107;
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Binary Protocol Real-time Lip Sync</h1>
+        
+        <div class="binary-specific">
+            🚀 BINARY MODE ACTIVE - Enhanced Performance Protocol
+        </div>
+        
+        <div class="controls">
+            <h3>Connection & Controls</h3>
+            
+            <div class="status-panel">
+                <div class="status-item" id="wsStatus">
+                    <strong>WebSocket:</strong> <span>Disconnected</span>
+                </div>
+                <div class="status-item" id="audioStatus">
+                    <strong>Audio:</strong> <span>Stopped</span>
+                </div>
+                <div class="status-item" id="modelStatus">
+                    <strong>Model:</strong> <span>default_model</span>
+                </div>
+                <div class="status-item" id="frameStatus">
+                    <strong>Frame Gen:</strong> <span>Idle</span>
+                </div>
+            </div>
+
+            <div class="audio-controls">
+                <div style="margin-bottom: 10px;">
+                    <label for="wsUrl">WebSocket URL:</label>
+                    <input type="text" id="wsUrl" value="ws://localhost:8084" style="margin-left: 10px; padding: 5px; width: 200px;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label for="micSelect">Choose Microphone:</label>
+                    <select id="micSelect" style="margin-left: 10px; padding: 5px;">
+                        <option value="">Default</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 10px;">
+                    <label>
+                        Model: 
+                        <select id="modelSelect" onchange="changeModel()">
+                            <option value="default_model" selected>default_model</option>
+                            <option value="test_optimized_package_fixed_1">test_optimized_package_fixed_1</option>
+                            <option value="demo_model">demo_model</option>
+                        </select>
+                    </label>
+                    
+                    <label>
+                        Protocol: 
+                        <select id="protocolSelect" onchange="changeProtocol()">
+                            <option value="binary" selected>Binary (Fast)</option>
+                            <option value="json">JSON (Fallback)</option>
+                        </select>
+                    </label>
+                    
+                    <label>
+                        <input type="checkbox" id="fixedFrameMode" checked onchange="toggleFixedFrameMode()"> 
+                        Fixed Frame Mode (Focus on mouth)
+                    </label>
+                    
+                    <label id="fixedFrameControls" style="display: inline;">
+                        Frame ID: 
+                        <input type="number" id="fixedFrameId" value="1000" min="0" max="3304" style="width: 80px; padding: 2px;">
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Action Buttons Row -->
+            <div class="audio-controls" style="border-top: 1px solid #dee2e6; padding-top: 15px; margin-top: 10px;">
+                <button onclick="testMicrophone()" id="testMicBtn" class="test-button">🎤 Test Microphone</button>
+                <button onclick="testBinaryProtocol()" id="testBinaryBtn" class="test-button">🚀 Test Binary</button>
+                <button onclick="connectWebSocket()" id="connectBtn">Connect to Server</button>
+                <button onclick="toggleAudioCapture()" id="audioToggleBtn" disabled>🎤 Start Audio</button>
+                <button onclick="clearBuffers()" id="clearBtn">Clear Buffers</button>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <div class="metric-value" id="audioBufferFill">0</div>
+                <div class="metric-label">Audio Buffer (500 max)</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="frameBufferFill">0</div>
+                <div class="metric-label">Frame Buffer (500 max)</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="framesGenerated">0</div>
+                <div class="metric-label">Frames Generated</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="frameRate">0</div>
+                <div class="metric-label">Current FPS</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="overallFPS">0</div>
+                <div class="metric-label">Overall FPS</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="latency">0</div>
+                <div class="metric-label">Latency (ms)</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="avgLatency">0ms</div>
+                <div class="metric-label">Avg Latency</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="currentAudioLevel">0%</div>
+                <div class="metric-label">Audio Level</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="serverRequests">0</div>
+                <div class="metric-label">Server Requests</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="serverAvgTime">0ms</div>
+                <div class="metric-label">Server Avg Time</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="pendingRequests">0</div>
+                <div class="metric-label">Pending Requests</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="audioActivity">No</div>
+                <div class="metric-label">Audio Activity</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="binaryRequests">0</div>
+                <div class="metric-label">Binary Requests</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value" id="binaryPercentage">100%</div>
+                <div class="metric-label">Binary Usage</div>
+            </div>
+        </div>
+
+        <div class="buffer-display">
+            <h3>Audio Buffer (20 seconds @ 40ms chunks)</h3>
+            <div class="buffer-grid" id="audioBufferGrid">
+                <!-- 100 display slots showing rolling window of last 100 chunks -->
+            </div>
+            <p style="margin-top: 10px; font-size: 12px; color: #6c757d;">
+                Blue: filled slots | Green: current processing | Height: audio level
+            </p>
+        </div>
+
+        <div class="frame-display">
+            <h3>Current Frame</h3>
+            <canvas id="currentFrameCanvas" class="frame-canvas" width="512" height="512"></canvas>
+            
+            <h4 style="margin-top: 25px;">Frame Buffer (Recent Frames)</h4>
+            <div class="frame-buffer-grid" id="frameBufferGrid">
+                <!-- Frame buffer display -->
+            </div>
+        </div>
+
+        <div class="buffer-display">
+            <h3>System Log</h3>
+            <div class="log-panel" id="logPanel"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let lipSyncGenerator = null;
+        let useBinaryProtocol = true;
+
+        class BinaryLipSyncGenerator {
+            constructor() {
+                this.ws = null;
+                this.isConnected = false;
+                this.wsUrl = 'ws://localhost:8084';
+                
+                // Audio processing
+                this.audioContext = null;
+                this.mediaStream = null;
+                this.processor = null;
+                this.analyser = null;
+                this.sampleAccumulator = [];
+                this.isRecording = false;
+                
+                // Buffers
+                this.audioBuffer = new Array(500).fill(null); // 20 seconds @ 40ms chunks
+                this.frameBuffer = new Array(500).fill(null); // Recent frames
+                this.audioBufferIndex = 0;
+                this.frameBufferIndex = 0;
+                
+                // Frame generation tracking (like original)
+                this.generatedFramePositions = new Set();
+                this.frameRequestTimes = new Map();
+                this.firstFrameTime = null;
+                this.lastFrameTime = 0;
+                this.lastFrameRequestTime = 0;
+                this.latencyHistory = [];
+                this.minFrameInterval = 50; // 50ms = max 20 FPS
+                
+                // Configuration
+                this.chunkSize = 40; // 40ms chunks
+                this.sampleRate = 24000; // 24kHz for lip sync model
+                this.samplesPerChunk = Math.floor(this.sampleRate * this.chunkSize / 1000); // 960 samples
+                this.processorBufferSize = 1024; // Closest power of 2 >= 960
+                this.currentModel = 'default_model';
+                
+                // Performance metrics
+                this.frameCount = 0;
+                this.startTime = 0;
+                
+                // Protocol selection
+                this.useBinaryProtocol = true;
+                
+                // Fixed frame mode for mouth focus testing
+                this.useFixedFrame = true;  // Default to fixed frame mode
+                this.fixedFrameId = 1000; // Try frame 1000 for better mouth variation
+                
+                this.initializeUI();
+                this.populateMicrophoneList();
+                this.log('🚀 Binary Real-time Lip Sync Generator initialized');
+            }
+
+            // Binary Protocol Methods
+            createBinaryRequest(modelName, frameId, audioData) {
+                // Convert model name to bytes
+                const modelNameBytes = new TextEncoder().encode(modelName);
+                
+                // Handle audio data - already in binary format for binary protocol
+                let audioBinary = new Uint8Array(0);
+                if (audioData) {
+                    if (audioData instanceof Uint8Array) {
+                        // Raw binary data - use directly (much faster!)
+                        audioBinary = audioData;
+                        console.log(`🚀 Using raw binary audio: ${audioBinary.length} bytes`);
+                    } else if (typeof audioData === 'string') {
+                        // Base64 data - decode it (fallback for JSON compatibility)
+                        try {
+                            const audioString = atob(audioData);
+                            audioBinary = new Uint8Array(audioString.length);
+                            for (let i = 0; i < audioString.length; i++) {
+                                audioBinary[i] = audioString.charCodeAt(i);
+                            }
+                            console.log(`🐌 Decoded base64 audio: ${audioBinary.length} bytes`);
+                        } catch (e) {
+                            console.warn('Failed to decode audio data:', e);
+                            audioBinary = new Uint8Array(0);
+                        }
+                    }
+                }
+                
+                // Calculate total size
+                const totalSize = 4 + modelNameBytes.length + 4 + 4 + audioBinary.length;
+                
+                // Create binary request
+                const buffer = new ArrayBuffer(totalSize);
+                const view = new DataView(buffer);
+                
+                let offset = 0;
+                
+                // Model name length (4 bytes)
+                view.setUint32(offset, modelNameBytes.length, true);
+                offset += 4;
+                
+                // Model name
+                new Uint8Array(buffer, offset, modelNameBytes.length).set(modelNameBytes);
+                offset += modelNameBytes.length;
+                
+                // Frame ID (4 bytes)
+                view.setUint32(offset, frameId, true);
+                offset += 4;
+                
+                // Audio data length (4 bytes)
+                view.setUint32(offset, audioBinary.length, true);
+                offset += 4;
+                
+                // Audio data
+                if (audioBinary.length > 0) {
+                    new Uint8Array(buffer, offset, audioBinary.length).set(audioBinary);
+                }
+                
+                return buffer;
+            }
+
+            parseBinaryResponse(data) {
+                const view = new DataView(data);
+                let offset = 0;
+                
+                try {
+                    // Parse success flag (1 byte)
+                    const success = view.getUint8(offset);
+                    offset += 1;
+                    
+                    if (!success) {
+                        // Error response
+                        const frameId = view.getUint32(offset, true);
+                        offset += 4;
+                        const processingTime = view.getUint32(offset, true);
+                        offset += 4;
+                        const errorLength = view.getUint32(offset, true);
+                        offset += 4;
+                        
+                        const errorBytes = new Uint8Array(data, offset, errorLength);
+                        const errorMessage = new TextDecoder().decode(errorBytes);
+                        
+                        throw new Error(errorMessage);
+                    }
+                    
+                    // Success response
+                    const frameId = view.getUint32(offset, true);
+                    offset += 4;
+                    
+                    const processingTime = view.getUint32(offset, true);
+                    offset += 4;
+                    
+                    const imageLength = view.getUint32(offset, true);
+                    offset += 4;
+                    
+                    // Extract image data
+                    const imageBytes = new Uint8Array(data, offset, imageLength);
+                    offset += imageLength;
+                    
+                    // Extract bounds data
+                    const boundsLength = view.getUint32(offset, true);
+                    offset += 4;
+                    
+                    // Ensure 4-byte alignment for Float32Array
+                    const boundsBytes = new Uint8Array(data, offset, boundsLength);
+                    const alignedBuffer = new ArrayBuffer(boundsLength);
+                    const alignedView = new Uint8Array(alignedBuffer);
+                    alignedView.set(boundsBytes);
+                    
+                    const boundsFloat32 = new Float32Array(alignedBuffer);
+                    const bounds = Array.from(boundsFloat32);
+                    
+                    return {
+                        success: true,
+                        frame_id: frameId,
+                        processing_time_ms: processingTime,
+                        imageBytes: imageBytes,
+                        bounds: bounds
+                    };
+                    
+                } catch (e) {
+                    throw new Error(`Binary parsing error: ${e.message}`);
+                }
+            }
+
+            // WebSocket Methods
+            async connectWebSocket() {
+                try {
+                    this.wsUrl = document.getElementById('wsUrl').value;
+                    this.log('🔗 Connecting to ' + this.wsUrl);
+                    
+                    this.ws = new WebSocket(this.wsUrl);
+                    this.ws.binaryType = 'arraybuffer'; // Important for binary data
+                    
+                    this.ws.onopen = () => {
+                        this.isConnected = true;
+                        this.updateStatus('wsStatus', 'Connected', 'connected');
+                        this.log('✅ WebSocket connected to ' + this.wsUrl);
+                        document.getElementById('connectBtn').disabled = true;
+                        document.getElementById('audioToggleBtn').disabled = false;
+                        document.getElementById('audioToggleBtn').textContent = '🎤 Start Audio';
+                        document.getElementById('audioToggleBtn').className = '';
+                        
+                        // Test protocol capability
+                        this.testProtocolSupport();
+                    };
+                    
+                    this.ws.onmessage = (event) => {
+                        if (event.data instanceof ArrayBuffer) {
+                            // Binary message
+                            this.handleBinaryMessage(event.data);
+                        } else {
+                            // Text/JSON message
+                            this.handleTextMessage(event.data);
+                        }
+                    };
+                    
+                    this.ws.onclose = () => {
+                        this.isConnected = false;
+                        this.updateStatus('wsStatus', 'Disconnected', 'disconnected');
+                        this.log('❌ WebSocket disconnected');
+                        document.getElementById('connectBtn').disabled = false;
+                        document.getElementById('audioToggleBtn').disabled = true;
+                    };
+                    
+                    this.ws.onerror = (error) => {
+                        this.log('💥 WebSocket error: ' + error);
+                    };
+                    
+                } catch (error) {
+                    this.log('💥 Connection failed: ' + error.message);
+                }
+            }
+
+            handleBinaryMessage(data) {
+                try {
+                    console.log(`📨 Binary response received: ${data.byteLength} bytes`);
+                    const response = this.parseBinaryResponse(data);
+                    
+                    console.log('⚡ Binary frame parsed:', {
+                        frame_id: response.frame_id,
+                        processing_time: response.processing_time_ms,
+                        image_size: response.imageBytes.length
+                    });
+                    
+                    this.displayBinaryFrame(response);
+                    this.updateMetrics(response);
+                    
+                } catch (e) {
+                    console.error('❌ Binary message error:', e);
+                    this.log('❌ Binary parsing failed: ' + e.message);
+                }
+            }
+
+            handleTextMessage(data) {
+                try {
+                    const message = JSON.parse(data);
+                    
+                    if (message.type === 'stats') {
+                        // Server statistics
+                        this.updateMetric('serverRequests', message.total_requests);
+                        this.updateMetric('binaryRequests', message.binary_requests || 0);
+                        this.updateMetric('binaryPercentage', (message.binary_percentage || 0).toFixed(1) + '%');
+                        this.updateMetric('serverAvgTime', (message.average_time_ms || 0).toFixed(1) + 'ms');
+                        
+                        if (message.total_requests % 20 === 0) {
+                            console.log(`📊 Server stats: ${message.total_requests} total, ${message.binary_requests} binary (${message.binary_percentage?.toFixed(1)}%)`);
+                        }
+                    } else if (message.success && message.prediction_data) {
+                        // JSON frame response (fallback)
+                        console.log('🐌 JSON frame response:', message.frame_id);
+                        this.displayFrame(message);
+                        this.updateMetrics(message);
+                    } else {
+                        console.log('📨 Other message:', message);
+                    }
+                    
+                } catch (e) {
+                    console.error('❌ JSON parse error:', e);
+                    this.log('❌ JSON parsing failed: ' + e.message);
+                }
+            }
+
+            displayBinaryFrame(response) {
+                // Create blob from binary image data
+                const imageBlob = new Blob([response.imageBytes], { type: 'image/jpeg' });
+                const imageUrl = URL.createObjectURL(imageBlob);
+                
+                // Display on canvas
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.getElementById('currentFrameCanvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    URL.revokeObjectURL(imageUrl); // Clean up
+                    console.log(`🖼️ Binary frame ${response.frame_id} displayed`);
+                };
+                img.src = imageUrl;
+                
+                // Add to frame buffer (convert to base64 for compatibility)
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64Data = reader.result.split(',')[1]; // Remove data URL prefix
+                    
+                    this.frameBuffer[this.frameBufferIndex] = {
+                        frameId: response.frame_id,
+                        timestamp: Date.now(),
+                        data: base64Data
+                    };
+                    this.frameBufferIndex = (this.frameBufferIndex + 1) % 500;
+                    this.updateFrameBufferDisplay();
+                };
+                reader.readAsDataURL(imageBlob);
+                
+                // Update metrics
+                this.updateMetric('framesGenerated', response.frame_id + 1);
+                this.updateMetric('frameBufferFill', this.frameBuffer.filter(f => f !== null).length);
+                this.log(`🖼️ Binary frame ${response.frame_id} received (${response.processing_time_ms}ms)`);
+            }
+
+            sendBinaryRequest(modelName, frameId, audioData) {
+                if (!this.isConnected || !this.useBinaryProtocol) {
+                    return this.sendJSONRequest(modelName, frameId, audioData);
+                }
+                
+                try {
+                    const binaryRequest = this.createBinaryRequest(modelName, frameId, audioData);
+                    
+                    console.log(`🚀 Sending binary request: frame ${frameId}, size ${binaryRequest.byteLength} bytes`);
+                    
+                    // Record timing
+                    this.frameRequestTimes.set(frameId, Date.now());
+                    
+                    this.ws.send(binaryRequest);
+                    this.log(`📤 Binary request ${frameId} sent`);
+                    
+                } catch (e) {
+                    console.error('❌ Binary send error:', e);
+                    this.log('❌ Binary send failed, falling back to JSON');
+                    this.sendJSONRequest(modelName, frameId, audioData);
+                }
+            }
+
+            sendJSONRequest(modelName, frameId, audioData) {
+                const request = {
+                    model_name: modelName,
+                    frame_id: frameId,
+                    audio_override: audioData
+                };
+                
+                console.log(`🐌 Sending JSON request: frame ${frameId}`);
+                this.frameRequestTimes.set(frameId, Date.now());
+                this.ws.send(JSON.stringify(request));
+                this.log(`📤 JSON request ${frameId} sent`);
+            }
+
+            testProtocolSupport() {
+                if (this.isConnected) {
+                    this.ws.send(JSON.stringify({ type: 'switch_to_binary' }));
+                }
+            }
+
+            // Audio processing methods
+            async populateMicrophoneList() {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                    
+                    const micSelect = document.getElementById('micSelect');
+                    micSelect.innerHTML = '<option value="">Default</option>';
+                    
+                    let headsetFound = false;
+                    audioInputs.forEach(device => {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Microphone ${micSelect.children.length}`;
+                        micSelect.appendChild(option);
+                        
+                        // Auto-select Arctis 7 Chat microphone if found
+                        if (device.label && 
+                            device.label.toLowerCase().includes('arctis') && 
+                            device.label.toLowerCase().includes('chat') &&
+                            device.label.toLowerCase().includes('headset')) {
+                            option.selected = true;
+                            headsetFound = true;
+                            this.log(`🎯 Auto-selected: ${device.label}`);
+                        }
+                    });
+                    
+                    if (!headsetFound) {
+                        this.log(`🎙️ Found ${audioInputs.length} microphone(s), no Arctis 7 Chat auto-selected`);
+                    } else {
+                        this.log(`�️ Found ${audioInputs.length} microphone(s), Arctis 7 Chat selected as default`);
+                    }
+                } catch (error) {
+                    this.log('❌ Error getting microphones: ' + error.message);
+                }
+            }
+
+            async startAudioCapture() {
+                try {
+                    this.log('🎤 Starting audio capture...');
+                    
+                    // Initialize audio context
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: this.sampleRate
+                    });
+                    
+                    // Try to get microphone access with fallback
+                    let mediaStream;
+                    try {
+                        // First try with selected microphone constraints
+                        mediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: this.getSelectedMicrophoneConstraints()
+                        });
+                    } catch (e) {
+                        console.warn('Selected microphone failed, trying basic audio:', e);
+                        // Fallback to basic audio
+                        mediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: true
+                        });
+                    }
+                    
+                    this.mediaStream = mediaStream;
+                    
+                    // Debug: Check audio tracks
+                    const audioTracks = this.mediaStream.getAudioTracks();
+                    console.log('Audio tracks:', audioTracks);
+                    if (audioTracks.length > 0) {
+                        console.log('Audio track settings:', audioTracks[0].getSettings());
+                        console.log('Audio track constraints:', audioTracks[0].getConstraints());
+                    }
+                    
+                    // Create audio processing pipeline
+                    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+                    this.processor = this.audioContext.createScriptProcessor(this.processorBufferSize, 1, 1);
+                    
+                    // Buffer to accumulate samples for exact 40ms chunks
+                    this.sampleAccumulator = [];
+                    
+                    // Add audio level monitoring
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    source.connect(this.analyser);
+                    
+                    this.processor.onaudioprocess = (event) => {
+                        this.processAudioBuffer(event.inputBuffer);
+                    };
+                    
+                    source.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+                    
+                    this.isRecording = true;
+                    this.startTime = Date.now();
+                    this.updateStatus('audioStatus', 'Recording', 'active');
+                    this.updateStatus('frameStatus', 'Processing', 'active');
+                    
+                    document.getElementById('audioToggleBtn').textContent = '⏹️ Stop Audio';
+                    document.getElementById('audioToggleBtn').className = 'danger';
+                    
+                    this.log('✅ Audio capture started (24kHz, 40ms chunks)');
+                    this.log('🎤 Try speaking into your microphone to test audio levels');
+                    this.log('📊 Watch the Audio Level metric and console for audio detection');
+                    
+                    // Start performance monitoring
+                    this.startPerformanceMonitoring();
+                    
+                    // Test audio processing
+                    setTimeout(() => {
+                        if (this.isRecording) {
+                            this.log('🔍 Audio capture still active after 2 seconds');
+                        } else {
+                            this.log('⚠️ Audio capture stopped unexpectedly');
+                        }
+                    }, 2000);
+                    
+                } catch (error) {
+                    this.log('❌ Audio capture failed: ' + error.message);
+                    this.log('🔧 Error details: ' + error.name + ' - ' + error.message);
+                    
+                    if (error.name === 'NotAllowedError') {
+                        this.log('🚫 Microphone permission denied. Please allow microphone access.');
+                    } else if (error.name === 'NotFoundError') {
+                        this.log('🎤 No microphone found. Please check your audio devices.');
+                    } else if (error.name === 'NotReadableError') {
+                        this.log('📵 Microphone is being used by another application.');
+                    }
+                    
+                    // Reset UI
+                    this.updateStatus('audioStatus', 'Failed', 'disconnected');
+                    document.getElementById('audioToggleBtn').textContent = '🎤 Start Audio';
+                    document.getElementById('audioToggleBtn').className = '';
+                }
+            }
+
+            stopAudioCapture() {
+                this.isRecording = false;
+                
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                    this.mediaStream = null;
+                }
+                
+                if (this.processor) {
+                    this.processor.disconnect();
+                    this.processor = null;
+                }
+                
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+                
+                this.updateStatus('audioStatus', 'Stopped', 'disconnected');
+                this.updateStatus('frameStatus', 'Idle', 'disconnected');
+                document.getElementById('audioToggleBtn').textContent = '🎤 Start Audio';
+                document.getElementById('audioToggleBtn').className = '';
+                
+                this.log('⏹️ Audio capture stopped');
+            }
+
+            processAudioBuffer(audioBuffer) {
+                console.log(`processAudioBuffer called: isRecording=${this.isRecording}, isConnected=${this.isConnected}`);
+                if (!this.isRecording || !this.isConnected) return;
+                
+                // Add new samples to our accumulator buffer
+                const channelData = audioBuffer.getChannelData(0);
+                console.log(`Audio input: ${channelData.length} samples, rms=${Math.sqrt(channelData.reduce((sum, val) => sum + val*val, 0) / channelData.length).toFixed(4)}`);
+                
+                for (let i = 0; i < channelData.length; i++) {
+                    this.sampleAccumulator.push(channelData[i]);
+                }
+                
+                // Process complete 40ms chunks (960 samples)
+                while (this.sampleAccumulator.length >= this.samplesPerChunk) {
+                    const chunk = this.sampleAccumulator.splice(0, this.samplesPerChunk);
+                    this.processAudioChunk(chunk);
+                }
+            }
+
+            processAudioChunk(audioSamples) {
+                if (!this.isRecording || !this.isConnected) return;
+                
+                // Calculate TRUE RMS from actual audio samples (like JSON version)
+                const rms = Math.sqrt(audioSamples.reduce((sum, val) => sum + val*val, 0) / audioSamples.length);
+                
+                // Also get frequency domain audio level for visualization
+                const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                this.analyser.getByteFrequencyData(dataArray);
+                const frequencyLevel = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+                
+                // Convert audio samples to Int16Array for binary protocol
+                const int16Data = new Int16Array(audioSamples.length);
+                
+                for (let i = 0; i < audioSamples.length; i++) {
+                    const clampedValue = Math.max(-1, Math.min(1, audioSamples[i]));
+                    int16Data[i] = clampedValue * 32767;
+                }
+                
+                // Store both binary data (for binary protocol) and base64 (for JSON fallback)
+                const uint8Data = new Uint8Array(int16Data.buffer);
+                const base64Audio = btoa(String.fromCharCode.apply(null, uint8Data));
+                
+                // Add to circular buffer with both formats
+                this.audioBuffer[this.audioBufferIndex] = {
+                    data: base64Audio,      // For JSON protocol compatibility
+                    binaryData: uint8Data,  // For binary protocol (raw bytes)
+                    timestamp: Date.now(),
+                    index: this.audioBufferIndex,
+                    level: frequencyLevel // Store frequency level for visualization (0-255)
+                };
+                
+                // Debug: Log audio processing with TRUE RMS
+                console.log(`Audio chunk processed: index=${this.audioBufferIndex}, samples=${audioSamples.length}, rms=${rms.toFixed(4)}, binary_bytes=${uint8Data.length}`);
+                
+                // Update audio level metric using RMS (0-1 range, convert to percentage)
+                this.updateMetric('currentAudioLevel', (rms * 100).toFixed(1) + '%');
+                
+                // Update buffer visualization
+                this.updateAudioBufferDisplay();
+                
+                // Generate frames for all positions that now have sufficient context
+                this.generatePendingFrames();
+                
+                // Update audio activity status after checking
+                const hasActivity = this.hasRecentAudioActivity();
+                this.updateMetric('audioActivity', hasActivity ? 'Yes' : 'No');
+                
+                // Advance buffer index
+                this.audioBufferIndex = (this.audioBufferIndex + 1) % 500;
+                
+                // Update metrics
+                const filledSlots = this.audioBuffer.filter(slot => slot !== null).length;
+                this.updateMetric('audioBufferFill', filledSlots);
+            }
+
+            generatePendingFrames() {
+                // Generate frames for all positions that have 16 consecutive chunks available
+                // This allows us to "catch up" and generate multiple frames per audio chunk if needed
+                
+                let framesGenerated = 0;
+                const maxFramesPerChunk = 1; // Reduced to 1 - only generate 1 frame per audio chunk
+                
+                // Don't generate any frames if we have too many pending
+                const pendingRequests = this.frameRequestTimes ? this.frameRequestTimes.size : 0;
+                if (pendingRequests > 5) {
+                    console.log(`⏸️ Skipping frame generation - ${pendingRequests} pending requests`);
+                    return;
+                }
+                
+                // Check if there's any meaningful audio in recent chunks
+                if (!this.hasRecentAudioActivity()) {
+                    // Only log occasionally to avoid spam
+                    if (this.audioBufferIndex % 50 === 0) {
+                        console.log(`🔇 Skipping frame generation - no audio activity detected`);
+                    }
+                    return;
+                }
+                
+                // Clean up old generated positions to prevent memory leaks
+                if (this.generatedFramePositions.size > 1000) {
+                    // Keep only recent positions (last 500)
+                    const positions = Array.from(this.generatedFramePositions);
+                    const keepPositions = positions.slice(-500);
+                    this.generatedFramePositions.clear();
+                    keepPositions.forEach(pos => this.generatedFramePositions.add(pos));
+                    console.warn(`🧹 Cleaned up generated frame positions, kept ${keepPositions.length}`);
+                }
+                
+                // Start checking from the oldest possible frame position
+                for (let checkOffset = 15; checkOffset >= 7 && framesGenerated < maxFramesPerChunk; checkOffset--) {
+                    const framePosition = (this.audioBufferIndex - checkOffset + 500) % 500;
+                    
+                    if (this.canGenerateFrameAt(framePosition) && !this.hasFrameBeenGenerated(framePosition)) {
+                        this.sendAudioForFrameGenerationAt(framePosition);
+                        framesGenerated++;
+                    }
+                }
+                
+                if (framesGenerated > 0) {
+                    console.log(`🎬 Generated ${framesGenerated} frames this audio chunk`);
+                }
+            }
+
+            checkForFrameGeneration() {
+                // Generate frames for all positions that have 16 consecutive chunks available
+                // Similar to original realtime-lipsync.html logic
+                
+                if (!this.hasRecentAudioActivity()) {
+                    return; // Skip if no recent audio activity
+                }
+                
+                const maxFramesPerChunk = 1; // Limit frames per audio chunk to prevent overwhelming
+                let framesGenerated = 0;
+                
+                // Start checking from the oldest possible frame position
+                for (let checkOffset = 15; checkOffset >= 7 && framesGenerated < maxFramesPerChunk; checkOffset--) {
+                    const framePosition = (this.audioBufferIndex - checkOffset + 500) % 500;
+                    
+                    if (this.canGenerateFrameAt(framePosition) && !this.hasFrameBeenGenerated(framePosition)) {
+                        this.sendAudioForFrameGenerationAt(framePosition);
+                        framesGenerated++;
+                    }
+                }
+                
+                if (framesGenerated > 0) {
+                    console.log(`🎬 Generated ${framesGenerated} frames this audio chunk`);
+                }
+            }
+
+            hasRecentAudioActivity() {
+                // Check the last 10 audio chunks for meaningful audio activity
+                const checksToPerform = Math.min(10, this.audioBufferIndex + 1);
+                let maxLevel = 0;
+                let chunksWithAudio = 0;
+                
+                for (let i = 0; i < checksToPerform; i++) {
+                    const checkIndex = (this.audioBufferIndex - i + 500) % 500;
+                    const chunk = this.audioBuffer[checkIndex];
+                    
+                    if (chunk && chunk.level !== undefined) {
+                        maxLevel = Math.max(maxLevel, chunk.level);
+                        if (chunk.level > 2.0) { // Threshold for meaningful audio (2.0 on 0-255 scale)
+                            chunksWithAudio++;
+                        }
+                    }
+                }
+                
+                // Require at least 2 chunks with audio activity in the last 10 chunks
+                // and a maximum level above a reasonable threshold
+                const hasActivity = chunksWithAudio >= 2 && maxLevel > 1.0;
+                
+                // Debug logging occasionally
+                if (this.audioBufferIndex % 100 === 0) {
+                    console.log(`🔊 Audio activity check: max=${maxLevel.toFixed(4)}, chunks=${chunksWithAudio}/10, active=${hasActivity}`);
+                }
+                
+                return hasActivity;
+            }
+
+            canGenerateFrameAt(framePosition) {
+                // Check if we can generate a frame at the specified position
+                // Need 8 prior + current + 7 future = 16 chunks (640ms total)
+                const startIndex = (framePosition - 8 + 500) % 500;
+                
+                let consecutiveCount = 0;
+                for (let i = 0; i < 16; i++) {
+                    const index = (startIndex + i) % 500;
+                    if (this.audioBuffer[index] !== null) {
+                        consecutiveCount++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                return consecutiveCount >= 16;
+            }
+
+            hasFrameBeenGenerated(framePosition) {
+                // Check if we've already generated a frame for this audio position
+                if (!this.generatedFramePositions) {
+                    this.generatedFramePositions = new Set();
+                }
+                
+                return this.generatedFramePositions.has(framePosition);
+            }
+
+            sendAudioForFrameGenerationAt(framePosition) {
+                // Check time-based throttling
+                const now = Date.now();
+                if (now - this.lastFrameRequestTime < this.minFrameInterval) {
+                    console.log(`⏱️ Skipping frame request - too soon (${now - this.lastFrameRequestTime}ms < ${this.minFrameInterval}ms)`);
+                    return;
+                }
+                
+                // Generate frame for the specified audio position
+                const startIndex = (framePosition - 8 + 500) % 500; // 8 chunks prior to frame
+                
+                console.log(`🎬 Generating frame for audio position ${framePosition}`);
+                
+                // Collect 16 chunks for 640ms audio window
+                const chunks = [];
+                const binaryChunks = [];
+                for (let i = 0; i < 16; i++) {
+                    const index = (startIndex + i) % 500;
+                    if (this.audioBuffer[index]) {
+                        chunks.push(this.audioBuffer[index].data);         // Base64 for JSON
+                        binaryChunks.push(this.audioBuffer[index].binaryData); // Raw bytes for binary
+                    } else {
+                        console.log(`❌ Missing chunk at index ${index} for frame generation`);
+                        return; // Don't generate if missing chunks
+                    }
+                }
+                
+                if (chunks.length === 16) {
+                    // For binary protocol: concatenate all 16 binary chunks into one audio stream
+                    // For JSON protocol: concatenate all 16 base64 chunks
+                    let currentChunk;
+                    if (this.useBinaryProtocol) {
+                        // Concatenate all 16 binary chunks (16 × 960 samples = 15,360 samples total)
+                        const totalSamples = 16 * 960;
+                        const totalBytes = totalSamples * 2; // Int16 = 2 bytes per sample
+                        const combinedAudio = new Uint8Array(totalBytes);
+                        
+                        let offset = 0;
+                        for (let i = 0; i < 16; i++) {
+                            combinedAudio.set(binaryChunks[i], offset);
+                            offset += binaryChunks[i].length;
+                        }
+                        currentChunk = combinedAudio;
+                    } else {
+                        // Concatenate all 16 base64 chunks for JSON protocol
+                        currentChunk = chunks.join('');
+                    }
+                    
+                    // Choose frame ID based on mode
+                    let frameId;
+                    if (this.useFixedFrame && this.fixedFrameId !== undefined) {
+                        frameId = this.fixedFrameId; // Use fixed frame for mouth focus
+                    } else {
+                        frameId = this.frameCount++; // Use sequential frames for head movement
+                    }
+                    
+                    // For tracking purposes, still increment frameCount even in fixed mode
+                    if (this.useFixedFrame) {
+                        this.frameCount++;
+                    }
+                    
+                    // Record timing and position
+                    this.frameRequestTimes.set(frameId, now);
+                    this.generatedFramePositions.add(framePosition);
+                    this.lastFrameRequestTime = now;
+                    
+                    // Monitor pending requests
+                    const pendingRequests = this.frameRequestTimes.size;
+                    if (pendingRequests > 3) {
+                        console.warn(`⚠️ ${pendingRequests} pending frame requests`);
+                        this.updateMetric('pendingRequests', pendingRequests);
+                        
+                        // Skip sending if too many pending
+                        if (pendingRequests > 8) {
+                            console.warn(`🛑 Skipping frame request - too many pending (${pendingRequests})`);
+                            return;
+                        }
+                    }
+                    
+                    console.log(`🚀 Sending frame request ${frameId} for audio position ${framePosition}`);
+                    
+                    // Debug: Check audio data
+                    console.log(`🎵 Audio chunk length: ${currentChunk ? currentChunk.length : 'null'} ${this.useBinaryProtocol ? 'bytes' : 'chars'}`);
+                    if (currentChunk && currentChunk.length > 0) {
+                        // Handle different data types for binary vs JSON protocols
+                        if (this.useBinaryProtocol) {
+                            // For binary data, show first few bytes as hex and calculate checksum
+                            const sampleBytes = Array.from(currentChunk.slice(0, 25)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+                            const checksum = Array.from(currentChunk).reduce((sum, byte) => sum + byte, 0) % 10000;
+                            console.log(`🎵 Binary audio data sample: [${sampleBytes}]... checksum=${checksum}`);
+                        } else {
+                            // For base64 string data, show substring
+                            console.log(`🎵 Audio data sample: ${currentChunk.substring(0, 50)}...`);
+                        }
+                    } else {
+                        console.log(`❌ WARNING: Empty audio data being sent!`);
+                    }
+                    
+                    // Send using selected protocol
+                    if (this.useBinaryProtocol) {
+                        this.sendBinaryRequest(this.currentModel, frameId, currentChunk);
+                    } else {
+                        this.sendJSONRequest(this.currentModel, frameId, currentChunk);
+                    }
+                    
+                    this.updateStatus('frameStatus', 'Generating', 'recording');
+                    this.updateMetric('pendingRequests', this.frameRequestTimes.size);
+                }
+            }
+
+            calculateAudioLevel(samples) {
+                let sum = 0;
+                for (let i = 0; i < samples.length; i++) {
+                    sum += samples[i] * samples[i];
+                }
+                return Math.sqrt(sum / samples.length);
+            }
+
+            samplesToBase64(samples) {
+                const int16Array = new Int16Array(samples.length);
+                for (let i = 0; i < samples.length; i++) {
+                    int16Array[i] = Math.max(-32768, Math.min(32767, samples[i] * 32767));
+                }
+                
+                const bytes = new Uint8Array(int16Array.buffer);
+                return btoa(String.fromCharCode.apply(null, bytes));
+            }
+
+            displayFrame(message) {
+                // Handle JSON frame response
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.getElementById('currentFrameCanvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    console.log(`🖼️ JSON frame ${message.frame_id} displayed`);
+                };
+                img.src = 'data:image/jpeg;base64,' + message.prediction_data;
+                
+                // Add to frame buffer
+                this.frameBuffer[this.frameBufferIndex] = {
+                    frameId: message.frame_id,
+                    timestamp: Date.now(),
+                    data: message.prediction_data
+                };
+                this.frameBufferIndex = (this.frameBufferIndex + 1) % 500;
+                this.updateFrameBufferDisplay();
+            }
+
+            updateMetrics(response) {
+                const frameId = response.frame_id;
+                const requestTime = this.frameRequestTimes.get(frameId);
+                
+                if (requestTime) {
+                    const latency = Date.now() - requestTime;
+                    this.latencyHistory.push(latency);
+                    if (this.latencyHistory.length > 50) {
+                        this.latencyHistory.shift();
+                    }
+                    
+                    const avgLatency = this.latencyHistory.reduce((a, b) => a + b, 0) / this.latencyHistory.length;
+                    
+                    this.updateMetric('latency', latency);
+                    this.updateMetric('avgLatency', Math.round(avgLatency) + 'ms');
+                    this.frameRequestTimes.delete(frameId);
+                }
+                
+                this.updateMetric('pendingRequests', this.frameRequestTimes.size);
+                this.updateMetric('framesGenerated', frameId + 1);
+                this.updateMetric('frameBufferFill', this.frameBuffer.filter(f => f !== null).length);
+            }
+
+            // UI Methods
+            updateStatus(elementId, text, className) {
+                const element = document.getElementById(elementId);
+                element.textContent = text;
+                element.className = `status-item ${className}`;
+            }
+
+            updateMetric(metricId, value) {
+                const element = document.getElementById(metricId);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+
+            updateAudioLevel() {
+                if (!this.analyser) return;
+                
+                const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                const percentage = Math.round((average / 255) * 100);
+                
+                this.updateMetric('currentAudioLevel', percentage + '%');
+            }
+
+            updateAudioBufferDisplay() {
+                const grid = document.getElementById('audioBufferGrid');
+                if (!grid) return;
+                
+                // Show last 100 chunks in rolling window
+                grid.innerHTML = '';
+                
+                for (let i = 0; i < 100; i++) {
+                    const bufferIndex = (this.audioBufferIndex - 100 + i + 500) % 500;
+                    const chunk = this.audioBuffer[bufferIndex];
+                    
+                    const slot = document.createElement('div');
+                    slot.className = 'buffer-slot';
+                    
+                    if (chunk) {
+                        slot.classList.add('filled');
+                        const height = Math.max(2, chunk.level * 20);
+                        slot.style.height = height + 'px';
+                        slot.title = `Level: ${(chunk.level * 100).toFixed(1)}%`;
+                        
+                        if (chunk.hasActivity) {
+                            slot.style.backgroundColor = '#28a745';
+                        }
+                    }
+                    
+                    if (i === 99) {
+                        slot.classList.add('current');
+                    }
+                    
+                    grid.appendChild(slot);
+                }
+            }
+
+            updateFrameBufferDisplay() {
+                const grid = document.getElementById('frameBufferGrid');
+                if (!grid) return;
+                
+                // Show last 10 frames
+                grid.innerHTML = '';
+                
+                const recentFrames = this.frameBuffer
+                    .filter(f => f !== null)
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 10);
+                
+                recentFrames.forEach((frame, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'frame-buffer-item';
+                    if (index === 0) item.classList.add('current');
+                    
+                    const img = document.createElement('img');
+                    img.src = 'data:image/jpeg;base64,' + frame.data;
+                    img.title = `Frame ${frame.frameId}`;
+                    
+                    const label = document.createElement('div');
+                    label.textContent = `#${frame.frameId}`;
+                    label.style.fontSize = '10px';
+                    label.style.marginTop = '5px';
+                    
+                    item.appendChild(img);
+                    item.appendChild(label);
+                    grid.appendChild(item);
+                });
+            }
+
+            startPerformanceMonitoring() {
+                setInterval(() => {
+                    if (!this.isRecording) return;
+                    
+                    const now = Date.now();
+                    const elapsed = (now - this.startTime) / 1000;
+                    
+                    if (elapsed > 0) {
+                        const overallFPS = this.frameCount / elapsed;
+                        this.updateMetric('overallFPS', overallFPS.toFixed(1));
+                        
+                        // Current FPS (last 5 seconds)
+                        const recentFrames = this.frameBuffer
+                            .filter(f => f !== null && (now - f.timestamp) < 5000);
+                        const currentFPS = recentFrames.length / 5;
+                        this.updateMetric('frameRate', currentFPS.toFixed(1));
+                    }
+                }, 1000);
+            }
+
+            initializeUI() {
+                // Initialize audio buffer display
+                const audioGrid = document.getElementById('audioBufferGrid');
+                for (let i = 0; i < 100; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'buffer-slot';
+                    audioGrid.appendChild(slot);
+                }
+            }
+
+            clearBuffers() {
+                this.audioBuffer.fill(null);
+                this.frameBuffer.fill(null);
+                this.audioBufferIndex = 0;
+                this.frameBufferIndex = 0;
+                this.frameRequestTimes.clear();
+                this.latencyHistory = [];
+                this.frameCount = 0;
+                this.firstFrameTime = null;
+                
+                this.updateAudioBufferDisplay();
+                this.updateFrameBufferDisplay();
+                
+                // Clear canvas
+                const canvas = document.getElementById('currentFrameCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                this.log('🧹 Buffers cleared');
+            }
+
+            changeModel() {
+                const modelSelect = document.getElementById('modelSelect');
+                this.currentModel = modelSelect.value;
+                this.updateStatus('modelStatus', 'Model: ' + this.currentModel, 'connected');
+                this.log('🔄 Changed model to: ' + this.currentModel);
+            }
+
+            log(message) {
+                const logPanel = document.getElementById('logPanel');
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}\n`;
+                
+                logPanel.textContent += logEntry;
+                logPanel.scrollTop = logPanel.scrollHeight;
+                
+                console.log(message);
+            }
+
+            async testMicrophoneStandalone() {
+                try {
+                    this.log('🎤 Testing microphone (standalone)...');
+                    
+                    // First, enumerate available audio devices
+                    try {
+                        const devices = await navigator.mediaDevices.enumerateDevices();
+                        const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                        this.log(`🎙️ Found ${audioInputs.length} audio input device(s):`);
+                        audioInputs.forEach((device, index) => {
+                            this.log(`  ${index + 1}. ${device.label || `Device ${device.deviceId.substring(0, 8)}...`}`);
+                        });
+                    } catch (e) {
+                        this.log('⚠️ Could not enumerate devices: ' + e.message);
+                    }
+                    
+                    document.getElementById('testMicBtn').disabled = true;
+                    document.getElementById('testMicBtn').textContent = '🎤 Testing...';
+                    
+                    // Create temporary audio context for testing
+                    const testAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Try to get microphone access with fallback
+                    let testMediaStream;
+                    try {
+                        testMediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: this.getSelectedMicrophoneConstraints()
+                        });
+                    } catch (e) {
+                        console.warn('Selected microphone failed, trying basic audio:', e);
+                        testMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    }
+                    
+                    // Create audio processing for level detection
+                    const source = testAudioContext.createMediaStreamSource(testMediaStream);
+                    const analyser = testAudioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+                    
+                    // Get additional microphone info
+                    const audioTracks = testMediaStream.getAudioTracks();
+                    if (audioTracks.length > 0) {
+                        const track = audioTracks[0];
+                        const settings = track.getSettings();
+                        this.log(`🎯 Microphone: ${track.label || 'Unknown'}`);
+                        this.log(`📊 Settings: ${settings.sampleRate}Hz, ${settings.channelCount}ch, Vol:${settings.volume || 'auto'}`);
+                        console.log('Full track settings:', settings);
+                        
+                        // Check if track is enabled and not muted
+                        this.log(`🔊 Track enabled: ${track.enabled}, muted: ${track.muted || 'unknown'}`);
+                    }
+                    
+                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    let testDuration = 0;
+                    let maxLevelDetected = 0;
+                    let samplesWithAudio = 0;
+                    
+                    this.log('🔊 Speak into your microphone now...');
+                    
+                    const testInterval = setInterval(() => {
+                        analyser.getByteFrequencyData(dataArray);
+                        const average = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+                        const max = Math.max(...dataArray);
+                        
+                        if (average > maxLevelDetected) maxLevelDetected = average;
+                        if (average > 1) samplesWithAudio++;
+                        
+                        // Update UI with current level
+                        this.updateMetric('currentAudioLevel', average.toFixed(1));
+                        
+                        console.log(`🎤 Test sample: avg=${average.toFixed(2)}, max=${max}, overall_max=${maxLevelDetected.toFixed(2)}`);
+                        
+                        testDuration += 100;
+                        
+                        if (testDuration >= 5000) { // Test for 5 seconds
+                            clearInterval(testInterval);
+                            
+                            // Clean up
+                            testMediaStream.getTracks().forEach(track => track.stop());
+                            testAudioContext.close();
+                            
+                            // Report results
+                            if (maxLevelDetected > 5) {
+                                this.log(`✅ Microphone test PASSED! Max level: ${maxLevelDetected.toFixed(1)}, Audio samples: ${samplesWithAudio}/50`);
+                                console.log('✅ Microphone is working correctly!');
+                            } else if (maxLevelDetected > 1) {
+                                this.log(`⚠️ Microphone test WEAK. Max level: ${maxLevelDetected.toFixed(1)} (try speaking louder)`);
+                                console.log('⚠️ Microphone detected but very quiet');
+                            } else {
+                                this.log(`❌ Microphone test FAILED. Max level: ${maxLevelDetected.toFixed(1)} (check mute/volume)`);
+                                console.log('❌ No audio detected - check microphone settings');
+                            }
+                            
+                            document.getElementById('testMicBtn').disabled = false;
+                            document.getElementById('testMicBtn').textContent = '🎤 Test Microphone';
+                        }
+                    }, 100);
+                    
+                } catch (error) {
+                    this.log('💥 Microphone test failed: ' + error.message);
+                    console.error('Microphone test error:', error);
+                    
+                    document.getElementById('testMicBtn').disabled = false;
+                    document.getElementById('testMicBtn').textContent = '🎤 Test Microphone';
+                }
+            }
+
+            getSelectedMicrophoneConstraints() {
+                const micSelect = document.getElementById('micSelect');
+                const selectedDeviceId = micSelect.value;
+                
+                const baseConstraints = {
+                    sampleRate: this.sampleRate,
+                    channelCount: 1,
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false
+                };
+                
+                if (selectedDeviceId) {
+                    baseConstraints.deviceId = { exact: selectedDeviceId };
+                    this.log(`🎯 Using selected microphone: ${micSelect.options[micSelect.selectedIndex].text}`);
+                } else {
+                    this.log('🎯 Using default microphone');
+                }
+                
+                return baseConstraints;
+            }
+        }
+
+        // Global functions
+        function connectWebSocket() {
+            if (lipSyncGenerator) {
+                lipSyncGenerator.connectWebSocket();
+            }
+        }
+
+        function startAudioCapture() {
+            if (lipSyncGenerator) {
+                lipSyncGenerator.startAudioCapture();
+            }
+        }
+
+        function stopAudioCapture() {
+            if (lipSyncGenerator) {
+                lipSyncGenerator.stopAudioCapture();
+            }
+        }
+
+        function clearBuffers() {
+            if (lipSyncGenerator) {
+                lipSyncGenerator.clearBuffers();
+            }
+        }
+
+        function changeModel() {
+            if (lipSyncGenerator) {
+                lipSyncGenerator.changeModel();
+            }
+        }
+
+        function changeProtocol() {
+            const protocolSelect = document.getElementById('protocolSelect');
+            useBinaryProtocol = protocolSelect.value === 'binary';
+            
+            if (lipSyncGenerator) {
+                lipSyncGenerator.useBinaryProtocol = useBinaryProtocol;
+            }
+            
+            const indicator = document.getElementById('protocolIndicator');
+            if (useBinaryProtocol) {
+                indicator.textContent = '🚀 Binary Mode';
+                indicator.className = 'protocol-indicator protocol-binary';
+            } else {
+                indicator.textContent = '🐌 JSON Mode';
+                indicator.className = 'protocol-indicator protocol-json';
+            }
+        }
+
+        function toggleFixedFrameMode() {
+            const checkbox = document.getElementById('fixedFrameMode');
+            const controls = document.getElementById('fixedFrameControls');
+            
+            if (checkbox.checked) {
+                controls.style.display = 'inline';
+                if (lipSyncGenerator) {
+                    lipSyncGenerator.useFixedFrame = true;
+                    lipSyncGenerator.fixedFrameId = parseInt(document.getElementById('fixedFrameId').value);
+                    lipSyncGenerator.log('🎯 Fixed Frame Mode enabled - using frame ' + lipSyncGenerator.fixedFrameId);
+                }
+            } else {
+                controls.style.display = 'none';
+                if (lipSyncGenerator) {
+                    lipSyncGenerator.useFixedFrame = false;
+                    lipSyncGenerator.log('🔄 Fixed Frame Mode disabled - using sequential frames');
+                }
+            }
+        }
+
+        // Helper functions (from working JSON version)
+        function connectWebSocket() {
+            lipSyncGenerator.connectWebSocket();
+        }
+
+        function startAudioCapture() {
+            lipSyncGenerator.startAudioCapture();
+        }
+
+        function stopAudioCapture() {
+            lipSyncGenerator.stopAudioCapture();
+        }
+
+        function toggleAudioCapture() {
+            if (lipSyncGenerator.isRecording) {
+                lipSyncGenerator.stopAudioCapture();
+            } else {
+                lipSyncGenerator.startAudioCapture();
+            }
+        }
+
+        function clearBuffers() {
+            lipSyncGenerator.clearBuffers();
+        }
+
+        function testMicrophone() {
+            lipSyncGenerator.testMicrophoneStandalone();
+        }
+
+        function refreshMicrophones() {
+            lipSyncGenerator.populateMicrophoneList();
+        }
+
+        function changeModel() {
+            lipSyncGenerator.changeModel();
+        }
+
+        function changeProtocol() {
+            const select = document.getElementById('protocolSelect');
+            const useBinary = select.value === 'binary';
+            lipSyncGenerator.useBinaryProtocol = useBinary;
+            lipSyncGenerator.log(`🔄 Protocol changed to: ${useBinary ? 'Binary' : 'JSON'}`);
+        }
+
+        function testBinaryProtocol() {
+            if (lipSyncGenerator && lipSyncGenerator.isConnected) {
+                lipSyncGenerator.sendBinaryRequest('default_model', 999, '');
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            lipSyncGenerator = new BinaryLipSyncGenerator();
+            
+            // Add event listener for fixed frame ID changes
+            document.getElementById('fixedFrameId').addEventListener('input', function() {
+                if (lipSyncGenerator && lipSyncGenerator.useFixedFrame) {
+                    lipSyncGenerator.fixedFrameId = parseInt(this.value);
+                    lipSyncGenerator.log('🎯 Fixed frame ID changed to: ' + lipSyncGenerator.fixedFrameId);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

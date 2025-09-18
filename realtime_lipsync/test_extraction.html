@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Frame Extraction Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .progress { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { height: 100%; background: #4CAF50; transition: width 0.3s ease; }
+        .log { background: #f5f5f5; padding: 10px; border-radius: 5px; font-family: monospace; max-height: 300px; overflow-y: auto; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        .stat-box { background: #e3f2fd; padding: 15px; border-radius: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Fast Frame Extraction Test</h1>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <h3>Extraction Method</h3>
+            <div id="method">Web Worker</div>
+        </div>
+        <div class="stat-box">
+            <h3>Progress</h3>
+            <div id="progress-text">0%</div>
+        </div>
+        <div class="stat-box">
+            <h3>Speed</h3>
+            <div id="speed">-</div>
+        </div>
+    </div>
+
+    <div class="progress">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+    </div>
+
+    <button onclick="testFastExtraction()">🎬 Test Optimized Extraction</button>
+    <button onclick="clearStorage()">🗄️ Clear Storage</button>
+    <button onclick="clearLog()">🗑️ Clear Log</button>
+
+    <h3>📋 Extraction Log</h3>
+    <div id="log" class="log"></div>
+
+    <script src="model_video_manager.js"></script>
+    <script>
+        let manager = null;
+        let startTime = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateProgress(progress, status) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const speedDiv = document.getElementById('speed');
+            
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${progress.toFixed(1)}% (${status})`;
+            
+            if (startTime) {
+                const elapsed = (Date.now() - startTime) / 1000;
+                const rate = progress / elapsed;
+                speedDiv.textContent = `${rate.toFixed(1)}%/sec`;
+            }
+        }
+
+        async function testFastExtraction() {
+            try {
+                if (!manager) {
+                    manager = new ModelVideoManager();
+                    log(`🔧 Initialized with settings: ${manager.extractionOptions.fps}fps, ${manager.extractionOptions.maxDimension}px, quality ${manager.extractionOptions.quality}, filesystem: ${manager.useFilesystem}`);
+                }
+
+                const testModel = 'test_optimized_package_fixed_1';
+                
+                log(`🎬 Starting optimized extraction test for model: ${testModel}`);
+                
+                startTime = Date.now();
+                updateProgress(0, 'starting');
+
+                const success = await manager.prepareModel(testModel, (progress, status) => {
+                    updateProgress(progress, status);
+                    log(`📥 ${testModel}: ${progress.toFixed(1)}% (${status})`);
+                });
+
+                const totalTime = (Date.now() - startTime) / 1000;
+                
+                if (success) {
+                    log(`✅ Model preparation completed in ${totalTime.toFixed(2)}s`);
+                    
+                    // Test frame loading
+                    log(`🧪 Testing frame loading...`);
+                    const loadStart = Date.now();
+                    
+                    try {
+                        // Wait a moment for IndexedDB to be ready
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        const frame0 = await manager.getModelFrame(testModel, 0);
+                        const frame10 = await manager.getModelFrame(testModel, 10);
+                        const frame25 = await manager.getModelFrame(testModel, 25);
+                        
+                        const loadTime = (Date.now() - loadStart) / 1000;
+                        
+                        if (frame0 && frame10 && frame25) {
+                            log(`✅ Frame loading test passed in ${(loadTime * 1000).toFixed(1)}ms`);
+                            log(`📊 Frame dimensions: ${frame0.width}x${frame0.height}`);
+                            log(`🗄️ Storage method: ${manager.useFilesystem ? 'IndexedDB' : 'Memory'}`);
+                            log(`💾 Frame 0 data length: ${frame0.data.length} pixels`);
+                        } else {
+                            log(`⚠️ Frame loading results: frame0=${!!frame0}, frame10=${!!frame10}, frame25=${!!frame25}`);
+                            
+                            // Try getting frame count from storage
+                            const frameCount = await manager.getFrameCount ? await manager.getFrameCount(testModel) : 'unknown';
+                            log(`📊 Available frames in storage: ${frameCount}`);
+                        }
+                    } catch (frameError) {
+                        log(`⚠️ Frame loading error: ${frameError.message}`);
+                        console.error('Frame loading error:', frameError);
+                    }
+                    
+                    updateProgress(100, 'complete');
+                } else {
+                    log(`❌ Model preparation failed`);
+                }
+
+                // Test second run (should be instant if using filesystem)
+                log(`🔄 Testing second preparation (should be instant)...`);
+                const secondStart = Date.now();
+                const secondSuccess = await manager.prepareModel(testModel, (progress, status) => {
+                    log(`📥 Second run: ${progress.toFixed(1)}% (${status})`);
+                });
+                const secondTime = (Date.now() - secondStart) / 1000;
+                
+                if (secondSuccess) {
+                    log(`⚡ Second preparation: ${(secondTime * 1000).toFixed(1)}ms (${secondTime < 0.1 ? 'INSTANT!' : 'slower than expected'})`);
+                }
+
+            } catch (error) {
+                log(`💥 Error: ${error.message}`);
+                console.error('Extraction error:', error);
+            }
+        }
+
+        async function clearStorage() {
+            try {
+                log('🗑️ Clearing IndexedDB storage...');
+                
+                if (manager && manager.db) {
+                    // Clear frames and models from IndexedDB
+                    const transaction = manager.db.transaction(['frames', 'models'], 'readwrite');
+                    const framesStore = transaction.objectStore('frames');
+                    const modelsStore = transaction.objectStore('models');
+                    
+                    await new Promise((resolve, reject) => {
+                        framesStore.clear().onsuccess = () => {
+                            modelsStore.clear().onsuccess = () => {
+                                log('✅ Storage cleared successfully');
+                                resolve();
+                            };
+                        };
+                    });
+                    
+                    // Clear memory caches
+                    manager.modelFrames.clear();
+                    manager.modelFrameFiles.clear();
+                    
+                } else {
+                    log('⚠️ No storage to clear');
+                }
+            } catch (error) {
+                log(`❌ Error clearing storage: ${error.message}`);
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            updateProgress(0, 'ready');
+            document.getElementById('speed').textContent = '-';
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('🚀 Optimized Frame Extraction Test initialized');
+            log('💡 Features: 25fps, IndexedDB storage, memory optimization, batch processing');
+            log('🎯 Click "Test Optimized Extraction" to start');
+        });
+    </script>
+</body>
+</html>

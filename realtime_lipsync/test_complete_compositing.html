@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Complete Lip Sync + Body Compositing Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .pipeline-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pipeline-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #ff7043, #f4511e);
+        }
+
+        .btn.info {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .status-item h3 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status.pending { background: #FF9800; }
+        .status.success { background: #4CAF50; }
+        .status.error { background: #f44336; }
+        .status.loading { background: #2196F3; }
+
+        .video-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .video-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .video-container h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .video-container canvas, .video-container video {
+            max-width: 100%;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-warning { color: #FF9800; }
+        .log-info { color: #2196F3; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .cache-info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Complete Lip Sync + Body Compositing Test</h1>
+        <p class="subtitle">Test the complete pipeline: Text → TTS → Face Generation → Body Frame Caching → Real-time Compositing</p>
+
+        <!-- Step 1: Configuration -->
+        <div class="pipeline-section">
+            <h2>⚙️ Configuration</h2>
+            <div class="input-group">
+                <label for="test-text">Enter text to synthesize:</label>
+                <textarea id="test-text" rows="3" placeholder="Hello, this is a complete test of the full body lip sync pipeline with real-time compositing!">Hello, this is a complete test of the full body lip sync pipeline with real-time compositing!</textarea>
+            </div>
+            <div class="input-group">
+                <label for="model-select">Select Face Model:</label>
+                <select id="model-select">
+                    <option value="default_model">default_model (Default)</option>
+                    <option value="test_optimized_package_fixed">test_optimized_package_fixed</option>
+                    <option value="test_optimized_package_fixed_1">test_optimized_package_fixed_1</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="batch-mode">Face Generation Mode:</label>
+                <select id="batch-mode">
+                    <option value="single">Single Frame (22.6 FPS baseline)</option>
+                    <option value="batch2" selected>Batch 2 Frames (Target: ~45 FPS)</option>
+                    <option value="batch3">Batch 3 Frames (Target: ~67 FPS)</option>
+                    <option value="batch4">Batch 4 Frames (Target: ~90 FPS)</option>
+                    <option value="batch5">Batch 5 Frames (Target: ~112 FPS)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="body-video-url">Body Video URL (MP4):</label>
+                <input type="url" id="body-video-url" placeholder="https://example.com/body_video.mp4" value="demo/sample_body.mp4">
+            </div>
+            <button class="btn" onclick="initializeBodyFrameCache()">📦 Initialize Body Frame Cache</button>
+            <button class="btn info" onclick="startCompletePipeline()">🚀 Start Complete Pipeline Test</button>
+            <button class="btn secondary" onclick="clearTest()">🗑️ Clear & Reset</button>
+        </div>
+
+        <!-- Body Frame Cache Status -->
+        <div class="pipeline-section">
+            <h2>🎞️ Body Frame Cache Status</h2>
+            <div class="cache-info">
+                <div><strong>Cache Status:</strong> <span id="cache-status">Not Initialized</span></div>
+                <div><strong>Frames Cached:</strong> <span id="frames-cached">0</span></div>
+                <div><strong>Cache Size:</strong> <span id="cache-size">0 MB</span></div>
+                <div><strong>Frame Dimensions:</strong> <span id="frame-dimensions">Unknown</span></div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="cache-progress"></div>
+            </div>
+            <div id="cache-log" class="log-container" style="height: 150px;"></div>
+        </div>
+
+        <!-- Pipeline Status -->
+        <div class="pipeline-section">
+            <h2>📊 Pipeline Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <h3>OpenAI Session</h3>
+                    <span id="openai-status" class="status pending">Not Started</span>
+                </div>
+                <div class="status-item">
+                    <h3>Face WebSocket</h3>
+                    <span id="grpc-status" class="status pending">Not Connected</span>
+                </div>
+                <div class="status-item">
+                    <h3>Body Cache</h3>
+                    <span id="body-cache-status" class="status pending">Not Loaded</span>
+                </div>
+                <div class="status-item">
+                    <h3>Compositing</h3>
+                    <span id="compositing-status" class="status pending">Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Display -->
+        <div class="video-section">
+            <div class="video-container">
+                <h3>🎭 Generated Face</h3>
+                <canvas id="face-canvas" width="256" height="256"></canvas>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="face-fps">0.0</div>
+                        <div class="stat-label">Face FPS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="face-latency">0</div>
+                        <div class="stat-label">Latency (ms)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <h3>🧍 Body Frame</h3>
+                <canvas id="body-canvas" width="512" height="512"></canvas>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="body-frame-id">0</div>
+                        <div class="stat-label">Frame ID</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cache-hit-rate">0%</div>
+                        <div class="stat-label">Cache Hit</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <h3>🎥 Final Composite</h3>
+                <canvas id="composite-canvas" width="512" height="512"></canvas>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="composite-fps">0.0</div>
+                        <div class="stat-label">Final FPS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-latency">0</div>
+                        <div class="stat-label">Total (ms)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Stats -->
+        <div class="pipeline-section">
+            <h2>📈 Performance Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-frames">0</div>
+                    <div class="stat-label">Total Frames</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-face-time">0</div>
+                    <div class="stat-label">Avg Face (ms)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-composite-time">0</div>
+                    <div class="stat-label">Avg Composite (ms)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="cache-efficiency">0%</div>
+                    <div class="stat-label">Cache Efficiency</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Log -->
+        <div class="pipeline-section">
+            <h2>🔍 Debug Log</h2>
+            <div id="log-container" class="log-container"></div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="audio_buffer_manager.js"></script>
+    <script src="openai_realtime_client.js"></script>
+    <script src="direct_websocket_client.js?v=batch001"></script>
+
+    <script>
+        // Global state
+        let client = null;
+        let frameGenerator = null;
+        let bodyFrameCache = null;
+        let stats = {
+            totalFrames: 0,
+            totalFaceTime: 0,
+            totalCompositeTime: 0,
+            cacheHits: 0,
+            cacheMisses: 0
+        };
+
+        // Body Frame Cache using WebCodecs
+        class BodyFrameCache {
+            constructor() {
+                this.frames = new Map(); // frameId -> ImageBitmap
+                this.isLoading = false;
+                this.totalFrames = 0;
+                this.frameWidth = 0;
+                this.frameHeight = 0;
+                this.cacheSize = 0;
+            }
+
+            async loadFromMP4(videoUrl) {
+                this.isLoading = true;
+                updateCacheStatus('Loading MP4...');
+                
+                try {
+                    // Check if WebCodecs is supported
+                    if (!('VideoDecoder' in window)) {
+                        throw new Error('WebCodecs not supported in this browser');
+                    }
+
+                    cacheLog('🎥 Fetching MP4 from: ' + videoUrl, 'info');
+                    
+                    // Fetch the MP4 file
+                    const response = await fetch(videoUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const arrayBuffer = await response.arrayBuffer();
+                    cacheLog(`✅ MP4 downloaded: ${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB`, 'success');
+
+                    // Use MP4Box.js or similar to parse MP4 and extract frames
+                    // For now, let's use a video element approach as fallback
+                    await this.extractFramesFromVideo(videoUrl);
+                    
+                } catch (error) {
+                    cacheLog(`❌ Failed to load MP4: ${error.message}`, 'error');
+                    updateCacheStatus('Failed');
+                    throw error;
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            async extractFramesFromVideo(videoUrl) {
+                return new Promise((resolve, reject) => {
+                    const video = document.createElement('video');
+                    video.crossOrigin = 'anonymous';
+                    video.muted = true;
+                    
+                    video.onloadedmetadata = async () => {
+                        try {
+                            const duration = video.duration;
+                            const fps = 25; // Assume 25 FPS
+                            this.totalFrames = Math.floor(duration * fps);
+                            this.frameWidth = video.videoWidth;
+                            this.frameHeight = video.videoHeight;
+                            
+                            cacheLog(`📊 Video info: ${this.frameWidth}x${this.frameHeight}, ${this.totalFrames} frames`, 'info');
+                            document.getElementById('frame-dimensions').textContent = `${this.frameWidth}x${this.frameHeight}`;
+                            
+                            const canvas = document.createElement('canvas');
+                            canvas.width = this.frameWidth;
+                            canvas.height = this.frameHeight;
+                            const ctx = canvas.getContext('2d');
+                            
+                            // Extract frames at intervals
+                            for (let frameId = 0; frameId < this.totalFrames; frameId++) {
+                                const timeInSeconds = frameId / fps;
+                                
+                                if (timeInSeconds >= duration) break;
+                                
+                                // Seek to frame time
+                                video.currentTime = timeInSeconds;
+                                
+                                await new Promise(seekResolve => {
+                                    video.onseeked = () => seekResolve();
+                                });
+                                
+                                // Draw frame to canvas
+                                ctx.drawImage(video, 0, 0);
+                                
+                                // Create ImageBitmap for efficient compositing
+                                const imageData = ctx.getImageData(0, 0, this.frameWidth, this.frameHeight);
+                                const imageBitmap = await createImageBitmap(imageData);
+                                
+                                // Store in cache
+                                this.frames.set(frameId, imageBitmap);
+                                this.cacheSize += this.frameWidth * this.frameHeight * 4; // RGBA bytes
+                                
+                                // Update progress
+                                const progress = ((frameId + 1) / this.totalFrames) * 100;
+                                document.getElementById('cache-progress').style.width = progress + '%';
+                                document.getElementById('frames-cached').textContent = frameId + 1;
+                                document.getElementById('cache-size').textContent = (this.cacheSize / 1024 / 1024).toFixed(2) + ' MB';
+                                
+                                if (frameId % 50 === 0) {
+                                    cacheLog(`📦 Cached frame ${frameId + 1}/${this.totalFrames}`, 'info');
+                                }
+                            }
+                            
+                            updateCacheStatus('Ready');
+                            cacheLog(`✅ All ${this.frames.size} frames cached successfully!`, 'success');
+                            resolve();
+                            
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    
+                    video.onerror = () => reject(new Error('Failed to load video'));
+                    video.src = videoUrl;
+                });
+            }
+
+            getFrame(frameId) {
+                // Map frame ID to available frames (loop if necessary)
+                const actualFrameId = frameId % this.totalFrames;
+                const frame = this.frames.get(actualFrameId);
+                
+                if (frame) {
+                    stats.cacheHits++;
+                    return frame;
+                } else {
+                    stats.cacheMisses++;
+                    return null;
+                }
+            }
+
+            isReady() {
+                return this.frames.size > 0 && !this.isLoading;
+            }
+        }
+
+        // Composite face + body frames
+        class FrameCompositor {
+            constructor(compositeCanvas) {
+                this.canvas = compositeCanvas;
+                this.ctx = this.canvas.getContext('2d');
+                this.faceCanvas = document.createElement('canvas');
+                this.faceCtx = this.faceCanvas.getContext('2d');
+            }
+
+            async composite(faceImageData, bodyImageBitmap, bounds) {
+                const startTime = performance.now();
+                
+                try {
+                    // Clear canvas
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    
+                    // Draw body frame as background
+                    if (bodyImageBitmap) {
+                        this.ctx.drawImage(bodyImageBitmap, 0, 0, this.canvas.width, this.canvas.height);
+                    }
+                    
+                    // Draw face on top at the correct position
+                    if (faceImageData && bounds) {
+                        // Convert base64 to image
+                        const faceImg = new Image();
+                        faceImg.onload = () => {
+                            // Scale and position face according to bounds
+                            const faceX = bounds[0] || 150; // Default position if bounds invalid
+                            const faceY = bounds[1] || 100;
+                            const faceW = bounds[2] || 200;
+                            const faceH = bounds[3] || 200;
+                            
+                            this.ctx.drawImage(faceImg, faceX, faceY, faceW, faceH);
+                            
+                            const compositeTime = performance.now() - startTime;
+                            stats.totalCompositeTime += compositeTime;
+                            
+                            // Update UI stats
+                            document.getElementById('avg-composite-time').textContent = 
+                                (stats.totalCompositeTime / stats.totalFrames).toFixed(1);
+                        };
+                        faceImg.src = 'data:image/jpeg;base64,' + faceImageData;
+                    }
+                    
+                } catch (error) {
+                    log(`❌ Compositing error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Initialize body frame cache
+        async function initializeBodyFrameCache() {
+            const videoUrl = document.getElementById('body-video-url').value;
+            
+            if (!videoUrl) {
+                log('❌ Please provide a body video URL', 'error');
+                return;
+            }
+            
+            try {
+                bodyFrameCache = new BodyFrameCache();
+                await bodyFrameCache.loadFromMP4(videoUrl);
+                updateStatus('body-cache-status', 'Ready', 'success');
+                log('✅ Body frame cache initialized successfully!', 'success');
+            } catch (error) {
+                log(`❌ Failed to initialize body cache: ${error.message}`, 'error');
+                updateStatus('body-cache-status', 'Failed', 'error');
+            }
+        }
+
+        // Start complete pipeline
+        async function startCompletePipeline() {
+            if (!bodyFrameCache || !bodyFrameCache.isReady()) {
+                log('❌ Please initialize body frame cache first', 'error');
+                return;
+            }
+            
+            log('🚀 Starting complete lip sync + compositing pipeline...', 'info');
+            
+            try {
+                // Initialize OpenAI client
+                client = new OpenAIRealtimeClient();
+                await client.initialize();
+                updateStatus('openai-status', 'Connected', 'success');
+                log('✅ OpenAI Realtime API connected', 'success');
+
+                // Initialize frame generator
+                const modelName = document.getElementById('model-select').value;
+                frameGenerator = new DirectWebSocketClient('ws://localhost:8082', modelName);
+                
+                // Set up frame compositor
+                const compositor = new FrameCompositor(document.getElementById('composite-canvas'));
+                
+                frameGenerator.onFrameReady = (frameData) => {
+                    stats.totalFrames++;
+                    stats.totalFaceTime += frameData.processingTime;
+                    
+                    // Display face frame
+                    const faceCanvas = document.getElementById('face-canvas');
+                    const faceCtx = faceCanvas.getContext('2d');
+                    const faceImg = new Image();
+                    faceImg.onload = () => {
+                        faceCtx.drawImage(faceImg, 0, 0, faceCanvas.width, faceCanvas.height);
+                    };
+                    faceImg.src = 'data:image/jpeg;base64,' + frameData.imageData;
+                    
+                    // Get corresponding body frame
+                    const bodyFrame = bodyFrameCache.getFrame(frameData.frameId);
+                    
+                    // Display body frame
+                    if (bodyFrame) {
+                        const bodyCanvas = document.getElementById('body-canvas');
+                        const bodyCtx = bodyCanvas.getContext('2d');
+                        bodyCtx.drawImage(bodyFrame, 0, 0, bodyCanvas.width, bodyCanvas.height);
+                        document.getElementById('body-frame-id').textContent = frameData.frameId;
+                    }
+                    
+                    // Composite final frame
+                    compositor.composite(frameData.imageData, bodyFrame, frameData.bounds);
+                    
+                    // Update stats
+                    updatePerformanceStats(frameData);
+                };
+
+                // Connect WebSocket
+                await frameGenerator.connect();
+                updateStatus('grpc-status', 'Connected', 'success');
+                log('✅ Direct WebSocket connected!', 'success');
+
+                // Connect frame generator to audio buffer
+                if (frameGenerator.connectToAudioBuffer) {
+                    await frameGenerator.connectToAudioBuffer(client.audioBufferManager);
+                    log('🔗 Frame generator connected to audio buffer', 'success');
+                } else {
+                    // Fallback manual connection with batch support
+                    const originalAddAudio = client.audioBufferManager.addAudioToBuffer;
+                    client.audioBufferManager.addAudioToBuffer = function(pcmData) {
+                        const result = originalAddAudio.call(this, pcmData);
+                        if (this.getBufferFillLevel() >= 1) {
+                            const audioChunks = this.getConsecutiveAudioChunks(1);
+                            if (audioChunks && audioChunks.length > 0) {
+                                const batchMode = document.getElementById('batch-mode').value;
+                                
+                                if (batchMode === 'single' || !frameGenerator.generateBatchFrames) {
+                                    frameGenerator.generateFrameFromAudio(audioChunks[0].data).catch(error => {
+                                        console.error('❌ Frame generation error:', error);
+                                    });
+                                } else {
+                                    const batchSize = parseInt(batchMode.replace('batch', ''));
+                                    frameGenerator.generateBatchFrames(batchSize, audioChunks[0].data).catch(error => {
+                                        console.error('❌ Batch frame generation error:', error);
+                                    });
+                                }
+                            }
+                        }
+                        return result;
+                    };
+                }
+
+                // Start TTS
+                const testText = document.getElementById('test-text').value;
+                await client.synthesizeSpeech(testText);
+                log('🎵 TTS synthesis started', 'success');
+                updateStatus('compositing-status', 'Running', 'loading');
+
+            } catch (error) {
+                log(`❌ Pipeline error: ${error.message}`, 'error');
+            }
+        }
+
+        // Update performance statistics
+        function updatePerformanceStats(frameData) {
+            const avgFaceTime = stats.totalFaceTime / stats.totalFrames;
+            const avgCompositeTime = stats.totalCompositeTime / stats.totalFrames;
+            const cacheEfficiency = (stats.cacheHits / (stats.cacheHits + stats.cacheMisses)) * 100;
+            
+            document.getElementById('total-frames').textContent = stats.totalFrames;
+            document.getElementById('avg-face-time').textContent = avgFaceTime.toFixed(1);
+            document.getElementById('avg-composite-time').textContent = avgCompositeTime.toFixed(1);
+            document.getElementById('cache-efficiency').textContent = cacheEfficiency.toFixed(1) + '%';
+            
+            document.getElementById('face-fps').textContent = frameGenerator.stats.frameRate.toFixed(1);
+            document.getElementById('face-latency').textContent = frameData.processingTime.toFixed(0);
+            document.getElementById('composite-fps').textContent = (1000 / (avgFaceTime + avgCompositeTime)).toFixed(1);
+            document.getElementById('total-latency').textContent = (avgFaceTime + avgCompositeTime).toFixed(0);
+            
+            const hitRate = (stats.cacheHits / (stats.cacheHits + stats.cacheMisses)) * 100;
+            document.getElementById('cache-hit-rate').textContent = hitRate.toFixed(0) + '%';
+        }
+
+        // Utility functions
+        function updateStatus(elementId, text, className) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = `status ${className}`;
+        }
+
+        function updateCacheStatus(status) {
+            document.getElementById('cache-status').textContent = status;
+        }
+
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function cacheLog(message, type = 'info') {
+            const logContainer = document.getElementById('cache-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearTest() {
+            if (client) {
+                client.disconnect();
+            }
+            if (frameGenerator) {
+                frameGenerator.websocket?.close();
+            }
+            
+            // Clear canvases
+            ['face-canvas', 'body-canvas', 'composite-canvas'].forEach(id => {
+                const canvas = document.getElementById(id);
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+            
+            // Reset stats
+            stats = {
+                totalFrames: 0,
+                totalFaceTime: 0,
+                totalCompositeTime: 0,
+                cacheHits: 0,
+                cacheMisses: 0
+            };
+            
+            // Reset UI
+            ['openai-status', 'grpc-status', 'compositing-status'].forEach(id => {
+                updateStatus(id, 'Not Started', 'pending');
+            });
+            
+            document.getElementById('log-container').innerHTML = '';
+            log('🔄 Test cleared and reset', 'info');
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('🎬 Complete Lip Sync + Body Compositing Test loaded', 'info');
+            log('📋 Step 1: Initialize body frame cache', 'info');
+            log('📋 Step 2: Start complete pipeline test', 'info');
+        });
+    </script>
+</body>
+</html>

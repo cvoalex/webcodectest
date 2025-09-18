@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Test Video</title>
+</head>
+<body>
+    <h2>Create a Test Video</h2>
+    <canvas id="canvas" width="320" height="240" style="border: 1px solid black;"></canvas>
+    <br><br>
+    <button onclick="createTestVideo()">Create Test Video</button>
+    <br><br>
+    <video id="testVideo" controls style="display: none;"></video>
+    <br>
+    <a id="downloadLink" style="display: none;">Download Test Video</a>
+
+    <script>
+        async function createTestVideo() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Create a MediaRecorder to record canvas
+            const stream = canvas.captureStream(30); // 30 FPS
+            const recorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9'
+            });
+            
+            const chunks = [];
+            recorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    chunks.push(event.data);
+                }
+            };
+            
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                
+                const video = document.getElementById('testVideo');
+                video.src = url;
+                video.style.display = 'block';
+                
+                const link = document.getElementById('downloadLink');
+                link.href = url;
+                link.download = 'test-video.webm';
+                link.textContent = 'Download Test Video';
+                link.style.display = 'block';
+                
+                console.log('Test video created!');
+            };
+            
+            // Start recording
+            recorder.start();
+            
+            // Animate canvas for 3 seconds
+            let frame = 0;
+            const animate = () => {
+                // Clear canvas
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, 320, 240);
+                
+                // Draw moving circle
+                const x = (frame % 280) + 20;
+                const y = 120 + Math.sin(frame * 0.1) * 50;
+                
+                ctx.fillStyle = '#ff0000';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw frame number
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '20px Arial';
+                ctx.fillText(`Frame: ${frame}`, 10, 30);
+                
+                frame++;
+                
+                if (frame < 90) { // 3 seconds at 30fps
+                    requestAnimationFrame(animate);
+                } else {
+                    recorder.stop();
+                }
+            };
+            
+            animate();
+        }
+    </script>
+</body>
+</html>

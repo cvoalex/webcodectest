@@ -6,8 +6,9 @@ This is a **high-performance real-time lip sync system** that synchronizes facia
 
 1. **Pre-processed Model Package** (Sanders model with 523 frames)
 2. **Four Server Implementations** (optimized for different use cases)
-3. **Web Client** with real-time performance monitoring
+3. **Web Clients** with real-time performance monitoring
 4. **gRPC Server** for server-to-server communication
+5. **Go WebSocket-to-gRPC Proxy** for browser access to gRPC backend
 
 ---
 
@@ -104,7 +105,7 @@ models/sanders/
 
 ```
 webcodecstest/
-├── minimal_server/           # All server implementations
+├── minimal_server/           # Python server implementations
 │   ├── server.py            # Original server (port 8084)
 │   ├── optimized_server.py  # Ultra-optimized WebSocket (port 8085)
 │   ├── optimized_grpc_server.py  # gRPC server (port 50051)
@@ -117,14 +118,23 @@ webcodecstest/
 │   │   └── *.json          # Metadata
 │   └── *.html              # Web clients
 │
-├── Documentation (2,500+ lines total):
+├── grpc-websocket-proxy/    # Go proxy for browser-to-gRPC
+│   ├── main.go             # Proxy server implementation
+│   ├── optimized_lipsyncsrv.proto  # Proto definition
+│   ├── static/
+│   │   └── grpc-lipsync-client.html  # Web client for gRPC
+│   ├── build.bat           # Build script
+│   └── run.bat             # Run script
+│
+├── Documentation (3,200+ lines total):
 │   ├── README.md                      # Original server docs
 │   ├── OPTIMIZED_README.md            # Ultra-optimized server docs (500 lines)
 │   ├── GRPC_SERVER_README.md          # gRPC server docs (500 lines)
 │   ├── GRPC_SETUP_GUIDE.md            # Quick setup guide (300 lines)
 │   ├── SERVER_IMPLEMENTATIONS.md      # All servers overview (550 lines)
 │   ├── PERFORMANCE_COMPARISON.md      # Detailed comparison (400 lines)
-│   └── CLIENT_GUIDE.md                # Web client guide (350 lines)
+│   ├── CLIENT_GUIDE.md                # Web client guide (350 lines)
+│   └── grpc-websocket-proxy/README.md # Proxy documentation (600 lines)
 │
 ├── fast_service/            # Experimental optimizations
 ├── data_utils/              # Face detection, landmark extraction
@@ -152,7 +162,7 @@ pip install opencv-python numpy websockets grpcio grpcio-tools
 
 ### 2. Choose Your Server
 
-#### For Web Clients (Browser-based)
+#### Option A: WebSocket Server (Direct Browser Connection)
 ```bash
 cd minimal_server
 python optimized_server.py
@@ -160,7 +170,7 @@ python optimized_server.py
 # Open: optimized-lipsync-client.html
 ```
 
-#### For Server-to-Server (Production)
+#### Option B: gRPC Server (Server-to-Server)
 ```bash
 cd minimal_server
 
@@ -173,6 +183,21 @@ python optimized_grpc_server.py
 
 # Test it
 python optimized_grpc_client.py
+```
+
+#### Option C: gRPC Server + Go Proxy (Browser → gRPC)
+```bash
+# Terminal 1: Start gRPC server
+cd minimal_server
+python optimized_grpc_server.py
+
+# Terminal 2: Build and run Go proxy
+cd grpc-websocket-proxy
+build.bat
+run.bat
+# Proxy starts on port 8086
+
+# Browser: Open http://localhost:8086/grpc-lipsync-client.html
 ```
 
 ### 3. Test Performance

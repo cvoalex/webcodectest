@@ -339,7 +339,7 @@ async def serve():
     try:
         result = await optimized_engine.load_package(
             "sanders",
-            "models/sanders"
+            "models/sanders"  # Path relative to minimal_server directory
         )
         
         if result["status"] == "success":

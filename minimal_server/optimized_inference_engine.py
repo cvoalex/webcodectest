@@ -193,9 +193,11 @@ class OptimizedModelPackage:
         # Load frame metadata
         frame_meta_path = self.package_dir / "cache" / "frame_metadata.json"
         if frame_meta_path.exists():
-            with open(crop_rect_path, 'r') as f:
+            with open(frame_meta_path, 'r') as f:
                 self.frame_metadata = json.load(f)
-            print(f"  ✅ Frame metadata: {self.frame_metadata['processed_frames']} frames")
+            # Support both 'processed_frames' and 'frame_count' fields
+            frame_count = self.frame_metadata.get('processed_frames', self.frame_metadata.get('frame_count', 'unknown'))
+            print(f"  ✅ Frame metadata: {frame_count} frames")
         else:
             self.frame_metadata = {}
             print(f"  📝 No frame metadata cache (will use package_info)")

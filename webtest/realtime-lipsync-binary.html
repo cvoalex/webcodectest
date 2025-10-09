@@ -276,17 +276,19 @@
             <h3>Video Source & Processing</h3>
             
             <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <h4 style="margin: 0 0 10px 0;">🎬 Model Video</h4>
+                <h4 style="margin: 0 0 10px 0;">🎬 Model Selection</h4>
                 <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-                    <span style="flex: 1; padding: 8px; background: #e9ecef; border-radius: 4px; font-family: monospace;">
-                        📁 Using model video: /models/<span id="currentModelPath">default_model</span>/video.mp4
-                    </span>
-                    <button onclick="loadModelVideo()" id="loadVideoBtn">🎬 Load Model Video</button>
+                    <label for="modelSelect" style="font-weight: bold;">Model:</label>
+                    <select id="modelSelect" onchange="changeModel()" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ced4da;">
+                        <option value="">Loading models...</option>
+                    </select>
+                    <button onclick="refreshModels()" id="refreshModelsBtn">🔄 Refresh</button>
+                    <button onclick="loadModelVideo()" id="loadVideoBtn">🎬 Load Video</button>
                 </div>
                 
                 <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    💡 <strong>Note:</strong> The video is automatically loaded from the selected model's directory. 
-                    Make sure your server serves static files from the models folder.
+                    💡 <strong>Note:</strong> Video frames are loaded via gRPC from the server. 
+                    Connect to the server first, then select a model and load its video.
                 </div>
                 
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
@@ -524,6 +526,9 @@
                 this.isConnected = false;
                 this.wsUrl = 'ws://localhost:8086/ws';
                 
+                // Request tracking for async responses
+                this.pendingRequests = new Map();
+                
                 // Audio processing
                 this.audioContext = null;
                 this.mediaStream = null;
@@ -613,10 +618,82 @@
                 this.lipSyncCtx.fillRect(0, 0, this.lipSyncCanvas.width, this.lipSyncCanvas.height);
             }
 
-            // Video Processing Methods - using model video
-            getModelVideoPath() {
-                // Construct path to current model's video
-                return `/models/${this.currentModel}/video.mp4`;
+            // Video Processing Methods - using gRPC API
+            async loadModelList() {
+                if (!this.isConnected) {
+                    throw new Error('Not connected to server');
+                }
+                
+                this.log('📋 Requesting model list...');
+                
+                // Send ListModels request
+                const request = {
+                    type: 'list_models'
+                };
+                
+                return new Promise((resolve, reject) => {
+                    this.pendingRequests.set('list_models', { resolve, reject, timestamp: Date.now() });
+                    this.ws.send(JSON.stringify(request));
+                    
+                    setTimeout(() => {
+                        if (this.pendingRequests.has('list_models')) {
+                            this.pendingRequests.delete('list_models');
+                            reject(new Error('Model list request timeout'));
+                        }
+                    }, 5000);
+                });
+            }
+
+            async loadModelMetadata(modelName) {
+                if (!this.isConnected) {
+                    throw new Error('Not connected to server');
+                }
+                
+                this.log(`📊 Requesting metadata for ${modelName}...`);
+                
+                const request = {
+                    type: 'get_metadata',
+                    model_name: modelName
+                };
+                
+                return new Promise((resolve, reject) => {
+                    this.pendingRequests.set('metadata_' + modelName, { resolve, reject, timestamp: Date.now() });
+                    this.ws.send(JSON.stringify(request));
+                    
+                    setTimeout(() => {
+                        const key = 'metadata_' + modelName;
+                        if (this.pendingRequests.has(key)) {
+                            this.pendingRequests.delete(key);
+                            reject(new Error('Metadata request timeout'));
+                        }
+                    }, 5000);
+                });
+            }
+
+            async loadVideoFrameFromServer(frameId, videoType = 'full_body') {
+                if (!this.isConnected) {
+                    throw new Error('Not connected to server');
+                }
+                
+                const request = {
+                    type: 'get_video_frame',
+                    model_name: this.currentModel,
+                    frame_id: frameId,
+                    video_type: videoType
+                };
+                
+                return new Promise((resolve, reject) => {
+                    const key = `frame_${videoType}_${frameId}`;
+                    this.pendingRequests.set(key, { resolve, reject, timestamp: Date.now() });
+                    this.ws.send(JSON.stringify(request));
+                    
+                    setTimeout(() => {
+                        if (this.pendingRequests.has(key)) {
+                            this.pendingRequests.delete(key);
+                            reject(new Error('Frame request timeout'));
+                        }
+                    }, 5000);
+                });
             }
 
             async loadModelVideo() {
@@ -624,53 +701,84 @@
                 this.showProgress(0);
                 
                 try {
-                    const videoPath = this.getModelVideoPath();
-                    this.log(`📁 Loading model video: ${videoPath}`);
+                    // Step 1: Get model metadata
+                    this.log(`📁 Loading model: ${this.currentModel}`);
+                    const metadata = await this.loadModelMetadata(this.currentModel);
                     
-                    // Try to load video from server
-                    const response = await fetch(videoPath);
-                    if (!response.ok) {
-                        throw new Error(`Model video not found: ${response.status} ${response.statusText}`);
+                    if (!metadata.success) {
+                        throw new Error(metadata.error || 'Failed to get model metadata');
                     }
                     
-                    const contentLength = response.headers.get('content-length');
-                    const total = parseInt(contentLength, 10);
-                    let loaded = 0;
-
-                    const reader = response.body.getReader();
-                    const chunks = [];
-
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-
-                        chunks.push(value);
-                        loaded += value.length;
-
-                        if (total) {
-                            const progress = (loaded / total) * 50; // 0-50% for loading
-                            this.showProgress(progress);
+                    this.log(`✅ Metadata loaded: ${metadata.frame_count} frames, Videos: ${metadata.available_videos.join(', ')}`);
+                    
+                    const totalFrames = metadata.frame_count;
+                    this.videoFrames = [];
+                    
+                    // Step 2: Load video frames in batches
+                    const BATCH_SIZE = 10; // Load 10 frames at a time
+                    const videoType = 'full_body'; // Primary video type
+                    
+                    for (let i = 0; i < totalFrames; i += BATCH_SIZE) {
+                        const batchEnd = Math.min(i + BATCH_SIZE, totalFrames);
+                        const batchPromises = [];
+                        
+                        for (let j = i; j < batchEnd; j++) {
+                            batchPromises.push(this.loadVideoFrameFromServer(j, videoType));
                         }
+                        
+                        const batchResults = await Promise.all(batchPromises);
+                        
+                        // Process batch results
+                        for (let j = 0; j < batchResults.length; j++) {
+                            const frameData = batchResults[j];
+                            if (frameData.success) {
+                                // Convert JPEG bytes to data URL
+                                const blob = new Blob([frameData.frame_data], { type: 'image/jpeg' });
+                                const dataUrl = await this.blobToDataURL(blob);
+                                
+                                this.videoFrames.push({
+                                    index: i + j,
+                                    timestamp: (i + j) / 30.0, // Assume 30 FPS
+                                    dataUrl: dataUrl,
+                                    canvas: null // Will be created on demand
+                                });
+                            }
+                        }
+                        
+                        // Update progress
+                        const progress = (batchEnd / totalFrames) * 100;
+                        this.showProgress(progress);
+                        this.log(`📥 Loaded ${batchEnd}/${totalFrames} frames...`);
                     }
 
-                    this.videoBuffer = new Uint8Array(loaded);
-                    let offset = 0;
-                    for (const chunk of chunks) {
-                        this.videoBuffer.set(chunk, offset);
-                        offset += chunk.length;
+                    this.log(`✅ All ${this.videoFrames.length} frames loaded!`);
+                    this.updateStatus('videoStatus', `${this.videoFrames.length} frames loaded`, 'connected');
+                    this.showProgress(100);
+                    
+                    // Enable playback controls
+                    document.getElementById('playVideoBtn').disabled = false;
+                    document.getElementById('lipSyncBtn').disabled = false;
+                    
+                    // Show first frame
+                    if (this.videoFrames.length > 0) {
+                        this.showVideoFrame(0);
                     }
-
-                    this.log(`✅ Model video loaded (${(loaded / 1024 / 1024).toFixed(2)} MB)`);
                     
-                    // Automatically extract frames and audio
-                    await this.extractVideoFramesAndAudio();
-                    
-                    return this.videoBuffer;
+                    return true;
                 } catch (error) {
                     this.log(`❌ Failed to load model video: ${error.message}`);
                     this.updateStatus('videoStatus', 'Failed to load', 'disconnected');
                     throw error;
                 }
+            }
+            
+            blobToDataURL(blob) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
             }
 
             async extractVideoFramesAndAudio() {
@@ -1227,7 +1335,7 @@
                     this.ws = new WebSocket(this.wsUrl);
                     this.ws.binaryType = 'arraybuffer'; // Important for binary data
                     
-                    this.ws.onopen = () => {
+                    this.ws.onopen = async () => {
                         this.isConnected = true;
                         this.updateStatus('wsStatus', 'Connected', 'connected');
                         this.log('✅ WebSocket connected to ' + this.wsUrl);
@@ -1238,6 +1346,9 @@
                         
                         // Test protocol capability
                         this.testProtocolSupport();
+                        
+                        // Auto-load model list
+                        setTimeout(() => refreshModels(), 500);
                     };
                     
                     this.ws.onmessage = (event) => {
@@ -1270,20 +1381,65 @@
             handleBinaryMessage(data) {
                 try {
                     console.log(`📨 Binary response received: ${data.byteLength} bytes`);
-                    const response = this.parseBinaryResponse(data);
                     
-                    console.log('⚡ Binary frame parsed:', {
-                        frame_id: response.frame_id,
-                        processing_time: response.processing_time_ms,
-                        image_size: response.imageBytes.length
-                    });
+                    // Check if this is a video frame response or inference response
+                    const view = new DataView(data);
+                    const messageType = view.getUint8(0);
                     
-                    this.displayBinaryFrame(response);
-                    this.updateMetrics(response);
+                    if (messageType === 2) {
+                        // Video frame response
+                        this.handleBinaryVideoFrame(data);
+                    } else {
+                        // Inference response (existing code)
+                        const response = this.parseBinaryResponse(data);
+                        
+                        console.log('⚡ Binary frame parsed:', {
+                            frame_id: response.frame_id,
+                            processing_time: response.processing_time_ms,
+                            image_size: response.imageBytes.length
+                        });
+                        
+                        this.displayBinaryFrame(response);
+                        this.updateMetrics(response);
+                    }
                     
                 } catch (e) {
                     console.error('❌ Binary message error:', e);
                     this.log('❌ Binary parsing failed: ' + e.message);
+                }
+            }
+            
+            handleBinaryVideoFrame(data) {
+                // Parse binary video frame: [type:1][frame_id:4][video_type_len:1][video_type:N][data_len:4][jpeg_data:N]
+                const view = new DataView(data);
+                let offset = 1; // Skip type byte
+                
+                const frameId = view.getInt32(offset, true);
+                offset += 4;
+                
+                const videoTypeLen = view.getUint8(offset);
+                offset += 1;
+                
+                const videoTypeBytes = new Uint8Array(data, offset, videoTypeLen);
+                const videoType = new TextDecoder().decode(videoTypeBytes);
+                offset += videoTypeLen;
+                
+                const dataLen = view.getUint32(offset, true);
+                offset += 4;
+                
+                const frameData = new Uint8Array(data, offset, dataLen);
+                
+                // Resolve pending request
+                const key = `frame_${videoType}_${frameId}`;
+                const pending = this.pendingRequests.get(key);
+                if (pending) {
+                    this.pendingRequests.delete(key);
+                    pending.resolve({
+                        success: true,
+                        frame_id: frameId,
+                        video_type: videoType,
+                        frame_data: frameData
+                    });
                 }
             }
 
@@ -1291,7 +1447,29 @@
                 try {
                     const message = JSON.parse(data);
                     
-                    if (message.type === 'stats') {
+                    // Handle async API responses
+                    if (message.type === 'model_list') {
+                        const pending = this.pendingRequests.get('list_models');
+                        if (pending) {
+                            this.pendingRequests.delete('list_models');
+                            pending.resolve(message);
+                        }
+                        this.log(`📋 Available models: ${message.models.join(', ')}`);
+                    } else if (message.type === 'metadata') {
+                        const key = 'metadata_' + message.model_name;
+                        const pending = this.pendingRequests.get(key);
+                        if (pending) {
+                            this.pendingRequests.delete(key);
+                            pending.resolve(message);
+                        }
+                    } else if (message.type === 'video_frame') {
+                        const key = `frame_${message.video_type}_${message.frame_id}`;
+                        const pending = this.pendingRequests.get(key);
+                        if (pending) {
+                            this.pendingRequests.delete(key);
+                            pending.resolve(message);
+                        }
+                    } else if (message.type === 'stats') {
                         // Server statistics
                         this.updateMetric('serverRequests', message.total_requests);
                         this.updateMetric('binaryRequests', message.binary_requests || 0);
@@ -1306,6 +1484,9 @@
                         console.log('🐌 JSON frame response:', message.frame_id);
                         this.displayFrame(message);
                         this.updateMetrics(message);
+                    } else if (message.error) {
+                        console.error('❌ Server error:', message.error);
+                        this.log(`❌ Error: ${message.error}`);
                     } else {
                         console.log('📨 Other message:', message);
                     }
@@ -2386,6 +2567,51 @@
                     lipSyncGenerator.useFixedFrame = false;
                     lipSyncGenerator.log('🔄 Fixed Frame Mode disabled - using sequential frames');
                 }
+            }
+        }
+
+        // Model management functions
+        async function refreshModels() {
+            if (!lipSyncGenerator || !lipSyncGenerator.isConnected) {
+                alert('Please connect to server first');
+                return;
+            }
+
+            try {
+                const result = await lipSyncGenerator.loadModelList();
+                if (result && result.models) {
+                    const select = document.getElementById('modelSelect');
+                    select.innerHTML = '';
+                    
+                    result.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        select.appendChild(option);
+                    });
+                    
+                    // Set current model
+                    if (lipSyncGenerator.currentModel && result.models.includes(lipSyncGenerator.currentModel)) {
+                        select.value = lipSyncGenerator.currentModel;
+                    } else if (result.models.length > 0) {
+                        select.value = result.models[0];
+                        lipSyncGenerator.currentModel = result.models[0];
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading models:', error);
+                alert('Failed to load model list: ' + error.message);
+            }
+        }
+
+        function changeModel() {
+            const select = document.getElementById('modelSelect');
+            if (lipSyncGenerator && select.value) {
+                lipSyncGenerator.currentModel = select.value;
+                lipSyncGenerator.log(`🎯 Switched to model: ${select.value}`);
+                // Clear loaded video frames
+                lipSyncGenerator.videoFrames = [];
+                lipSyncGenerator.updateStatus('videoStatus', 'Model changed - reload video', 'disconnected');
             }
         }
 

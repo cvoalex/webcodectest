@@ -128,10 +128,20 @@ class OptimizedModelPackage:
         print(f"\n✅ Package initialized in {init_time:.2f}s")
         print(f"🎯 Ready for ultra-fast inference!")
         
+        # Get frame count from appropriate location based on package format
+        if 'videos' in self.package_info and 'model_inputs' in self.package_info['videos']:
+            frame_count = self.package_info['videos']['model_inputs']['frame_count']
+        elif 'source_video' in self.package_info:
+            frame_count = self.package_info['source_video'].get('processed_frames', 
+                                                                self.package_info['source_video'].get('total_frames', 0))
+        else:
+            # Fallback to counting from loaded videos
+            frame_count = max(cache.frame_count for cache in self.video_caches.values()) if self.video_caches else 0
+        
         return {
             "status": "success",
             "model_name": self.model_name,
-            "frame_count": self.package_info["videos"]["model_inputs"]["frame_count"],
+            "frame_count": frame_count,
             "initialization_time_s": init_time,
             "device": str(self.device),
             "videos_loaded": list(self.video_caches.keys()),

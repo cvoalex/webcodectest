@@ -34,7 +34,7 @@ timeout /t 3 /nobreak >nul
 
 REM Open browser
 echo Opening web browser...
-start chrome "file:///%~dp0webtest\realtime-lipsync-binary.html"
+start chrome "file:///%~dp0webtest/realtime-lipsync-binary.html"
 
 echo.
 echo ========================================

@@ -274,16 +274,16 @@ async def serve():
     print("   ⚡ Zero I/O overhead")
     print("=" * 80)
     
-    # Auto-load optimized sanders model
-    print("\n📦 Loading optimized sanders model...")
+    # Auto-load optimized default_model
+    print("\n📦 Loading optimized default_model...")
     try:
         result = await optimized_engine.load_package(
-            "sanders",
-            "models/sanders"
+            "default_model",
+            "models/default_model"
         )
         
         if result["status"] == "success":
-            print("\n✅ Sanders model loaded successfully!")
+            print("\n✅ default_model loaded successfully!")
             print(f"   Frame count: {result['frame_count']}")
             print(f"   Initialization time: {result['initialization_time_s']:.2f}s")
             print(f"   Device: {result['device']}")
@@ -295,7 +295,7 @@ async def serve():
             return
             
     except Exception as e:
-        print(f"❌ Error loading sanders model: {e}")
+        print(f"❌ Error loading default_model: {e}")
         import traceback
         traceback.print_exc()
         return

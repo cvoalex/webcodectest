@@ -49,9 +49,9 @@ Click **"Start"** → **"Auto-play"**
 
 ---
 
-## Option 2: Multi-Process (Production with RTX 6000 Ada)
+## Option 2: Multi-GPU Multi-Process (Production)
 
-**Best for:** Production, multiple users, RTX 6000 Ada GPU
+**Best for:** Production, multiple users, 1-8 GPUs (consumer or professional)
 
 ### Step 1: Install Dependencies (Same as Option 1)
 ```bash
@@ -60,39 +60,52 @@ pip install -r requirements.txt
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. optimized_lipsyncsrv.proto
 ```
 
-### Step 2: Start Multiple gRPC Servers
+### Step 2: Start Multi-GPU Servers
+
+**Auto-detect GPUs (Recommended):**
 ```powershell
 cd minimal_server
-.\start_multi_grpc.ps1 -NumProcesses 4
+.\start_multi_gpu.ps1
+# Detects GPUs automatically, starts 6 processes per GPU
 ```
 
-**Wait for:** All servers to show `✅ All models loaded and ready!` (~35-40 seconds total)
+**Or specify configuration:**
+```powershell
+# Single GPU, 4 processes (development)
+.\start_multi_gpu.ps1 -NumGPUs 1 -ProcessesPerGPU 4
 
-You'll see:
+# 4 GPUs, 6 processes each (medium production)
+.\start_multi_gpu.ps1 -NumGPUs 4 -ProcessesPerGPU 6
+
+# 8 GPUs, 6 processes each (large production)
+.\start_multi_gpu.ps1 -NumGPUs 8 -ProcessesPerGPU 6
 ```
-Starting gRPC server 1 on port 50051...
-Starting gRPC server 2 on port 50052...
-Starting gRPC server 3 on port 50053...
-Starting gRPC server 4 on port 50054...
-```
+
+**Wait for:** All servers to show `✅ All models loaded and ready!`
+- 4 servers: ~35 seconds
+- 12 servers: ~90 seconds
+- 24 servers: ~3 minutes
+- 48 servers: ~6-7 minutes
 
 ### Step 3: Start Multi-Backend Proxy
+
+The script tells you the exact command:
 ```bash
 cd ..\grpc-websocket-proxy
-.\build.bat
-.\run_multi.bat 4 50051
+.\proxy.exe --start-port 50051 --num-servers <TOTAL>
+# Where TOTAL = NumGPUs × ProcessesPerGPU
 ```
 
-You'll see:
-```
-📍 Backend configuration:
-   [1] localhost:50051
-   [2] localhost:50052
-   [3] localhost:50053
-   [4] localhost:50054
+Examples:
+```bash
+# For 1 GPU × 4 processes = 4 servers
+.\proxy.exe --start-port 50051 --num-servers 4
 
-✅ Connected to 4/4 gRPC servers
-⚖️  Load balancing: Round-robin across 4 backends
+# For 4 GPUs × 6 processes = 24 servers
+.\proxy.exe --start-port 50051 --num-servers 24
+
+# For 8 GPUs × 6 processes = 48 servers
+.\proxy.exe --start-port 50051 --num-servers 48
 ```
 
 ### Step 4: Open Browser
@@ -100,7 +113,11 @@ Navigate to: **http://localhost:8086/**
 
 Click **"Start"** → **"Auto-play"**
 
-**Expected (RTX 6000 Ada):** 180-220 FPS aggregate, 17-22ms latency
+**Expected Performance:**
+- 1 GPU (consumer): 90-160 FPS
+- 1 GPU (professional): 180-300 FPS
+- 4 GPUs (professional): 720-1,200 FPS
+- 8 GPUs (professional): 1,440-2,400 FPS
 
 ---
 

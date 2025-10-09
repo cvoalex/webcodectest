@@ -197,12 +197,25 @@ async def main():
     parser = argparse.ArgumentParser(description='Test multi-process gRPC servers')
     parser.add_argument('--ports', type=int, nargs='+', default=[50051, 50052, 50053, 50054],
                        help='Server ports to test')
+    parser.add_argument('--port-range', type=str, default=None,
+                       help='Port range in format "50051-50060" (alternative to --ports)')
     parser.add_argument('--requests', type=int, default=20,
                        help='Requests per server in concurrent test')
     parser.add_argument('--round-robin', type=int, default=100,
                        help='Total requests for round-robin test')
     
     args = parser.parse_args()
+    
+    # Parse port range if provided
+    if args.port_range:
+        try:
+            start_port, end_port = map(int, args.port_range.split('-'))
+            args.ports = list(range(start_port, end_port + 1))
+            print(f"Using port range: {start_port}-{end_port} ({len(args.ports)} servers)")
+        except ValueError:
+            print(f"❌ Invalid port range format: {args.port_range}")
+            print("   Expected format: 50051-50060")
+            return
     
     print("=" * 80)
     print("🧪 MULTI-PROCESS GRPC SERVER PERFORMANCE TEST")

@@ -26,6 +26,5 @@ if %ERRORLEVEL% EQU 0 (
 ) else (
     echo.
     echo ❌ Build failed!
+    exit /b 1
 )
-
-pause

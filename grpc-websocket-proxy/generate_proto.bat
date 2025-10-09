@@ -21,6 +21,5 @@ if %ERRORLEVEL% EQU 0 (
     echo Make sure protoc and Go plugins are installed:
     echo   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
     echo   go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+    exit /b 1
 )
-
-pause

@@ -18,9 +18,11 @@ import (
 )
 
 var (
-	wsPort    = flag.Int("ws-port", 8086, "WebSocket server port")
-	grpcAddr  = flag.String("grpc-addr", "localhost:50051", "gRPC server address")
-	upgrader  = websocket.Upgrader{
+	wsPort      = flag.Int("ws-port", 8086, "WebSocket server port")
+	grpcAddrs   = flag.String("grpc-addrs", "localhost:50051", "Comma-separated gRPC server addresses")
+	startPort   = flag.Int("start-port", 50051, "First gRPC port (generates range)")
+	numServers  = flag.Int("num-servers", 1, "Number of gRPC servers (for port range)")
+	upgrader    = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true // Allow all origins for development
 		},
@@ -29,54 +31,108 @@ var (
 	}
 )
 
-// ProxyServer handles WebSocket to gRPC proxying
-type ProxyServer struct {
-	grpcClient pb.OptimizedLipSyncServiceClient
-	grpcConn   *grpc.ClientConn
+// Backend represents a single gRPC backend server
+type Backend struct {
+	address    string
+	client     pb.OptimizedLipSyncServiceClient
+	conn       *grpc.ClientConn
+	healthy    bool
+	totalReqs  int64
+	errorCount int64
 }
 
-// NewProxyServer creates a new proxy server
-func NewProxyServer(grpcAddr string) (*ProxyServer, error) {
-	log.Printf("🔌 Connecting to gRPC server at %s...", grpcAddr)
-	
-	conn, err := grpc.Dial(
-		grpcAddr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithDefaultCallOptions(
-			grpc.MaxCallRecvMsgSize(50*1024*1024), // 50MB
-			grpc.MaxCallSendMsgSize(50*1024*1024), // 50MB
-		),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to gRPC: %w", err)
-	}
+// ProxyServer handles WebSocket to gRPC proxying with load balancing
+type ProxyServer struct {
+	backends     []*Backend
+	nextBackend  int
+}
 
-	client := pb.NewOptimizedLipSyncServiceClient(conn)
+// NewProxyServer creates a new proxy server with multiple backends
+func NewProxyServer(addresses []string) (*ProxyServer, error) {
+	log.Printf("🔌 Connecting to %d gRPC servers...", len(addresses))
 	
-	// Test connection with health check
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	backends := make([]*Backend, 0, len(addresses))
 	
-	healthResp, err := client.HealthCheck(ctx, &pb.HealthRequest{})
-	if err != nil {
-		conn.Close()
-		return nil, fmt.Errorf("gRPC health check failed: %w", err)
+	for i, addr := range addresses {
+		log.Printf("   [%d/%d] Connecting to %s...", i+1, len(addresses), addr)
+		
+		conn, err := grpc.Dial(
+			addr,
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithDefaultCallOptions(
+				grpc.MaxCallRecvMsgSize(50*1024*1024), // 50MB
+				grpc.MaxCallSendMsgSize(50*1024*1024), // 50MB
+			),
+		)
+		if err != nil {
+			log.Printf("   ⚠️  Failed to connect to %s: %v", addr, err)
+			continue
+		}
+
+		client := pb.NewOptimizedLipSyncServiceClient(conn)
+		
+		// Test connection with health check
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		healthResp, err := client.HealthCheck(ctx, &pb.HealthRequest{})
+		cancel()
+		
+		healthy := err == nil
+		if healthy {
+			log.Printf("   ✅ %s - Status: %s, Models: %d", addr, healthResp.Status, healthResp.LoadedModels)
+		} else {
+			log.Printf("   ⚠️  %s - Health check failed (will retry): %v", addr, err)
+		}
+		
+		backends = append(backends, &Backend{
+			address: addr,
+			client:  client,
+			conn:    conn,
+			healthy: healthy,
+		})
 	}
 	
-	log.Printf("✅ Connected to gRPC server!")
-	log.Printf("   Status: %s", healthResp.Status)
-	log.Printf("   Loaded models: %d", healthResp.LoadedModels)
+	if len(backends) == 0 {
+		return nil, fmt.Errorf("no gRPC backends available")
+	}
+	
+	log.Printf("✅ Connected to %d/%d gRPC servers", len(backends), len(addresses))
 	
 	return &ProxyServer{
-		grpcClient: client,
-		grpcConn:   conn,
+		backends:    backends,
+		nextBackend: 0,
 	}, nil
 }
 
-// Close closes the gRPC connection
+// getNextBackend returns the next healthy backend (round-robin)
+func (p *ProxyServer) getNextBackend() *Backend {
+	if len(p.backends) == 0 {
+		return nil
+	}
+	
+	// Try up to 2x the number of backends to find a healthy one
+	attempts := len(p.backends) * 2
+	
+	for i := 0; i < attempts; i++ {
+		backend := p.backends[p.nextBackend]
+		p.nextBackend = (p.nextBackend + 1) % len(p.backends)
+		
+		if backend.healthy {
+			return backend
+		}
+	}
+	
+	// No healthy backends found, return the next one anyway (it will fail gracefully)
+	backend := p.backends[p.nextBackend]
+	p.nextBackend = (p.nextBackend + 1) % len(p.backends)
+	return backend
+}
+
+// Close closes all gRPC connections
 func (p *ProxyServer) Close() {
-	if p.grpcConn != nil {
-		p.grpcConn.Close()
+	for _, backend := range p.backends {
+		if backend.conn != nil {
+			backend.conn.Close()
+		}
 	}
 }
 
@@ -178,6 +234,20 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			isBinary = false
 		}
 		
+		// Get next backend (round-robin)
+		backend := p.getNextBackend()
+		if backend == nil {
+			log.Printf("❌ No backends available")
+			if isBinary {
+				conn.WriteMessage(websocket.BinaryMessage, []byte{})
+			} else {
+				errorResp := JSONResponse{Success: false, FrameID: frameID, Error: "no backends available"}
+				jsonData, _ := json.Marshal(errorResp)
+				conn.WriteMessage(websocket.TextMessage, jsonData)
+			}
+			continue
+		}
+		
 		// Forward to gRPC server
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		
@@ -186,13 +256,16 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			FrameId:   frameID,
 		}
 		
-		grpcResp, err := p.grpcClient.GenerateInference(ctx, grpcReq)
+		backend.totalReqs++
+		grpcResp, err := backend.client.GenerateInference(ctx, grpcReq)
 		cancel()
 		
 		totalTime := time.Since(startTime).Milliseconds()
 		
 		if err != nil {
-			log.Printf("❌ gRPC error for %s frame %d: %v", modelName, frameID, err)
+			log.Printf("❌ gRPC error for %s frame %d from %s: %v", modelName, frameID, backend.address, err)
+			backend.errorCount++
+			backend.healthy = false // Mark as unhealthy temporarily
 			
 			// Send error response
 			if isBinary {
@@ -210,9 +283,12 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		
+		// Mark backend as healthy on success
+		backend.healthy = true
+		
 		// Log success
-		log.Printf("✅ %s frame %d: gRPC=%dms total=%dms size=%d bytes",
-			modelName, frameID, int(grpcResp.ProcessingTimeMs), totalTime, len(grpcResp.PredictionData))
+		log.Printf("✅ %s frame %d [%s]: gRPC=%dms total=%dms size=%d bytes",
+			modelName, frameID, backend.address, int(grpcResp.ProcessingTimeMs), totalTime, len(grpcResp.PredictionData))
 		
 		// Send response to browser
 		if isBinary {
@@ -262,34 +338,77 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 // healthHandler handles health check endpoint
 func (p *ProxyServer) healthHandler(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
+	w.Header().Set("Content-Type", "application/json")
 	
-	resp, err := p.grpcClient.HealthCheck(ctx, &pb.HealthRequest{})
-	if err != nil {
-		http.Error(w, fmt.Sprintf("gRPC health check failed: %v", err), http.StatusServiceUnavailable)
-		return
+	type BackendStatus struct {
+		Address    string `json:"address"`
+		Healthy    bool   `json:"healthy"`
+		TotalReqs  int64  `json:"total_requests"`
+		ErrorCount int64  `json:"error_count"`
 	}
 	
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":        resp.Status,
-		"healthy":       resp.Healthy,
-		"loaded_models": resp.LoadedModels,
-		"uptime":        resp.UptimeSeconds,
-	})
+	backendStatuses := make([]BackendStatus, len(p.backends))
+	healthyCount := 0
+	
+	for i, backend := range p.backends {
+		backendStatuses[i] = BackendStatus{
+			Address:    backend.address,
+			Healthy:    backend.healthy,
+			TotalReqs:  backend.totalReqs,
+			ErrorCount: backend.errorCount,
+		}
+		if backend.healthy {
+			healthyCount++
+		}
+	}
+	
+	response := map[string]interface{}{
+		"healthy":        healthyCount > 0,
+		"total_backends": len(p.backends),
+		"healthy_count":  healthyCount,
+		"backends":       backendStatuses,
+	}
+	
+	if healthyCount == 0 {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}
+	
+	json.NewEncoder(w).Encode(response)
 }
 
 func main() {
 	flag.Parse()
 	
 	fmt.Println("================================================================================")
-	fmt.Println("🌉 GRPC-TO-WEBSOCKET PROXY SERVER")
+	fmt.Println("🌉 GRPC-TO-WEBSOCKET PROXY SERVER (Multi-Backend Load Balancer)")
 	fmt.Println("================================================================================")
 	fmt.Println()
 	
-	// Connect to gRPC server
-	proxy, err := NewProxyServer(*grpcAddr)
+	// Parse backend addresses
+	var addresses []string
+	
+	if *grpcAddrs != "" && *grpcAddrs != "localhost:50051" {
+		// Use explicit addresses from --grpc-addrs
+		addresses = parseAddresses(*grpcAddrs)
+	} else if *numServers > 1 {
+		// Generate port range from --start-port and --num-servers
+		for i := 0; i < *numServers; i++ {
+			addr := fmt.Sprintf("localhost:%d", *startPort+i)
+			addresses = append(addresses, addr)
+		}
+	} else {
+		// Default to single server
+		addresses = []string{fmt.Sprintf("localhost:%d", *startPort)}
+	}
+	
+	fmt.Printf("📍 Backend configuration:\n")
+	for i, addr := range addresses {
+		fmt.Printf("   [%d] %s\n", i+1, addr)
+	}
+	fmt.Println()
+	
+	// Connect to gRPC servers
+	proxy, err := NewProxyServer(addresses)
 	if err != nil {
 		log.Fatalf("❌ Failed to create proxy: %v", err)
 	}
@@ -308,10 +427,50 @@ func main() {
 	fmt.Printf("🚀 WebSocket proxy started on ws://localhost%s/ws\n", addr)
 	fmt.Printf("📁 Static files served from ./static/\n")
 	fmt.Printf("🏥 Health check: http://localhost%s/health\n", addr)
-	fmt.Printf("🔗 gRPC backend: %s\n", *grpcAddr)
+	fmt.Printf("⚖️  Load balancing: Round-robin across %d backends\n", len(addresses))
 	fmt.Println()
 	fmt.Println("Press Ctrl+C to stop")
 	fmt.Println()
 	
 	log.Fatal(http.ListenAndServe(addr, nil))
+}
+
+func parseAddresses(addrsStr string) []string {
+	var addresses []string
+	for _, addr := range splitString(addrsStr, ',') {
+		trimmed := trimSpace(addr)
+		if trimmed != "" {
+			addresses = append(addresses, trimmed)
+		}
+	}
+	return addresses
+}
+
+func splitString(s string, sep rune) []string {
+	var result []string
+	var current string
+	for _, c := range s {
+		if c == sep {
+			result = append(result, current)
+			current = ""
+		} else {
+			current += string(c)
+		}
+	}
+	if current != "" {
+		result = append(result, current)
+	}
+	return result
+}
+
+func trimSpace(s string) string {
+	start := 0
+	end := len(s)
+	for start < end && (s[start] == ' ' || s[start] == '\t' || s[start] == '\n') {
+		start++
+	}
+	for end > start && (s[end-1] == ' ' || s[end-1] == '\t' || s[end-1] == '\n') {
+		end--
+	}
+	return s[start:end]
 }

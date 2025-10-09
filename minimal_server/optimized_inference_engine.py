@@ -257,14 +257,23 @@ class OptimizedModelPackage:
         """Load PyTorch model"""
         print(f"\n🧠 Loading neural network model...")
         
-        checkpoint_path = self.package_dir / "checkpoint" / "best_trainloss.pth"
+        # Try different checkpoint locations and names
+        possible_checkpoints = [
+            self.package_dir / "checkpoint" / "best_trainloss.pth",  # Sanders format
+            self.package_dir / "checkpoint" / "model_best.pth",       # Alternative
+            self.package_dir / "models" / "99.pth",                   # default_model format
+            self.package_dir / "models" / "audio_visual_encoder.pth", # AVE model
+        ]
         
-        if not checkpoint_path.exists():
-            # Try alternative checkpoint name
-            checkpoint_path = self.package_dir / "checkpoint" / "model_best.pth"
+        checkpoint_path = None
+        for path in possible_checkpoints:
+            if path.exists():
+                checkpoint_path = path
+                print(f"📁 Using model checkpoint: {path.name}")
+                break
         
-        if not checkpoint_path.exists():
-            raise FileNotFoundError(f"Model checkpoint not found in {self.package_dir / 'checkpoint'}")
+        if not checkpoint_path:
+            raise FileNotFoundError(f"Model checkpoint not found. Tried: {[str(p) for p in possible_checkpoints]}")
         
         # Create model
         self.model = Model(n_channels=6, mode='ave')

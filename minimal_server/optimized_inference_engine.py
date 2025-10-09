@@ -149,8 +149,19 @@ class OptimizedModelPackage:
         with open(info_path, 'r') as f:
             self.package_info = json.load(f)
         
-        print(f"📋 Package: {self.package_info['dataset_name']} v{self.package_info['package_version']}")
-        print(f"📊 Frame count: {self.package_info['videos']['model_inputs']['frame_count']}")
+        # Support both 'package_version' and 'version' field names
+        version = self.package_info.get('package_version') or self.package_info.get('version', 'unknown')
+        print(f"📋 Package: {self.package_info['dataset_name']} v{version}")
+        
+        # Handle different package info formats
+        if 'videos' in self.package_info and 'model_inputs' in self.package_info['videos']:
+            frame_count = self.package_info['videos']['model_inputs']['frame_count']
+        elif 'source_video' in self.package_info:
+            frame_count = self.package_info['source_video'].get('processed_frames', 
+                                                                self.package_info['source_video'].get('total_frames', 'unknown'))
+        else:
+            frame_count = 'unknown'
+        print(f"📊 Frame count: {frame_count}")
     
     async def _load_metadata(self):
         """Load and cache metadata files in memory"""
@@ -162,13 +173,22 @@ class OptimizedModelPackage:
             with open(crop_rect_path, 'r') as f:
                 self.crop_rectangles = json.load(f)
             print(f"  ✅ Crop rectangles: {len(self.crop_rectangles)} frames cached")
+        else:
+            # For default_model format, use face_bounds instead
+            face_bounds_dir = self.package_dir / "face_bounds"
+            if face_bounds_dir.exists():
+                self.crop_rectangles = {}
+                print(f"  📁 Using face_bounds directory (default_model format)")
         
         # Load frame metadata
         frame_meta_path = self.package_dir / "cache" / "frame_metadata.json"
         if frame_meta_path.exists():
-            with open(frame_meta_path, 'r') as f:
+            with open(crop_rect_path, 'r') as f:
                 self.frame_metadata = json.load(f)
             print(f"  ✅ Frame metadata: {self.frame_metadata['processed_frames']} frames")
+        else:
+            self.frame_metadata = {}
+            print(f"  📝 No frame metadata cache (will use package_info)")
     
     async def _load_audio_features(self):
         """Memory-map audio features for instant zero-copy access"""
@@ -192,15 +212,28 @@ class OptimizedModelPackage:
         """Pre-load all videos into RAM for instant frame access"""
         print(f"\n🎬 Pre-loading videos into RAM...")
         
-        videos_to_load = [
-            ("full_body", "full_body_video.mp4"),
-            ("crops_328", "crops_328_video.mp4"),
-            ("model_inputs", "model_inputs_video.mp4")
-        ]
+        # Different package formats have different video files
+        # Try sanders format first, then fall back to default_model format
+        videos_to_load = []
         
-        # Note: rois_320_video.mp4 might be missing, handle gracefully
-        if (self.package_dir / "rois_320_video.mp4").exists():
-            videos_to_load.append(("rois_320", "rois_320_video.mp4"))
+        # Sanders format
+        if (self.package_dir / "full_body_video.mp4").exists():
+            videos_to_load = [
+                ("full_body", "full_body_video.mp4"),
+                ("crops_328", "crops_328_video.mp4"),
+                ("model_inputs", "model_inputs_video.mp4")
+            ]
+            if (self.package_dir / "rois_320_video.mp4").exists():
+                videos_to_load.append(("rois_320", "rois_320_video.mp4"))
+        
+        # default_model format (older format)
+        elif (self.package_dir / "video.mp4").exists():
+            videos_to_load = [
+                ("full_body", "video.mp4"),
+                ("face_regions", "face_regions_320.mp4"),
+                ("masked_regions", "masked_regions_320.mp4")
+            ]
+            print(f"📦 Using default_model format")
         
         total_memory = 0
         

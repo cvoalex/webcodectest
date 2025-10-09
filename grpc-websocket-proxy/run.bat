@@ -11,4 +11,4 @@ if not exist "lipsync-proxy.exe" (
 )
 
 REM Run with default settings
-lipsync-proxy.exe -ws-port 8086 -grpc-addr localhost:50051
+lipsync-proxy.exe --ws-port 8086 --num-servers 1 --start-port 50051

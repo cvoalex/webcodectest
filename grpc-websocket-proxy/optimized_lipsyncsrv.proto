@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+option go_package = "github.com/cvoalex/lipsync-proxy/pb";
+
+// Ultra-Optimized Lip Sync Service
+// Uses pre-processed model packages for maximum performance
+service OptimizedLipSyncService {
+  // Single frame inference (most common)
+  rpc GenerateInference(OptimizedInferenceRequest) returns (OptimizedInferenceResponse);
+  
+  // Batch inference for multiple frames
+  rpc GenerateBatchInference(BatchInferenceRequest) returns (BatchInferenceResponse);
+  
+  // Streaming inference for real-time applications
+  rpc StreamInference(stream OptimizedInferenceRequest) returns (stream OptimizedInferenceResponse);
+  
+  // Load a model package dynamically
+  rpc LoadPackage(LoadPackageRequest) returns (LoadPackageResponse);
+  
+  // Get performance statistics
+  rpc GetStats(StatsRequest) returns (StatsResponse);
+  
+  // List loaded models
+  rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+  
+  // Health check
+  rpc HealthCheck(HealthRequest) returns (HealthResponse);
+}
+
+// Request for optimized inference (no audio needed - pre-extracted)
+message OptimizedInferenceRequest {
+  string model_name = 1;
+  int32 frame_id = 2;
+}
+
+// Response with optimized inference result
+message OptimizedInferenceResponse {
+  bool success = 1;
+  int32 frame_id = 2;
+  bytes prediction_data = 3;        // JPEG-encoded image
+  string prediction_shape = 4;      // e.g., "(720, 1280, 3)"
+  repeated int32 bounds = 5;        // [x, y, width, height]
+  float processing_time_ms = 6;
+  
+  // Detailed performance metrics
+  float prepare_time_ms = 7;
+  float inference_time_ms = 8;
+  float composite_time_ms = 9;
+  
+  string error = 10;
+}
+
+// Batch inference request
+message BatchInferenceRequest {
+  string model_name = 1;
+  repeated int32 frame_ids = 2;
+}
+
+// Batch inference response
+message BatchInferenceResponse {
+  repeated OptimizedInferenceResponse responses = 1;
+  float total_processing_time_ms = 2;
+  float avg_frame_time_ms = 3;
+}
+
+// Load model package request
+message LoadPackageRequest {
+  string model_name = 1;
+  string package_path = 2;
+}
+
+// Load model package response
+message LoadPackageResponse {
+  bool success = 1;
+  string model_name = 2;
+  int32 frame_count = 3;
+  string error = 4;
+}
+
+// Statistics request
+message StatsRequest {
+  string model_name = 1;
+}
+
+// Statistics response
+message StatsResponse {
+  int32 total_requests = 1;
+  float avg_inference_time_ms = 2;
+  float min_inference_time_ms = 3;
+  float max_inference_time_ms = 4;
+  int32 frame_count = 5;
+  string device = 6;
+  repeated string optimizations_active = 7;
+}
+
+// List models request
+message ListModelsRequest {}
+
+// List models response
+message ListModelsResponse {
+  repeated string loaded_models = 1;
+  int32 count = 2;
+}
+
+// Health check request
+message HealthRequest {}
+
+// Health check response
+message HealthResponse {
+  string status = 1;
+  bool healthy = 2;
+  int32 loaded_models = 3;
+  float uptime_seconds = 4;
+}

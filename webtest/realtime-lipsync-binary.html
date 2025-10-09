@@ -333,7 +333,7 @@
             <div class="audio-controls">
                 <div style="margin-bottom: 10px;">
                     <label for="wsUrl">WebSocket URL:</label>
-                    <input type="text" id="wsUrl" value="ws://localhost:8084" style="margin-left: 10px; padding: 5px; width: 200px;">
+                    <input type="text" id="wsUrl" value="ws://localhost:8086/ws" style="margin-left: 10px; padding: 5px; width: 200px;">
                 </div>
                 <div style="margin-bottom: 10px;">
                     <label for="micSelect">Choose Microphone:</label>
@@ -522,7 +522,7 @@
             constructor() {
                 this.ws = null;
                 this.isConnected = false;
-                this.wsUrl = 'ws://localhost:8084';
+                this.wsUrl = 'ws://localhost:8086/ws';
                 
                 // Audio processing
                 this.audioContext = null;

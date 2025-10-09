@@ -259,6 +259,66 @@ class OptimizedLipSyncServicer(optimized_lipsyncsrv_pb2_grpc.OptimizedLipSyncSer
             loaded_models=models.get("count", 0),
             uptime_seconds=uptime
         )
+    
+    async def GetVideoFrame(
+        self,
+        request: optimized_lipsyncsrv_pb2.GetVideoFrameRequest,
+        context: grpc.aio.ServicerContext
+    ) -> optimized_lipsyncsrv_pb2.GetVideoFrameResponse:
+        """Get a specific video frame"""
+        
+        try:
+            frame_data = await optimized_engine.get_video_frame(
+                request.model_name,
+                request.frame_id,
+                request.video_type
+            )
+            
+            return optimized_lipsyncsrv_pb2.GetVideoFrameResponse(
+                success=True,
+                frame_data=frame_data,
+                frame_id=request.frame_id,
+                video_type=request.video_type
+            )
+        except Exception as e:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(str(e))
+            return optimized_lipsyncsrv_pb2.GetVideoFrameResponse(
+                success=False,
+                frame_id=request.frame_id,
+                video_type=request.video_type,
+                error=str(e)
+            )
+    
+    async def GetModelMetadata(
+        self,
+        request: optimized_lipsyncsrv_pb2.GetModelMetadataRequest,
+        context: grpc.aio.ServicerContext
+    ) -> optimized_lipsyncsrv_pb2.GetModelMetadataResponse:
+        """Get model metadata including available videos and frame count"""
+        
+        try:
+            metadata = await optimized_engine.get_model_metadata(request.model_name)
+            
+            return optimized_lipsyncsrv_pb2.GetModelMetadataResponse(
+                success=True,
+                model_name=request.model_name,
+                frame_count=metadata["frame_count"],
+                available_videos=metadata["available_videos"],
+                audio_path=metadata.get("audio_path", ""),
+                bounds=metadata.get("bounds", [])
+            )
+        except Exception as e:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(str(e))
+            return optimized_lipsyncsrv_pb2.GetModelMetadataResponse(
+                success=False,
+                model_name=request.model_name,
+                frame_count=0,
+                available_videos=[],
+                audio_path="",
+                error=str(e)
+            )
 
 
 async def serve():

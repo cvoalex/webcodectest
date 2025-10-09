@@ -151,16 +151,16 @@ type JSONRequest struct {
 
 // JSONResponse represents a JSON protocol response to browser
 type JSONResponse struct {
-	Success         bool    `json:"success"`
-	FrameID         int32   `json:"frame_id"`
-	PredictionData  string  `json:"prediction_data,omitempty"` // base64
-	PredictionShape string  `json:"prediction_shape,omitempty"`
-	Bounds          []int32 `json:"bounds,omitempty"`
-	ProcessingTime  float32 `json:"processing_time_ms"`
-	PrepareTime     float32 `json:"prepare_time_ms,omitempty"`
-	InferenceTime   float32 `json:"inference_time_ms,omitempty"`
-	CompositeTime   float32 `json:"composite_time_ms,omitempty"`
-	Error           string  `json:"error,omitempty"`
+	Success         bool      `json:"success"`
+	FrameID         int32     `json:"frame_id"`
+	PredictionData  string    `json:"prediction_data,omitempty"` // base64
+	PredictionShape string    `json:"prediction_shape,omitempty"`
+	Bounds          []float32 `json:"bounds,omitempty"`
+	ProcessingTime  int32     `json:"processing_time_ms"`
+	PrepareTime     float64   `json:"prepare_time_ms,omitempty"`
+	InferenceTime   float64   `json:"inference_time_ms,omitempty"`
+	CompositeTime   float64   `json:"composite_time_ms,omitempty"`
+	Error           string    `json:"error,omitempty"`
 }
 
 // parseBinaryRequest parses binary protocol request
@@ -316,7 +316,9 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				// But for efficiency, recommend binary protocol
 				jsonResp.PredictionData = "use_binary_protocol_for_image_data"
 			} else {
-				jsonResp.Error = grpcResp.Error
+				if grpcResp.Error != nil {
+					jsonResp.Error = *grpcResp.Error
+				}
 			}
 
 			jsonData, err := json.Marshal(jsonResp)

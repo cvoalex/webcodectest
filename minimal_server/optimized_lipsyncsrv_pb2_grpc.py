@@ -70,6 +70,16 @@ class OptimizedLipSyncServiceStub(object):
                 request_serializer=optimized__lipsyncsrv__pb2.HealthRequest.SerializeToString,
                 response_deserializer=optimized__lipsyncsrv__pb2.HealthResponse.FromString,
                 _registered_method=True)
+        self.GetVideoFrame = channel.unary_unary(
+                '/optimized_lipsyncsrv.OptimizedLipSyncService/GetVideoFrame',
+                request_serializer=optimized__lipsyncsrv__pb2.GetVideoFrameRequest.SerializeToString,
+                response_deserializer=optimized__lipsyncsrv__pb2.GetVideoFrameResponse.FromString,
+                _registered_method=True)
+        self.GetModelMetadata = channel.unary_unary(
+                '/optimized_lipsyncsrv.OptimizedLipSyncService/GetModelMetadata',
+                request_serializer=optimized__lipsyncsrv__pb2.GetModelMetadataRequest.SerializeToString,
+                response_deserializer=optimized__lipsyncsrv__pb2.GetModelMetadataResponse.FromString,
+                _registered_method=True)
 
 
 class OptimizedLipSyncServiceServicer(object):
@@ -125,6 +135,20 @@ class OptimizedLipSyncServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetVideoFrame(self, request, context):
+        """Get video frame from model
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetModelMetadata(self, request, context):
+        """Get model metadata
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_OptimizedLipSyncServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -162,6 +186,16 @@ def add_OptimizedLipSyncServiceServicer_to_server(servicer, server):
                     servicer.HealthCheck,
                     request_deserializer=optimized__lipsyncsrv__pb2.HealthRequest.FromString,
                     response_serializer=optimized__lipsyncsrv__pb2.HealthResponse.SerializeToString,
+            ),
+            'GetVideoFrame': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetVideoFrame,
+                    request_deserializer=optimized__lipsyncsrv__pb2.GetVideoFrameRequest.FromString,
+                    response_serializer=optimized__lipsyncsrv__pb2.GetVideoFrameResponse.SerializeToString,
+            ),
+            'GetModelMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetModelMetadata,
+                    request_deserializer=optimized__lipsyncsrv__pb2.GetModelMetadataRequest.FromString,
+                    response_serializer=optimized__lipsyncsrv__pb2.GetModelMetadataResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -354,6 +388,60 @@ class OptimizedLipSyncService(object):
             '/optimized_lipsyncsrv.OptimizedLipSyncService/HealthCheck',
             optimized__lipsyncsrv__pb2.HealthRequest.SerializeToString,
             optimized__lipsyncsrv__pb2.HealthResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetVideoFrame(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/optimized_lipsyncsrv.OptimizedLipSyncService/GetVideoFrame',
+            optimized__lipsyncsrv__pb2.GetVideoFrameRequest.SerializeToString,
+            optimized__lipsyncsrv__pb2.GetVideoFrameResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetModelMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/optimized_lipsyncsrv.OptimizedLipSyncService/GetModelMetadata',
+            optimized__lipsyncsrv__pb2.GetModelMetadataRequest.SerializeToString,
+            optimized__lipsyncsrv__pb2.GetModelMetadataResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -19,36 +19,41 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OptimizedLipSyncService_GenerateInference_FullMethodName      = "/OptimizedLipSyncService/GenerateInference"
-	OptimizedLipSyncService_GenerateBatchInference_FullMethodName = "/OptimizedLipSyncService/GenerateBatchInference"
-	OptimizedLipSyncService_StreamInference_FullMethodName        = "/OptimizedLipSyncService/StreamInference"
-	OptimizedLipSyncService_LoadPackage_FullMethodName            = "/OptimizedLipSyncService/LoadPackage"
-	OptimizedLipSyncService_GetStats_FullMethodName               = "/OptimizedLipSyncService/GetStats"
-	OptimizedLipSyncService_ListModels_FullMethodName             = "/OptimizedLipSyncService/ListModels"
-	OptimizedLipSyncService_HealthCheck_FullMethodName            = "/OptimizedLipSyncService/HealthCheck"
+	OptimizedLipSyncService_GenerateInference_FullMethodName      = "/optimized_lipsyncsrv.OptimizedLipSyncService/GenerateInference"
+	OptimizedLipSyncService_GenerateBatchInference_FullMethodName = "/optimized_lipsyncsrv.OptimizedLipSyncService/GenerateBatchInference"
+	OptimizedLipSyncService_StreamInference_FullMethodName        = "/optimized_lipsyncsrv.OptimizedLipSyncService/StreamInference"
+	OptimizedLipSyncService_LoadPackage_FullMethodName            = "/optimized_lipsyncsrv.OptimizedLipSyncService/LoadPackage"
+	OptimizedLipSyncService_GetStats_FullMethodName               = "/optimized_lipsyncsrv.OptimizedLipSyncService/GetStats"
+	OptimizedLipSyncService_ListModels_FullMethodName             = "/optimized_lipsyncsrv.OptimizedLipSyncService/ListModels"
+	OptimizedLipSyncService_HealthCheck_FullMethodName            = "/optimized_lipsyncsrv.OptimizedLipSyncService/HealthCheck"
+	OptimizedLipSyncService_GetVideoFrame_FullMethodName          = "/optimized_lipsyncsrv.OptimizedLipSyncService/GetVideoFrame"
+	OptimizedLipSyncService_GetModelMetadata_FullMethodName       = "/optimized_lipsyncsrv.OptimizedLipSyncService/GetModelMetadata"
 )
 
 // OptimizedLipSyncServiceClient is the client API for OptimizedLipSyncService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Ultra-Optimized Lip Sync Service
-// Uses pre-processed model packages for maximum performance
+// Service definition for optimized lip sync
 type OptimizedLipSyncServiceClient interface {
-	// Single frame inference (most common)
+	// Single frame inference (optimized)
 	GenerateInference(ctx context.Context, in *OptimizedInferenceRequest, opts ...grpc.CallOption) (*OptimizedInferenceResponse, error)
 	// Batch inference for multiple frames
 	GenerateBatchInference(ctx context.Context, in *BatchInferenceRequest, opts ...grpc.CallOption) (*BatchInferenceResponse, error)
-	// Streaming inference for real-time applications
+	// Streaming inference for real-time applications (50+ FPS capable)
 	StreamInference(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OptimizedInferenceRequest, OptimizedInferenceResponse], error)
-	// Load a model package dynamically
+	// Model package management
 	LoadPackage(ctx context.Context, in *LoadPackageRequest, opts ...grpc.CallOption) (*LoadPackageResponse, error)
-	// Get performance statistics
+	// Get statistics
 	GetStats(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
 	// List loaded models
 	ListModels(ctx context.Context, in *ListModelsRequest, opts ...grpc.CallOption) (*ListModelsResponse, error)
 	// Health check
 	HealthCheck(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
+	// Get video frame from model
+	GetVideoFrame(ctx context.Context, in *GetVideoFrameRequest, opts ...grpc.CallOption) (*GetVideoFrameResponse, error)
+	// Get model metadata
+	GetModelMetadata(ctx context.Context, in *GetModelMetadataRequest, opts ...grpc.CallOption) (*GetModelMetadataResponse, error)
 }
 
 type optimizedLipSyncServiceClient struct {
@@ -132,27 +137,50 @@ func (c *optimizedLipSyncServiceClient) HealthCheck(ctx context.Context, in *Hea
 	return out, nil
 }
 
+func (c *optimizedLipSyncServiceClient) GetVideoFrame(ctx context.Context, in *GetVideoFrameRequest, opts ...grpc.CallOption) (*GetVideoFrameResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetVideoFrameResponse)
+	err := c.cc.Invoke(ctx, OptimizedLipSyncService_GetVideoFrame_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *optimizedLipSyncServiceClient) GetModelMetadata(ctx context.Context, in *GetModelMetadataRequest, opts ...grpc.CallOption) (*GetModelMetadataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetModelMetadataResponse)
+	err := c.cc.Invoke(ctx, OptimizedLipSyncService_GetModelMetadata_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OptimizedLipSyncServiceServer is the server API for OptimizedLipSyncService service.
 // All implementations must embed UnimplementedOptimizedLipSyncServiceServer
 // for forward compatibility.
 //
-// Ultra-Optimized Lip Sync Service
-// Uses pre-processed model packages for maximum performance
+// Service definition for optimized lip sync
 type OptimizedLipSyncServiceServer interface {
-	// Single frame inference (most common)
+	// Single frame inference (optimized)
 	GenerateInference(context.Context, *OptimizedInferenceRequest) (*OptimizedInferenceResponse, error)
 	// Batch inference for multiple frames
 	GenerateBatchInference(context.Context, *BatchInferenceRequest) (*BatchInferenceResponse, error)
-	// Streaming inference for real-time applications
+	// Streaming inference for real-time applications (50+ FPS capable)
 	StreamInference(grpc.BidiStreamingServer[OptimizedInferenceRequest, OptimizedInferenceResponse]) error
-	// Load a model package dynamically
+	// Model package management
 	LoadPackage(context.Context, *LoadPackageRequest) (*LoadPackageResponse, error)
-	// Get performance statistics
+	// Get statistics
 	GetStats(context.Context, *StatsRequest) (*StatsResponse, error)
 	// List loaded models
 	ListModels(context.Context, *ListModelsRequest) (*ListModelsResponse, error)
 	// Health check
 	HealthCheck(context.Context, *HealthRequest) (*HealthResponse, error)
+	// Get video frame from model
+	GetVideoFrame(context.Context, *GetVideoFrameRequest) (*GetVideoFrameResponse, error)
+	// Get model metadata
+	GetModelMetadata(context.Context, *GetModelMetadataRequest) (*GetModelMetadataResponse, error)
 	mustEmbedUnimplementedOptimizedLipSyncServiceServer()
 }
 
@@ -183,6 +211,12 @@ func (UnimplementedOptimizedLipSyncServiceServer) ListModels(context.Context, *L
 }
 func (UnimplementedOptimizedLipSyncServiceServer) HealthCheck(context.Context, *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
+func (UnimplementedOptimizedLipSyncServiceServer) GetVideoFrame(context.Context, *GetVideoFrameRequest) (*GetVideoFrameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVideoFrame not implemented")
+}
+func (UnimplementedOptimizedLipSyncServiceServer) GetModelMetadata(context.Context, *GetModelMetadataRequest) (*GetModelMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetModelMetadata not implemented")
 }
 func (UnimplementedOptimizedLipSyncServiceServer) mustEmbedUnimplementedOptimizedLipSyncServiceServer() {
 }
@@ -321,11 +355,47 @@ func _OptimizedLipSyncService_HealthCheck_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OptimizedLipSyncService_GetVideoFrame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVideoFrameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OptimizedLipSyncServiceServer).GetVideoFrame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OptimizedLipSyncService_GetVideoFrame_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OptimizedLipSyncServiceServer).GetVideoFrame(ctx, req.(*GetVideoFrameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OptimizedLipSyncService_GetModelMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetModelMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OptimizedLipSyncServiceServer).GetModelMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OptimizedLipSyncService_GetModelMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OptimizedLipSyncServiceServer).GetModelMetadata(ctx, req.(*GetModelMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OptimizedLipSyncService_ServiceDesc is the grpc.ServiceDesc for OptimizedLipSyncService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var OptimizedLipSyncService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "OptimizedLipSyncService",
+	ServiceName: "optimized_lipsyncsrv.OptimizedLipSyncService",
 	HandlerType: (*OptimizedLipSyncServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -351,6 +421,14 @@ var OptimizedLipSyncService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HealthCheck",
 			Handler:    _OptimizedLipSyncService_HealthCheck_Handler,
+		},
+		{
+			MethodName: "GetVideoFrame",
+			Handler:    _OptimizedLipSyncService_GetVideoFrame_Handler,
+		},
+		{
+			MethodName: "GetModelMetadata",
+			Handler:    _OptimizedLipSyncService_GetModelMetadata_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

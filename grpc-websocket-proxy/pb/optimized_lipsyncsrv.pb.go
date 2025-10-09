@@ -21,11 +21,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request for optimized inference (no audio needed - pre-extracted)
+// Request for optimized inference (uses pre-processed data)
 type OptimizedInferenceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ModelName     string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
-	FrameId       int32                  `protobuf:"varint,2,opt,name=frame_id,json=frameId,proto3" json:"frame_id,omitempty"`
+	FrameId       int32                  `protobuf:"varint,2,opt,name=frame_id,json=frameId,proto3" json:"frame_id,omitempty"` // No audio_override needed - uses pre-extracted features!
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -74,20 +74,22 @@ func (x *OptimizedInferenceRequest) GetFrameId() int32 {
 	return 0
 }
 
-// Response with optimized inference result
+// Response with prediction and metadata
 type OptimizedInferenceResponse struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Success          bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	FrameId          int32                  `protobuf:"varint,2,opt,name=frame_id,json=frameId,proto3" json:"frame_id,omitempty"`
-	PredictionData   []byte                 `protobuf:"bytes,3,opt,name=prediction_data,json=predictionData,proto3" json:"prediction_data,omitempty"`    // JPEG-encoded image
-	PredictionShape  string                 `protobuf:"bytes,4,opt,name=prediction_shape,json=predictionShape,proto3" json:"prediction_shape,omitempty"` // e.g., "(720, 1280, 3)"
-	Bounds           []int32                `protobuf:"varint,5,rep,packed,name=bounds,proto3" json:"bounds,omitempty"`                                  // [x, y, width, height]
-	ProcessingTimeMs float32                `protobuf:"fixed32,6,opt,name=processing_time_ms,json=processingTimeMs,proto3" json:"processing_time_ms,omitempty"`
-	// Detailed performance metrics
-	PrepareTimeMs   float32 `protobuf:"fixed32,7,opt,name=prepare_time_ms,json=prepareTimeMs,proto3" json:"prepare_time_ms,omitempty"`
-	InferenceTimeMs float32 `protobuf:"fixed32,8,opt,name=inference_time_ms,json=inferenceTimeMs,proto3" json:"inference_time_ms,omitempty"`
-	CompositeTimeMs float32 `protobuf:"fixed32,9,opt,name=composite_time_ms,json=compositeTimeMs,proto3" json:"composite_time_ms,omitempty"`
-	Error           string  `protobuf:"bytes,10,opt,name=error,proto3" json:"error,omitempty"`
+	PredictionData   []byte                 `protobuf:"bytes,2,opt,name=prediction_data,json=predictionData,proto3" json:"prediction_data,omitempty"` // JPEG encoded prediction image
+	Bounds           []float32              `protobuf:"fixed32,3,rep,packed,name=bounds,proto3" json:"bounds,omitempty"`                              // Bounds array [x1, y1, x2, y2]
+	ProcessingTimeMs int32                  `protobuf:"varint,4,opt,name=processing_time_ms,json=processingTimeMs,proto3" json:"processing_time_ms,omitempty"`
+	ModelName        string                 `protobuf:"bytes,5,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
+	FrameId          int32                  `protobuf:"varint,6,opt,name=frame_id,json=frameId,proto3" json:"frame_id,omitempty"`
+	PredictionShape  string                 `protobuf:"bytes,7,opt,name=prediction_shape,json=predictionShape,proto3" json:"prediction_shape,omitempty"` // e.g., "320x320x3"
+	Error            *string                `protobuf:"bytes,8,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	// Performance metadata
+	PrepareTimeMs   float64  `protobuf:"fixed64,9,opt,name=prepare_time_ms,json=prepareTimeMs,proto3" json:"prepare_time_ms,omitempty"`
+	InferenceTimeMs float64  `protobuf:"fixed64,10,opt,name=inference_time_ms,json=inferenceTimeMs,proto3" json:"inference_time_ms,omitempty"`
+	CompositeTimeMs float64  `protobuf:"fixed64,11,opt,name=composite_time_ms,json=compositeTimeMs,proto3" json:"composite_time_ms,omitempty"`
+	Optimizations   []string `protobuf:"bytes,12,rep,name=optimizations,proto3" json:"optimizations,omitempty"` // Active optimizations
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -129,18 +131,39 @@ func (x *OptimizedInferenceResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *OptimizedInferenceResponse) GetFrameId() int32 {
-	if x != nil {
-		return x.FrameId
-	}
-	return 0
-}
-
 func (x *OptimizedInferenceResponse) GetPredictionData() []byte {
 	if x != nil {
 		return x.PredictionData
 	}
 	return nil
+}
+
+func (x *OptimizedInferenceResponse) GetBounds() []float32 {
+	if x != nil {
+		return x.Bounds
+	}
+	return nil
+}
+
+func (x *OptimizedInferenceResponse) GetProcessingTimeMs() int32 {
+	if x != nil {
+		return x.ProcessingTimeMs
+	}
+	return 0
+}
+
+func (x *OptimizedInferenceResponse) GetModelName() string {
+	if x != nil {
+		return x.ModelName
+	}
+	return ""
+}
+
+func (x *OptimizedInferenceResponse) GetFrameId() int32 {
+	if x != nil {
+		return x.FrameId
+	}
+	return 0
 }
 
 func (x *OptimizedInferenceResponse) GetPredictionShape() string {
@@ -150,49 +173,42 @@ func (x *OptimizedInferenceResponse) GetPredictionShape() string {
 	return ""
 }
 
-func (x *OptimizedInferenceResponse) GetBounds() []int32 {
-	if x != nil {
-		return x.Bounds
+func (x *OptimizedInferenceResponse) GetError() string {
+	if x != nil && x.Error != nil {
+		return *x.Error
 	}
-	return nil
+	return ""
 }
 
-func (x *OptimizedInferenceResponse) GetProcessingTimeMs() float32 {
-	if x != nil {
-		return x.ProcessingTimeMs
-	}
-	return 0
-}
-
-func (x *OptimizedInferenceResponse) GetPrepareTimeMs() float32 {
+func (x *OptimizedInferenceResponse) GetPrepareTimeMs() float64 {
 	if x != nil {
 		return x.PrepareTimeMs
 	}
 	return 0
 }
 
-func (x *OptimizedInferenceResponse) GetInferenceTimeMs() float32 {
+func (x *OptimizedInferenceResponse) GetInferenceTimeMs() float64 {
 	if x != nil {
 		return x.InferenceTimeMs
 	}
 	return 0
 }
 
-func (x *OptimizedInferenceResponse) GetCompositeTimeMs() float32 {
+func (x *OptimizedInferenceResponse) GetCompositeTimeMs() float64 {
 	if x != nil {
 		return x.CompositeTimeMs
 	}
 	return 0
 }
 
-func (x *OptimizedInferenceResponse) GetError() string {
+func (x *OptimizedInferenceResponse) GetOptimizations() []string {
 	if x != nil {
-		return x.Error
+		return x.Optimizations
 	}
-	return ""
+	return nil
 }
 
-// Batch inference request
+// Batch request for multiple frames
 type BatchInferenceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ModelName     string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
@@ -245,12 +261,12 @@ func (x *BatchInferenceRequest) GetFrameIds() []int32 {
 	return nil
 }
 
-// Batch inference response
+// Batch response
 type BatchInferenceResponse struct {
 	state                 protoimpl.MessageState        `protogen:"open.v1"`
 	Responses             []*OptimizedInferenceResponse `protobuf:"bytes,1,rep,name=responses,proto3" json:"responses,omitempty"`
-	TotalProcessingTimeMs float32                       `protobuf:"fixed32,2,opt,name=total_processing_time_ms,json=totalProcessingTimeMs,proto3" json:"total_processing_time_ms,omitempty"`
-	AvgFrameTimeMs        float32                       `protobuf:"fixed32,3,opt,name=avg_frame_time_ms,json=avgFrameTimeMs,proto3" json:"avg_frame_time_ms,omitempty"`
+	TotalProcessingTimeMs int32                         `protobuf:"varint,2,opt,name=total_processing_time_ms,json=totalProcessingTimeMs,proto3" json:"total_processing_time_ms,omitempty"`
+	AvgFrameTimeMs        float64                       `protobuf:"fixed64,3,opt,name=avg_frame_time_ms,json=avgFrameTimeMs,proto3" json:"avg_frame_time_ms,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -292,25 +308,25 @@ func (x *BatchInferenceResponse) GetResponses() []*OptimizedInferenceResponse {
 	return nil
 }
 
-func (x *BatchInferenceResponse) GetTotalProcessingTimeMs() float32 {
+func (x *BatchInferenceResponse) GetTotalProcessingTimeMs() int32 {
 	if x != nil {
 		return x.TotalProcessingTimeMs
 	}
 	return 0
 }
 
-func (x *BatchInferenceResponse) GetAvgFrameTimeMs() float32 {
+func (x *BatchInferenceResponse) GetAvgFrameTimeMs() float64 {
 	if x != nil {
 		return x.AvgFrameTimeMs
 	}
 	return 0
 }
 
-// Load model package request
+// Model package loading request
 type LoadPackageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ModelName     string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
-	PackagePath   string                 `protobuf:"bytes,2,opt,name=package_path,json=packagePath,proto3" json:"package_path,omitempty"`
+	PackageName   string                 `protobuf:"bytes,1,opt,name=package_name,json=packageName,proto3" json:"package_name,omitempty"`
+	PackageDir    string                 `protobuf:"bytes,2,opt,name=package_dir,json=packageDir,proto3" json:"package_dir,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -345,29 +361,35 @@ func (*LoadPackageRequest) Descriptor() ([]byte, []int) {
 	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *LoadPackageRequest) GetModelName() string {
+func (x *LoadPackageRequest) GetPackageName() string {
 	if x != nil {
-		return x.ModelName
+		return x.PackageName
 	}
 	return ""
 }
 
-func (x *LoadPackageRequest) GetPackagePath() string {
+func (x *LoadPackageRequest) GetPackageDir() string {
 	if x != nil {
-		return x.PackagePath
+		return x.PackageDir
 	}
 	return ""
 }
 
-// Load model package response
+// Model package loading response
 type LoadPackageResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	ModelName     string                 `protobuf:"bytes,2,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
-	FrameCount    int32                  `protobuf:"varint,3,opt,name=frame_count,json=frameCount,proto3" json:"frame_count,omitempty"`
-	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Success              bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	PackageName          string                 `protobuf:"bytes,2,opt,name=package_name,json=packageName,proto3" json:"package_name,omitempty"`
+	Message              string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	InitializationTimeMs int32                  `protobuf:"varint,4,opt,name=initialization_time_ms,json=initializationTimeMs,proto3" json:"initialization_time_ms,omitempty"`
+	FrameCount           int32                  `protobuf:"varint,5,opt,name=frame_count,json=frameCount,proto3" json:"frame_count,omitempty"`
+	Device               string                 `protobuf:"bytes,6,opt,name=device,proto3" json:"device,omitempty"`
+	VideosLoaded         []string               `protobuf:"bytes,7,rep,name=videos_loaded,json=videosLoaded,proto3" json:"videos_loaded,omitempty"`
+	AudioFeaturesShape   []int32                `protobuf:"varint,8,rep,packed,name=audio_features_shape,json=audioFeaturesShape,proto3" json:"audio_features_shape,omitempty"`
+	MemoryMappedAudio    bool                   `protobuf:"varint,9,opt,name=memory_mapped_audio,json=memoryMappedAudio,proto3" json:"memory_mapped_audio,omitempty"`
+	Error                *string                `protobuf:"bytes,10,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *LoadPackageResponse) Reset() {
@@ -407,11 +429,25 @@ func (x *LoadPackageResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *LoadPackageResponse) GetModelName() string {
+func (x *LoadPackageResponse) GetPackageName() string {
 	if x != nil {
-		return x.ModelName
+		return x.PackageName
 	}
 	return ""
+}
+
+func (x *LoadPackageResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *LoadPackageResponse) GetInitializationTimeMs() int32 {
+	if x != nil {
+		return x.InitializationTimeMs
+	}
+	return 0
 }
 
 func (x *LoadPackageResponse) GetFrameCount() int32 {
@@ -421,14 +457,42 @@ func (x *LoadPackageResponse) GetFrameCount() int32 {
 	return 0
 }
 
-func (x *LoadPackageResponse) GetError() string {
+func (x *LoadPackageResponse) GetDevice() string {
 	if x != nil {
-		return x.Error
+		return x.Device
 	}
 	return ""
 }
 
-// Statistics request
+func (x *LoadPackageResponse) GetVideosLoaded() []string {
+	if x != nil {
+		return x.VideosLoaded
+	}
+	return nil
+}
+
+func (x *LoadPackageResponse) GetAudioFeaturesShape() []int32 {
+	if x != nil {
+		return x.AudioFeaturesShape
+	}
+	return nil
+}
+
+func (x *LoadPackageResponse) GetMemoryMappedAudio() bool {
+	if x != nil {
+		return x.MemoryMappedAudio
+	}
+	return false
+}
+
+func (x *LoadPackageResponse) GetError() string {
+	if x != nil && x.Error != nil {
+		return *x.Error
+	}
+	return ""
+}
+
+// Stats request
 type StatsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ModelName     string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
@@ -473,16 +537,17 @@ func (x *StatsRequest) GetModelName() string {
 	return ""
 }
 
-// Statistics response
+// Stats response
 type StatsResponse struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	TotalRequests       int32                  `protobuf:"varint,1,opt,name=total_requests,json=totalRequests,proto3" json:"total_requests,omitempty"`
-	AvgInferenceTimeMs  float32                `protobuf:"fixed32,2,opt,name=avg_inference_time_ms,json=avgInferenceTimeMs,proto3" json:"avg_inference_time_ms,omitempty"`
-	MinInferenceTimeMs  float32                `protobuf:"fixed32,3,opt,name=min_inference_time_ms,json=minInferenceTimeMs,proto3" json:"min_inference_time_ms,omitempty"`
-	MaxInferenceTimeMs  float32                `protobuf:"fixed32,4,opt,name=max_inference_time_ms,json=maxInferenceTimeMs,proto3" json:"max_inference_time_ms,omitempty"`
-	FrameCount          int32                  `protobuf:"varint,5,opt,name=frame_count,json=frameCount,proto3" json:"frame_count,omitempty"`
-	Device              string                 `protobuf:"bytes,6,opt,name=device,proto3" json:"device,omitempty"`
-	OptimizationsActive []string               `protobuf:"bytes,7,rep,name=optimizations_active,json=optimizationsActive,proto3" json:"optimizations_active,omitempty"`
+	ModelName           string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
+	TotalRequests       int32                  `protobuf:"varint,2,opt,name=total_requests,json=totalRequests,proto3" json:"total_requests,omitempty"`
+	AvgInferenceTimeMs  float64                `protobuf:"fixed64,3,opt,name=avg_inference_time_ms,json=avgInferenceTimeMs,proto3" json:"avg_inference_time_ms,omitempty"`
+	MinInferenceTimeMs  float64                `protobuf:"fixed64,4,opt,name=min_inference_time_ms,json=minInferenceTimeMs,proto3" json:"min_inference_time_ms,omitempty"`
+	MaxInferenceTimeMs  float64                `protobuf:"fixed64,5,opt,name=max_inference_time_ms,json=maxInferenceTimeMs,proto3" json:"max_inference_time_ms,omitempty"`
+	FrameCount          int32                  `protobuf:"varint,6,opt,name=frame_count,json=frameCount,proto3" json:"frame_count,omitempty"`
+	Device              string                 `protobuf:"bytes,7,opt,name=device,proto3" json:"device,omitempty"`
+	OptimizationsActive []string               `protobuf:"bytes,8,rep,name=optimizations_active,json=optimizationsActive,proto3" json:"optimizations_active,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -517,6 +582,13 @@ func (*StatsResponse) Descriptor() ([]byte, []int) {
 	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{7}
 }
 
+func (x *StatsResponse) GetModelName() string {
+	if x != nil {
+		return x.ModelName
+	}
+	return ""
+}
+
 func (x *StatsResponse) GetTotalRequests() int32 {
 	if x != nil {
 		return x.TotalRequests
@@ -524,21 +596,21 @@ func (x *StatsResponse) GetTotalRequests() int32 {
 	return 0
 }
 
-func (x *StatsResponse) GetAvgInferenceTimeMs() float32 {
+func (x *StatsResponse) GetAvgInferenceTimeMs() float64 {
 	if x != nil {
 		return x.AvgInferenceTimeMs
 	}
 	return 0
 }
 
-func (x *StatsResponse) GetMinInferenceTimeMs() float32 {
+func (x *StatsResponse) GetMinInferenceTimeMs() float64 {
 	if x != nil {
 		return x.MinInferenceTimeMs
 	}
 	return 0
 }
 
-func (x *StatsResponse) GetMaxInferenceTimeMs() float32 {
+func (x *StatsResponse) GetMaxInferenceTimeMs() float64 {
 	if x != nil {
 		return x.MaxInferenceTimeMs
 	}
@@ -696,10 +768,10 @@ func (*HealthRequest) Descriptor() ([]byte, []int) {
 // Health check response
 type HealthResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	Healthy       bool                   `protobuf:"varint,2,opt,name=healthy,proto3" json:"healthy,omitempty"`
+	Healthy       bool                   `protobuf:"varint,1,opt,name=healthy,proto3" json:"healthy,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 	LoadedModels  int32                  `protobuf:"varint,3,opt,name=loaded_models,json=loadedModels,proto3" json:"loaded_models,omitempty"`
-	UptimeSeconds float32                `protobuf:"fixed32,4,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"`
+	UptimeSeconds int64                  `protobuf:"varint,4,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -734,18 +806,18 @@ func (*HealthResponse) Descriptor() ([]byte, []int) {
 	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *HealthResponse) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
-}
-
 func (x *HealthResponse) GetHealthy() bool {
 	if x != nil {
 		return x.Healthy
 	}
 	return false
+}
+
+func (x *HealthResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
 }
 
 func (x *HealthResponse) GetLoadedModels() int32 {
@@ -755,84 +827,405 @@ func (x *HealthResponse) GetLoadedModels() int32 {
 	return 0
 }
 
-func (x *HealthResponse) GetUptimeSeconds() float32 {
+func (x *HealthResponse) GetUptimeSeconds() int64 {
 	if x != nil {
 		return x.UptimeSeconds
 	}
 	return 0
 }
 
+// Get video frame request
+type GetVideoFrameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ModelName     string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
+	FrameId       int32                  `protobuf:"varint,2,opt,name=frame_id,json=frameId,proto3" json:"frame_id,omitempty"`
+	VideoType     string                 `protobuf:"bytes,3,opt,name=video_type,json=videoType,proto3" json:"video_type,omitempty"` // "full_body", "face_regions", "masked_regions"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetVideoFrameRequest) Reset() {
+	*x = GetVideoFrameRequest{}
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetVideoFrameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetVideoFrameRequest) ProtoMessage() {}
+
+func (x *GetVideoFrameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetVideoFrameRequest.ProtoReflect.Descriptor instead.
+func (*GetVideoFrameRequest) Descriptor() ([]byte, []int) {
+	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetVideoFrameRequest) GetModelName() string {
+	if x != nil {
+		return x.ModelName
+	}
+	return ""
+}
+
+func (x *GetVideoFrameRequest) GetFrameId() int32 {
+	if x != nil {
+		return x.FrameId
+	}
+	return 0
+}
+
+func (x *GetVideoFrameRequest) GetVideoType() string {
+	if x != nil {
+		return x.VideoType
+	}
+	return ""
+}
+
+// Get video frame response
+type GetVideoFrameResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	FrameData     []byte                 `protobuf:"bytes,2,opt,name=frame_data,json=frameData,proto3" json:"frame_data,omitempty"` // JPEG encoded original video frame
+	FrameId       int32                  `protobuf:"varint,3,opt,name=frame_id,json=frameId,proto3" json:"frame_id,omitempty"`
+	VideoType     string                 `protobuf:"bytes,4,opt,name=video_type,json=videoType,proto3" json:"video_type,omitempty"`
+	Error         *string                `protobuf:"bytes,5,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetVideoFrameResponse) Reset() {
+	*x = GetVideoFrameResponse{}
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetVideoFrameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetVideoFrameResponse) ProtoMessage() {}
+
+func (x *GetVideoFrameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetVideoFrameResponse.ProtoReflect.Descriptor instead.
+func (*GetVideoFrameResponse) Descriptor() ([]byte, []int) {
+	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetVideoFrameResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetVideoFrameResponse) GetFrameData() []byte {
+	if x != nil {
+		return x.FrameData
+	}
+	return nil
+}
+
+func (x *GetVideoFrameResponse) GetFrameId() int32 {
+	if x != nil {
+		return x.FrameId
+	}
+	return 0
+}
+
+func (x *GetVideoFrameResponse) GetVideoType() string {
+	if x != nil {
+		return x.VideoType
+	}
+	return ""
+}
+
+func (x *GetVideoFrameResponse) GetError() string {
+	if x != nil && x.Error != nil {
+		return *x.Error
+	}
+	return ""
+}
+
+// Get model metadata request
+type GetModelMetadataRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ModelName     string                 `protobuf:"bytes,1,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetModelMetadataRequest) Reset() {
+	*x = GetModelMetadataRequest{}
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetModelMetadataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetModelMetadataRequest) ProtoMessage() {}
+
+func (x *GetModelMetadataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetModelMetadataRequest.ProtoReflect.Descriptor instead.
+func (*GetModelMetadataRequest) Descriptor() ([]byte, []int) {
+	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetModelMetadataRequest) GetModelName() string {
+	if x != nil {
+		return x.ModelName
+	}
+	return ""
+}
+
+// Get model metadata response
+type GetModelMetadataResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Success         bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ModelName       string                 `protobuf:"bytes,2,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`
+	FrameCount      int32                  `protobuf:"varint,3,opt,name=frame_count,json=frameCount,proto3" json:"frame_count,omitempty"`
+	AvailableVideos []string               `protobuf:"bytes,4,rep,name=available_videos,json=availableVideos,proto3" json:"available_videos,omitempty"` // ["full_body", "face_regions", "masked_regions"]
+	AudioPath       string                 `protobuf:"bytes,5,opt,name=audio_path,json=audioPath,proto3" json:"audio_path,omitempty"`                   // Relative path to audio file
+	Bounds          []float32              `protobuf:"fixed32,6,rep,packed,name=bounds,proto3" json:"bounds,omitempty"`                                 // Default face bounds [x1, y1, x2, y2]
+	Error           *string                `protobuf:"bytes,7,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetModelMetadataResponse) Reset() {
+	*x = GetModelMetadataResponse{}
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetModelMetadataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetModelMetadataResponse) ProtoMessage() {}
+
+func (x *GetModelMetadataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_optimized_lipsyncsrv_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetModelMetadataResponse.ProtoReflect.Descriptor instead.
+func (*GetModelMetadataResponse) Descriptor() ([]byte, []int) {
+	return file_optimized_lipsyncsrv_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetModelMetadataResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetModelMetadataResponse) GetModelName() string {
+	if x != nil {
+		return x.ModelName
+	}
+	return ""
+}
+
+func (x *GetModelMetadataResponse) GetFrameCount() int32 {
+	if x != nil {
+		return x.FrameCount
+	}
+	return 0
+}
+
+func (x *GetModelMetadataResponse) GetAvailableVideos() []string {
+	if x != nil {
+		return x.AvailableVideos
+	}
+	return nil
+}
+
+func (x *GetModelMetadataResponse) GetAudioPath() string {
+	if x != nil {
+		return x.AudioPath
+	}
+	return ""
+}
+
+func (x *GetModelMetadataResponse) GetBounds() []float32 {
+	if x != nil {
+		return x.Bounds
+	}
+	return nil
+}
+
+func (x *GetModelMetadataResponse) GetError() string {
+	if x != nil && x.Error != nil {
+		return *x.Error
+	}
+	return ""
+}
+
 var File_optimized_lipsyncsrv_proto protoreflect.FileDescriptor
 
 const file_optimized_lipsyncsrv_proto_rawDesc = "" +
 	"\n" +
-	"\x1aoptimized_lipsyncsrv.proto\"U\n" +
+	"\x1aoptimized_lipsyncsrv.proto\x12\x14optimized_lipsyncsrv\"U\n" +
 	"\x19OptimizedInferenceRequest\x12\x1d\n" +
 	"\n" +
 	"model_name\x18\x01 \x01(\tR\tmodelName\x12\x19\n" +
-	"\bframe_id\x18\x02 \x01(\x05R\aframeId\"\x81\x03\n" +
+	"\bframe_id\x18\x02 \x01(\x05R\aframeId\"\xd5\x03\n" +
 	"\x1aOptimizedInferenceResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x19\n" +
-	"\bframe_id\x18\x02 \x01(\x05R\aframeId\x12'\n" +
-	"\x0fprediction_data\x18\x03 \x01(\fR\x0epredictionData\x12)\n" +
-	"\x10prediction_shape\x18\x04 \x01(\tR\x0fpredictionShape\x12\x16\n" +
-	"\x06bounds\x18\x05 \x03(\x05R\x06bounds\x12,\n" +
-	"\x12processing_time_ms\x18\x06 \x01(\x02R\x10processingTimeMs\x12&\n" +
-	"\x0fprepare_time_ms\x18\a \x01(\x02R\rprepareTimeMs\x12*\n" +
-	"\x11inference_time_ms\x18\b \x01(\x02R\x0finferenceTimeMs\x12*\n" +
-	"\x11composite_time_ms\x18\t \x01(\x02R\x0fcompositeTimeMs\x12\x14\n" +
-	"\x05error\x18\n" +
-	" \x01(\tR\x05error\"S\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12'\n" +
+	"\x0fprediction_data\x18\x02 \x01(\fR\x0epredictionData\x12\x16\n" +
+	"\x06bounds\x18\x03 \x03(\x02R\x06bounds\x12,\n" +
+	"\x12processing_time_ms\x18\x04 \x01(\x05R\x10processingTimeMs\x12\x1d\n" +
+	"\n" +
+	"model_name\x18\x05 \x01(\tR\tmodelName\x12\x19\n" +
+	"\bframe_id\x18\x06 \x01(\x05R\aframeId\x12)\n" +
+	"\x10prediction_shape\x18\a \x01(\tR\x0fpredictionShape\x12\x19\n" +
+	"\x05error\x18\b \x01(\tH\x00R\x05error\x88\x01\x01\x12&\n" +
+	"\x0fprepare_time_ms\x18\t \x01(\x01R\rprepareTimeMs\x12*\n" +
+	"\x11inference_time_ms\x18\n" +
+	" \x01(\x01R\x0finferenceTimeMs\x12*\n" +
+	"\x11composite_time_ms\x18\v \x01(\x01R\x0fcompositeTimeMs\x12$\n" +
+	"\roptimizations\x18\f \x03(\tR\roptimizationsB\b\n" +
+	"\x06_error\"S\n" +
 	"\x15BatchInferenceRequest\x12\x1d\n" +
 	"\n" +
 	"model_name\x18\x01 \x01(\tR\tmodelName\x12\x1b\n" +
-	"\tframe_ids\x18\x02 \x03(\x05R\bframeIds\"\xb7\x01\n" +
-	"\x16BatchInferenceResponse\x129\n" +
-	"\tresponses\x18\x01 \x03(\v2\x1b.OptimizedInferenceResponseR\tresponses\x127\n" +
-	"\x18total_processing_time_ms\x18\x02 \x01(\x02R\x15totalProcessingTimeMs\x12)\n" +
-	"\x11avg_frame_time_ms\x18\x03 \x01(\x02R\x0eavgFrameTimeMs\"V\n" +
-	"\x12LoadPackageRequest\x12\x1d\n" +
-	"\n" +
-	"model_name\x18\x01 \x01(\tR\tmodelName\x12!\n" +
-	"\fpackage_path\x18\x02 \x01(\tR\vpackagePath\"\x85\x01\n" +
+	"\tframe_ids\x18\x02 \x03(\x05R\bframeIds\"\xcc\x01\n" +
+	"\x16BatchInferenceResponse\x12N\n" +
+	"\tresponses\x18\x01 \x03(\v20.optimized_lipsyncsrv.OptimizedInferenceResponseR\tresponses\x127\n" +
+	"\x18total_processing_time_ms\x18\x02 \x01(\x05R\x15totalProcessingTimeMs\x12)\n" +
+	"\x11avg_frame_time_ms\x18\x03 \x01(\x01R\x0eavgFrameTimeMs\"X\n" +
+	"\x12LoadPackageRequest\x12!\n" +
+	"\fpackage_name\x18\x01 \x01(\tR\vpackageName\x12\x1f\n" +
+	"\vpackage_dir\x18\x02 \x01(\tR\n" +
+	"packageDir\"\x87\x03\n" +
 	"\x13LoadPackageResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1d\n" +
-	"\n" +
-	"model_name\x18\x02 \x01(\tR\tmodelName\x12\x1f\n" +
-	"\vframe_count\x18\x03 \x01(\x05R\n" +
-	"frameCount\x12\x14\n" +
-	"\x05error\x18\x04 \x01(\tR\x05error\"-\n" +
-	"\fStatsRequest\x12\x1d\n" +
-	"\n" +
-	"model_name\x18\x01 \x01(\tR\tmodelName\"\xbb\x02\n" +
-	"\rStatsResponse\x12%\n" +
-	"\x0etotal_requests\x18\x01 \x01(\x05R\rtotalRequests\x121\n" +
-	"\x15avg_inference_time_ms\x18\x02 \x01(\x02R\x12avgInferenceTimeMs\x121\n" +
-	"\x15min_inference_time_ms\x18\x03 \x01(\x02R\x12minInferenceTimeMs\x121\n" +
-	"\x15max_inference_time_ms\x18\x04 \x01(\x02R\x12maxInferenceTimeMs\x12\x1f\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12!\n" +
+	"\fpackage_name\x18\x02 \x01(\tR\vpackageName\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x124\n" +
+	"\x16initialization_time_ms\x18\x04 \x01(\x05R\x14initializationTimeMs\x12\x1f\n" +
 	"\vframe_count\x18\x05 \x01(\x05R\n" +
 	"frameCount\x12\x16\n" +
-	"\x06device\x18\x06 \x01(\tR\x06device\x121\n" +
-	"\x14optimizations_active\x18\a \x03(\tR\x13optimizationsActive\"\x13\n" +
+	"\x06device\x18\x06 \x01(\tR\x06device\x12#\n" +
+	"\rvideos_loaded\x18\a \x03(\tR\fvideosLoaded\x120\n" +
+	"\x14audio_features_shape\x18\b \x03(\x05R\x12audioFeaturesShape\x12.\n" +
+	"\x13memory_mapped_audio\x18\t \x01(\bR\x11memoryMappedAudio\x12\x19\n" +
+	"\x05error\x18\n" +
+	" \x01(\tH\x00R\x05error\x88\x01\x01B\b\n" +
+	"\x06_error\"-\n" +
+	"\fStatsRequest\x12\x1d\n" +
+	"\n" +
+	"model_name\x18\x01 \x01(\tR\tmodelName\"\xda\x02\n" +
+	"\rStatsResponse\x12\x1d\n" +
+	"\n" +
+	"model_name\x18\x01 \x01(\tR\tmodelName\x12%\n" +
+	"\x0etotal_requests\x18\x02 \x01(\x05R\rtotalRequests\x121\n" +
+	"\x15avg_inference_time_ms\x18\x03 \x01(\x01R\x12avgInferenceTimeMs\x121\n" +
+	"\x15min_inference_time_ms\x18\x04 \x01(\x01R\x12minInferenceTimeMs\x121\n" +
+	"\x15max_inference_time_ms\x18\x05 \x01(\x01R\x12maxInferenceTimeMs\x12\x1f\n" +
+	"\vframe_count\x18\x06 \x01(\x05R\n" +
+	"frameCount\x12\x16\n" +
+	"\x06device\x18\a \x01(\tR\x06device\x121\n" +
+	"\x14optimizations_active\x18\b \x03(\tR\x13optimizationsActive\"\x13\n" +
 	"\x11ListModelsRequest\"O\n" +
 	"\x12ListModelsResponse\x12#\n" +
 	"\rloaded_models\x18\x01 \x03(\tR\floadedModels\x12\x14\n" +
 	"\x05count\x18\x02 \x01(\x05R\x05count\"\x0f\n" +
 	"\rHealthRequest\"\x8e\x01\n" +
-	"\x0eHealthResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
-	"\ahealthy\x18\x02 \x01(\bR\ahealthy\x12#\n" +
+	"\x0eHealthResponse\x12\x18\n" +
+	"\ahealthy\x18\x01 \x01(\bR\ahealthy\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12#\n" +
 	"\rloaded_models\x18\x03 \x01(\x05R\floadedModels\x12%\n" +
-	"\x0euptime_seconds\x18\x04 \x01(\x02R\ruptimeSeconds2\xce\x03\n" +
-	"\x17OptimizedLipSyncService\x12L\n" +
-	"\x11GenerateInference\x12\x1a.OptimizedInferenceRequest\x1a\x1b.OptimizedInferenceResponse\x12I\n" +
-	"\x16GenerateBatchInference\x12\x16.BatchInferenceRequest\x1a\x17.BatchInferenceResponse\x12N\n" +
-	"\x0fStreamInference\x12\x1a.OptimizedInferenceRequest\x1a\x1b.OptimizedInferenceResponse(\x010\x01\x128\n" +
-	"\vLoadPackage\x12\x13.LoadPackageRequest\x1a\x14.LoadPackageResponse\x12)\n" +
-	"\bGetStats\x12\r.StatsRequest\x1a\x0e.StatsResponse\x125\n" +
+	"\x0euptime_seconds\x18\x04 \x01(\x03R\ruptimeSeconds\"o\n" +
+	"\x14GetVideoFrameRequest\x12\x1d\n" +
 	"\n" +
-	"ListModels\x12\x12.ListModelsRequest\x1a\x13.ListModelsResponse\x12.\n" +
-	"\vHealthCheck\x12\x0e.HealthRequest\x1a\x0f.HealthResponseB%Z#github.com/cvoalex/lipsync-proxy/pbb\x06proto3"
+	"model_name\x18\x01 \x01(\tR\tmodelName\x12\x19\n" +
+	"\bframe_id\x18\x02 \x01(\x05R\aframeId\x12\x1d\n" +
+	"\n" +
+	"video_type\x18\x03 \x01(\tR\tvideoType\"\xaf\x01\n" +
+	"\x15GetVideoFrameResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1d\n" +
+	"\n" +
+	"frame_data\x18\x02 \x01(\fR\tframeData\x12\x19\n" +
+	"\bframe_id\x18\x03 \x01(\x05R\aframeId\x12\x1d\n" +
+	"\n" +
+	"video_type\x18\x04 \x01(\tR\tvideoType\x12\x19\n" +
+	"\x05error\x18\x05 \x01(\tH\x00R\x05error\x88\x01\x01B\b\n" +
+	"\x06_error\"8\n" +
+	"\x17GetModelMetadataRequest\x12\x1d\n" +
+	"\n" +
+	"model_name\x18\x01 \x01(\tR\tmodelName\"\xfb\x01\n" +
+	"\x18GetModelMetadataResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1d\n" +
+	"\n" +
+	"model_name\x18\x02 \x01(\tR\tmodelName\x12\x1f\n" +
+	"\vframe_count\x18\x03 \x01(\x05R\n" +
+	"frameCount\x12)\n" +
+	"\x10available_videos\x18\x04 \x03(\tR\x0favailableVideos\x12\x1d\n" +
+	"\n" +
+	"audio_path\x18\x05 \x01(\tR\taudioPath\x12\x16\n" +
+	"\x06bounds\x18\x06 \x03(\x02R\x06bounds\x12\x19\n" +
+	"\x05error\x18\a \x01(\tH\x00R\x05error\x88\x01\x01B\b\n" +
+	"\x06_error2\xd1\a\n" +
+	"\x17OptimizedLipSyncService\x12v\n" +
+	"\x11GenerateInference\x12/.optimized_lipsyncsrv.OptimizedInferenceRequest\x1a0.optimized_lipsyncsrv.OptimizedInferenceResponse\x12s\n" +
+	"\x16GenerateBatchInference\x12+.optimized_lipsyncsrv.BatchInferenceRequest\x1a,.optimized_lipsyncsrv.BatchInferenceResponse\x12x\n" +
+	"\x0fStreamInference\x12/.optimized_lipsyncsrv.OptimizedInferenceRequest\x1a0.optimized_lipsyncsrv.OptimizedInferenceResponse(\x010\x01\x12b\n" +
+	"\vLoadPackage\x12(.optimized_lipsyncsrv.LoadPackageRequest\x1a).optimized_lipsyncsrv.LoadPackageResponse\x12S\n" +
+	"\bGetStats\x12\".optimized_lipsyncsrv.StatsRequest\x1a#.optimized_lipsyncsrv.StatsResponse\x12_\n" +
+	"\n" +
+	"ListModels\x12'.optimized_lipsyncsrv.ListModelsRequest\x1a(.optimized_lipsyncsrv.ListModelsResponse\x12X\n" +
+	"\vHealthCheck\x12#.optimized_lipsyncsrv.HealthRequest\x1a$.optimized_lipsyncsrv.HealthResponse\x12h\n" +
+	"\rGetVideoFrame\x12*.optimized_lipsyncsrv.GetVideoFrameRequest\x1a+.optimized_lipsyncsrv.GetVideoFrameResponse\x12q\n" +
+	"\x10GetModelMetadata\x12-.optimized_lipsyncsrv.GetModelMetadataRequest\x1a..optimized_lipsyncsrv.GetModelMetadataResponseB\x06Z\x04./pbb\x06proto3"
 
 var (
 	file_optimized_lipsyncsrv_proto_rawDescOnce sync.Once
@@ -846,39 +1239,47 @@ func file_optimized_lipsyncsrv_proto_rawDescGZIP() []byte {
 	return file_optimized_lipsyncsrv_proto_rawDescData
 }
 
-var file_optimized_lipsyncsrv_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_optimized_lipsyncsrv_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_optimized_lipsyncsrv_proto_goTypes = []any{
-	(*OptimizedInferenceRequest)(nil),  // 0: OptimizedInferenceRequest
-	(*OptimizedInferenceResponse)(nil), // 1: OptimizedInferenceResponse
-	(*BatchInferenceRequest)(nil),      // 2: BatchInferenceRequest
-	(*BatchInferenceResponse)(nil),     // 3: BatchInferenceResponse
-	(*LoadPackageRequest)(nil),         // 4: LoadPackageRequest
-	(*LoadPackageResponse)(nil),        // 5: LoadPackageResponse
-	(*StatsRequest)(nil),               // 6: StatsRequest
-	(*StatsResponse)(nil),              // 7: StatsResponse
-	(*ListModelsRequest)(nil),          // 8: ListModelsRequest
-	(*ListModelsResponse)(nil),         // 9: ListModelsResponse
-	(*HealthRequest)(nil),              // 10: HealthRequest
-	(*HealthResponse)(nil),             // 11: HealthResponse
+	(*OptimizedInferenceRequest)(nil),  // 0: optimized_lipsyncsrv.OptimizedInferenceRequest
+	(*OptimizedInferenceResponse)(nil), // 1: optimized_lipsyncsrv.OptimizedInferenceResponse
+	(*BatchInferenceRequest)(nil),      // 2: optimized_lipsyncsrv.BatchInferenceRequest
+	(*BatchInferenceResponse)(nil),     // 3: optimized_lipsyncsrv.BatchInferenceResponse
+	(*LoadPackageRequest)(nil),         // 4: optimized_lipsyncsrv.LoadPackageRequest
+	(*LoadPackageResponse)(nil),        // 5: optimized_lipsyncsrv.LoadPackageResponse
+	(*StatsRequest)(nil),               // 6: optimized_lipsyncsrv.StatsRequest
+	(*StatsResponse)(nil),              // 7: optimized_lipsyncsrv.StatsResponse
+	(*ListModelsRequest)(nil),          // 8: optimized_lipsyncsrv.ListModelsRequest
+	(*ListModelsResponse)(nil),         // 9: optimized_lipsyncsrv.ListModelsResponse
+	(*HealthRequest)(nil),              // 10: optimized_lipsyncsrv.HealthRequest
+	(*HealthResponse)(nil),             // 11: optimized_lipsyncsrv.HealthResponse
+	(*GetVideoFrameRequest)(nil),       // 12: optimized_lipsyncsrv.GetVideoFrameRequest
+	(*GetVideoFrameResponse)(nil),      // 13: optimized_lipsyncsrv.GetVideoFrameResponse
+	(*GetModelMetadataRequest)(nil),    // 14: optimized_lipsyncsrv.GetModelMetadataRequest
+	(*GetModelMetadataResponse)(nil),   // 15: optimized_lipsyncsrv.GetModelMetadataResponse
 }
 var file_optimized_lipsyncsrv_proto_depIdxs = []int32{
-	1,  // 0: BatchInferenceResponse.responses:type_name -> OptimizedInferenceResponse
-	0,  // 1: OptimizedLipSyncService.GenerateInference:input_type -> OptimizedInferenceRequest
-	2,  // 2: OptimizedLipSyncService.GenerateBatchInference:input_type -> BatchInferenceRequest
-	0,  // 3: OptimizedLipSyncService.StreamInference:input_type -> OptimizedInferenceRequest
-	4,  // 4: OptimizedLipSyncService.LoadPackage:input_type -> LoadPackageRequest
-	6,  // 5: OptimizedLipSyncService.GetStats:input_type -> StatsRequest
-	8,  // 6: OptimizedLipSyncService.ListModels:input_type -> ListModelsRequest
-	10, // 7: OptimizedLipSyncService.HealthCheck:input_type -> HealthRequest
-	1,  // 8: OptimizedLipSyncService.GenerateInference:output_type -> OptimizedInferenceResponse
-	3,  // 9: OptimizedLipSyncService.GenerateBatchInference:output_type -> BatchInferenceResponse
-	1,  // 10: OptimizedLipSyncService.StreamInference:output_type -> OptimizedInferenceResponse
-	5,  // 11: OptimizedLipSyncService.LoadPackage:output_type -> LoadPackageResponse
-	7,  // 12: OptimizedLipSyncService.GetStats:output_type -> StatsResponse
-	9,  // 13: OptimizedLipSyncService.ListModels:output_type -> ListModelsResponse
-	11, // 14: OptimizedLipSyncService.HealthCheck:output_type -> HealthResponse
-	8,  // [8:15] is the sub-list for method output_type
-	1,  // [1:8] is the sub-list for method input_type
+	1,  // 0: optimized_lipsyncsrv.BatchInferenceResponse.responses:type_name -> optimized_lipsyncsrv.OptimizedInferenceResponse
+	0,  // 1: optimized_lipsyncsrv.OptimizedLipSyncService.GenerateInference:input_type -> optimized_lipsyncsrv.OptimizedInferenceRequest
+	2,  // 2: optimized_lipsyncsrv.OptimizedLipSyncService.GenerateBatchInference:input_type -> optimized_lipsyncsrv.BatchInferenceRequest
+	0,  // 3: optimized_lipsyncsrv.OptimizedLipSyncService.StreamInference:input_type -> optimized_lipsyncsrv.OptimizedInferenceRequest
+	4,  // 4: optimized_lipsyncsrv.OptimizedLipSyncService.LoadPackage:input_type -> optimized_lipsyncsrv.LoadPackageRequest
+	6,  // 5: optimized_lipsyncsrv.OptimizedLipSyncService.GetStats:input_type -> optimized_lipsyncsrv.StatsRequest
+	8,  // 6: optimized_lipsyncsrv.OptimizedLipSyncService.ListModels:input_type -> optimized_lipsyncsrv.ListModelsRequest
+	10, // 7: optimized_lipsyncsrv.OptimizedLipSyncService.HealthCheck:input_type -> optimized_lipsyncsrv.HealthRequest
+	12, // 8: optimized_lipsyncsrv.OptimizedLipSyncService.GetVideoFrame:input_type -> optimized_lipsyncsrv.GetVideoFrameRequest
+	14, // 9: optimized_lipsyncsrv.OptimizedLipSyncService.GetModelMetadata:input_type -> optimized_lipsyncsrv.GetModelMetadataRequest
+	1,  // 10: optimized_lipsyncsrv.OptimizedLipSyncService.GenerateInference:output_type -> optimized_lipsyncsrv.OptimizedInferenceResponse
+	3,  // 11: optimized_lipsyncsrv.OptimizedLipSyncService.GenerateBatchInference:output_type -> optimized_lipsyncsrv.BatchInferenceResponse
+	1,  // 12: optimized_lipsyncsrv.OptimizedLipSyncService.StreamInference:output_type -> optimized_lipsyncsrv.OptimizedInferenceResponse
+	5,  // 13: optimized_lipsyncsrv.OptimizedLipSyncService.LoadPackage:output_type -> optimized_lipsyncsrv.LoadPackageResponse
+	7,  // 14: optimized_lipsyncsrv.OptimizedLipSyncService.GetStats:output_type -> optimized_lipsyncsrv.StatsResponse
+	9,  // 15: optimized_lipsyncsrv.OptimizedLipSyncService.ListModels:output_type -> optimized_lipsyncsrv.ListModelsResponse
+	11, // 16: optimized_lipsyncsrv.OptimizedLipSyncService.HealthCheck:output_type -> optimized_lipsyncsrv.HealthResponse
+	13, // 17: optimized_lipsyncsrv.OptimizedLipSyncService.GetVideoFrame:output_type -> optimized_lipsyncsrv.GetVideoFrameResponse
+	15, // 18: optimized_lipsyncsrv.OptimizedLipSyncService.GetModelMetadata:output_type -> optimized_lipsyncsrv.GetModelMetadataResponse
+	10, // [10:19] is the sub-list for method output_type
+	1,  // [1:10] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
 	1,  // [1:1] is the sub-list for extension extendee
 	0,  // [0:1] is the sub-list for field type_name
@@ -889,13 +1290,17 @@ func file_optimized_lipsyncsrv_proto_init() {
 	if File_optimized_lipsyncsrv_proto != nil {
 		return
 	}
+	file_optimized_lipsyncsrv_proto_msgTypes[1].OneofWrappers = []any{}
+	file_optimized_lipsyncsrv_proto_msgTypes[5].OneofWrappers = []any{}
+	file_optimized_lipsyncsrv_proto_msgTypes[13].OneofWrappers = []any{}
+	file_optimized_lipsyncsrv_proto_msgTypes[15].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_optimized_lipsyncsrv_proto_rawDesc), len(file_optimized_lipsyncsrv_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

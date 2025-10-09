@@ -5,7 +5,7 @@
 ### Terminal 1: Start gRPC Server
 ```powershell
 cd D:\Projects\webcodecstest\minimal_server
-python optimized_grpc_server.py --port 50051
+.\start_grpc_single.bat
 ```
 
 Wait for: `✅ All models loaded and ready!`
@@ -77,10 +77,16 @@ Same as above - open `realtime-lipsync-binary.html` in browser
 
 ### gRPC Server Won't Start
 
-**Check Python environment:**
+**Use the batch file (handles environment automatically):**
+```powershell
+cd D:\Projects\webcodecstest\minimal_server
+.\start_grpc_single.bat
+```
+
+**Or manually:**
 ```powershell
 cd D:\Projects\webcodecstest
-.\.venv312\Scripts\Activate.ps1
+.\.venv312\Scripts\activate.bat
 cd minimal_server
 python optimized_grpc_server.py --port 50051
 ```

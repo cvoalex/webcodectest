@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Ultra-Optimized Lip Sync Client (50+ FPS)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .header .badge {
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .panel h2 {
+            margin-top: 0;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .status-item {
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            transition: all 0.3s;
+        }
+        .status-item.connected {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .status-item.disconnected {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .status-item.active {
+            border-left-color: #667eea;
+            background: #e7e3ff;
+        }
+        .status-item label {
+            display: block;
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .status-item .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        button.success {
+            background: #28a745;
+        }
+        button.success:hover {
+            background: #218838;
+        }
+        button.danger {
+            background: #dc3545;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        button.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        button.warning:hover {
+            background: #e0a800;
+        }
+        .canvas-container {
+            position: relative;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .performance-chart {
+            height: 150px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+            gap: 2px;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.3s;
+            min-width: 2px;
+            position: relative;
+        }
+        .chart-bar.good {
+            background: linear-gradient(to top, #28a745, #20c997);
+        }
+        .chart-bar.warning {
+            background: linear-gradient(to top, #ffc107, #fd7e14);
+        }
+        .chart-bar.error {
+            background: linear-gradient(to top, #dc3545, #e83e8c);
+        }
+        .log-container {
+            background: #212529;
+            color: #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        .log-entry {
+            margin: 2px 0;
+        }
+        .log-entry.info {
+            color: #17a2b8;
+        }
+        .log-entry.success {
+            color: #28a745;
+        }
+        .log-entry.warning {
+            color: #ffc107;
+        }
+        .log-entry.error {
+            color: #dc3545;
+        }
+        .info-box {
+            background: #e7e3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .frame-counter {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .counter-box {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .counter-box .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .counter-box .label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .optimization-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .badge.active {
+            background: #28a745;
+            color: white;
+        }
+        .badge.info {
+            background: #17a2b8;
+            color: white;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            🚀 Ultra-Optimized Lip Sync Client
+            <span class="badge">50+ FPS</span>
+        </h1>
+        <p style="margin: 10px 0 0 0; color: #6c757d;">
+            Connected to optimized server on port 8085 | Pre-loaded videos | Memory-mapped audio | Zero I/O
+        </p>
+    </div>
+
+    <div class="container">
+        <!-- Connection & Controls Panel -->
+        <div class="panel">
+            <h2>🎛️ Connection & Controls</h2>
+            
+            <div class="status-grid">
+                <div class="status-item" id="connectionStatus">
+                    <label>Connection</label>
+                    <div class="value">Disconnected</div>
+                </div>
+                <div class="status-item" id="serverStatus">
+                    <label>Server</label>
+                    <div class="value">8085</div>
+                </div>
+                <div class="status-item" id="protocolStatus">
+                    <label>Protocol</label>
+                    <div class="value">Binary</div>
+                </div>
+                <div class="status-item" id="modelStatus">
+                    <label>Model</label>
+                    <div class="value">sanders</div>
+                </div>
+            </div>
+
+            <div class="controls-row">
+                <button id="connectBtn" class="success" onclick="connect()">
+                    🔌 Connect to Server
+                </button>
+                <button id="disconnectBtn" class="danger" onclick="disconnect()" disabled>
+                    ⚡ Disconnect
+                </button>
+            </div>
+
+            <div class="info-box">
+                <h3>⚡ Optimizations Active:</h3>
+                <div class="optimization-badges">
+                    <span class="badge active">✓ Pre-loaded Videos</span>
+                    <span class="badge active">✓ Memory-mapped Audio</span>
+                    <span class="badge active">✓ Cached Metadata</span>
+                    <span class="badge active">✓ Zero I/O</span>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Frame ID: <strong id="frameIdValue">0</strong></span>
+                    <span>Max: <span id="maxFrames">522</span></span>
+                </div>
+                <input type="range" id="frameSlider" min="0" max="522" value="0" 
+                       oninput="updateFrameId(this.value)">
+            </div>
+
+            <div class="controls-row">
+                <button onclick="requestFrame()" id="requestBtn" disabled>
+                    🎬 Request Frame
+                </button>
+                <button onclick="startAutoPlay()" id="playBtn" disabled>
+                    ▶️ Auto Play
+                </button>
+                <button onclick="stopAutoPlay()" id="stopBtn" disabled>
+                    ⏸️ Stop
+                </button>
+            </div>
+        </div>
+
+        <!-- Performance Stats Panel -->
+        <div class="panel">
+            <h2>📊 Performance Stats</h2>
+            
+            <div class="frame-counter">
+                <div class="counter-box">
+                    <div class="number" id="requestCount">0</div>
+                    <div class="label">Requests</div>
+                </div>
+                <div class="counter-box">
+                    <div class="number" id="avgTime">0ms</div>
+                    <div class="label">Avg Time</div>
+                </div>
+                <div class="counter-box">
+                    <div class="number" id="fps">0</div>
+                    <div class="label">FPS</div>
+                </div>
+            </div>
+
+            <div class="status-grid">
+                <div class="status-item active">
+                    <label>Last Frame</label>
+                    <div class="value" id="lastFrameTime">-</div>
+                </div>
+                <div class="status-item active">
+                    <label>Min Time</label>
+                    <div class="value" id="minTime">-</div>
+                </div>
+                <div class="status-item active">
+                    <label>Max Time</label>
+                    <div class="value" id="maxTime">-</div>
+                </div>
+            </div>
+
+            <h3 style="margin: 20px 0 10px 0; color: #667eea;">Performance Chart</h3>
+            <div class="performance-chart">
+                <div class="chart-bars" id="chartBars"></div>
+            </div>
+
+            <p style="font-size: 12px; color: #6c757d; margin-top: 10px;">
+                <strong>Chart Key:</strong>
+                <span style="color: #28a745;">■ Good (&lt;25ms)</span>
+                <span style="color: #ffc107;">■ Warning (25-40ms)</span>
+                <span style="color: #dc3545;">■ Slow (&gt;40ms)</span>
+            </p>
+        </div>
+
+        <!-- Frame Display Panel -->
+        <div class="panel full-width">
+            <h2>🎬 Frame Display</h2>
+            <div class="canvas-container">
+                <canvas id="frameCanvas" width="1280" height="720"></canvas>
+            </div>
+            <p style="margin-top: 10px; color: #6c757d; text-align: center; font-size: 14px;">
+                <strong>Current Frame:</strong> <span id="displayedFrame">-</span> | 
+                <strong>Resolution:</strong> 1280×720 |
+                <strong>Format:</strong> JPEG
+            </p>
+        </div>
+
+        <!-- Console Log Panel -->
+        <div class="panel full-width">
+            <h2>📝 Console Log</h2>
+            <div class="log-container" id="consoleLog">
+                <div class="log-entry success">🚀 Ultra-Optimized Client initialized</div>
+                <div class="log-entry info">💡 Click "Connect to Server" to begin</div>
+            </div>
+            <div class="controls-row" style="margin-top: 10px;">
+                <button class="warning" onclick="clearLog()">🗑️ Clear Log</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws = null;
+        let connected = false;
+        const SERVER_URL = 'ws://localhost:8085';
+        const MODEL_NAME = 'sanders';
+        const MAX_FRAMES = 522; // Sanders model has 523 frames (0-522)
+
+        // Performance tracking
+        let requestCount = 0;
+        let responseTimes = [];
+        let lastFrameTime = 0;
+        let fpsCounter = 0;
+        let fpsTimer = null;
+
+        // Auto-play state
+        let autoPlayInterval = null;
+        let currentFrameId = 0;
+
+        // Chart data
+        const MAX_CHART_POINTS = 50;
+        let chartData = [];
+
+        // Initialize
+        document.getElementById('maxFrames').textContent = MAX_FRAMES;
+
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('consoleLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('consoleLog').innerHTML = '';
+            log('Console cleared', 'info');
+        }
+
+        function updateConnectionStatus(status, className = 'disconnected') {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.className = `status-item ${className}`;
+            statusElement.querySelector('.value').textContent = status;
+        }
+
+        function connect() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                log('Already connected', 'warning');
+                return;
+            }
+
+            log(`Connecting to ${SERVER_URL}...`, 'info');
+            updateConnectionStatus('Connecting...', 'active');
+
+            ws = new WebSocket(SERVER_URL);
+            ws.binaryType = 'arraybuffer';
+
+            ws.onopen = () => {
+                connected = true;
+                log('✅ Connected to ultra-optimized server!', 'success');
+                updateConnectionStatus('Connected', 'connected');
+                
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+                document.getElementById('requestBtn').disabled = false;
+                document.getElementById('playBtn').disabled = false;
+
+                // Start FPS counter
+                startFPSCounter();
+            };
+
+            ws.onmessage = (event) => {
+                handleBinaryResponse(event.data);
+            };
+
+            ws.onerror = (error) => {
+                log('❌ WebSocket error', 'error');
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                connected = false;
+                log('⚡ Disconnected from server', 'warning');
+                updateConnectionStatus('Disconnected', 'disconnected');
+                
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+                document.getElementById('requestBtn').disabled = true;
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = true;
+
+                stopFPSCounter();
+                stopAutoPlay();
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            stopAutoPlay();
+        }
+
+        function handleBinaryResponse(arrayBuffer) {
+            const startTime = performance.now();
+            const view = new DataView(arrayBuffer);
+            
+            let offset = 0;
+            
+            // Parse response header
+            const success = view.getUint8(offset);
+            offset += 1;
+            
+            const frameId = view.getUint32(offset, true);
+            offset += 4;
+            
+            const processingTime = view.getUint32(offset, true);
+            offset += 4;
+            
+            if (!success) {
+                const errorLength = view.getUint32(offset, true);
+                offset += 4;
+                const errorBytes = new Uint8Array(arrayBuffer, offset, errorLength);
+                const errorMsg = new TextDecoder().decode(errorBytes);
+                log(`❌ Error: ${errorMsg}`, 'error');
+                return;
+            }
+            
+            const imageLength = view.getUint32(offset, true);
+            offset += 4;
+            
+            // Extract image data
+            const imageBlob = new Blob([arrayBuffer.slice(offset, offset + imageLength)], { type: 'image/jpeg' });
+            offset += imageLength;
+            
+            // Extract bounds (optional, for reference)
+            const boundsLength = view.getUint32(offset, true);
+            offset += 4;
+            const boundsArray = new Float32Array(arrayBuffer, offset, boundsLength / 4);
+            
+            // Display image
+            displayFrame(imageBlob, frameId);
+            
+            // Update performance stats
+            const totalTime = performance.now() - startTime;
+            updatePerformanceStats(processingTime, totalTime, frameId);
+            
+            log(`✅ Frame ${frameId} received | Server: ${processingTime}ms | Total: ${totalTime.toFixed(1)}ms`, 'success');
+        }
+
+        function displayFrame(imageBlob, frameId) {
+            const canvas = document.getElementById('frameCanvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(img.src);
+                document.getElementById('displayedFrame').textContent = frameId;
+                fpsCounter++;
+            };
+            
+            img.src = URL.createObjectURL(imageBlob);
+        }
+
+        function updatePerformanceStats(serverTime, totalTime, frameId) {
+            requestCount++;
+            responseTimes.push(serverTime);
+            lastFrameTime = serverTime;
+            
+            // Keep last 100 times
+            if (responseTimes.length > 100) {
+                responseTimes.shift();
+            }
+            
+            // Calculate stats
+            const avgTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+            const minTime = Math.min(...responseTimes);
+            const maxTime = Math.max(...responseTimes);
+            
+            // Update display
+            document.getElementById('requestCount').textContent = requestCount;
+            document.getElementById('avgTime').textContent = avgTime.toFixed(1) + 'ms';
+            document.getElementById('lastFrameTime').textContent = serverTime + 'ms';
+            document.getElementById('minTime').textContent = minTime + 'ms';
+            document.getElementById('maxTime').textContent = maxTime + 'ms';
+            
+            // Update chart
+            updateChart(serverTime);
+        }
+
+        function updateChart(time) {
+            chartData.push(time);
+            if (chartData.length > MAX_CHART_POINTS) {
+                chartData.shift();
+            }
+            
+            const chartBars = document.getElementById('chartBars');
+            chartBars.innerHTML = '';
+            
+            const maxTime = Math.max(60, ...chartData); // At least 60ms scale
+            
+            chartData.forEach(t => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                
+                // Color code by performance
+                if (t < 25) {
+                    bar.classList.add('good');
+                } else if (t < 40) {
+                    bar.classList.add('warning');
+                } else {
+                    bar.classList.add('error');
+                }
+                
+                bar.style.height = `${(t / maxTime) * 100}%`;
+                chartBars.appendChild(bar);
+            });
+        }
+
+        function startFPSCounter() {
+            fpsCounter = 0;
+            fpsTimer = setInterval(() => {
+                document.getElementById('fps').textContent = fpsCounter;
+                fpsCounter = 0;
+            }, 1000);
+        }
+
+        function stopFPSCounter() {
+            if (fpsTimer) {
+                clearInterval(fpsTimer);
+                fpsTimer = null;
+            }
+        }
+
+        function updateFrameId(value) {
+            currentFrameId = parseInt(value);
+            document.getElementById('frameIdValue').textContent = currentFrameId;
+        }
+
+        function requestFrame() {
+            if (!connected) {
+                log('❌ Not connected to server', 'error');
+                return;
+            }
+            
+            const frameId = currentFrameId;
+            
+            // Create binary request
+            const modelNameBytes = new TextEncoder().encode(MODEL_NAME);
+            const buffer = new ArrayBuffer(4 + modelNameBytes.length + 4 + 4);
+            const view = new DataView(buffer);
+            
+            let offset = 0;
+            
+            // Model name length
+            view.setUint32(offset, modelNameBytes.length, true);
+            offset += 4;
+            
+            // Model name
+            new Uint8Array(buffer, offset, modelNameBytes.length).set(modelNameBytes);
+            offset += modelNameBytes.length;
+            
+            // Frame ID
+            view.setUint32(offset, frameId, true);
+            offset += 4;
+            
+            // Audio length (0 for pre-processed models)
+            view.setUint32(offset, 0, true);
+            
+            ws.send(buffer);
+            log(`📤 Requesting frame ${frameId}...`, 'info');
+        }
+
+        function startAutoPlay() {
+            if (autoPlayInterval) {
+                return;
+            }
+            
+            log('▶️ Auto-play started', 'success');
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('frameSlider').disabled = true;
+            
+            autoPlayInterval = setInterval(() => {
+                requestFrame();
+                
+                // Auto-advance frame
+                currentFrameId++;
+                if (currentFrameId > MAX_FRAMES) {
+                    currentFrameId = 0;
+                }
+                
+                document.getElementById('frameSlider').value = currentFrameId;
+                document.getElementById('frameIdValue').textContent = currentFrameId;
+            }, 50); // 20 FPS auto-play (can go faster with optimized server!)
+        }
+
+        function stopAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                
+                log('⏸️ Auto-play stopped', 'info');
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('frameSlider').disabled = false;
+            }
+        }
+
+        // Initialize chart
+        for (let i = 0; i < MAX_CHART_POINTS; i++) {
+            chartData.push(0);
+        }
+        updateChart(0);
+
+        log('🎯 Client ready! Connect to port 8085 to begin.', 'info');
+    </script>
+</body>
+</html>

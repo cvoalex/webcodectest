@@ -1,10 +1,10 @@
 @echo off
-REM Run the gRPC test client with frame 100
+REM Run the gRPC test client with frames 95-100 (5 frames)
 
-echo Running gRPC test client for frame 100...
+echo Running gRPC test client for frames 95-100...
 echo.
 
-grpc-test-client.exe -frame 100
+grpc-test-client.exe -start 95 -count 5
 
 echo.
 pause

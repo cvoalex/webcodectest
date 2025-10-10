@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"time"
 
@@ -185,6 +186,51 @@ func parseBinaryRequest(data []byte) (*BinaryRequest, error) {
 	}, nil
 }
 
+// createBinaryResponse creates a binary response matching browser's expected format
+// Format: [success:1][frame_id:4][processing_time:4][image_len:4][image_data:N][bounds_len:4][bounds_data:N*4]
+func createBinaryResponse(frameID int32, processingTime int32, imageData []byte, bounds []float32) []byte {
+	imageLen := len(imageData)
+	boundsLen := len(bounds) * 4 // 4 bytes per float32
+	
+	// Calculate total size
+	totalSize := 1 + 4 + 4 + 4 + imageLen + 4 + boundsLen
+	response := make([]byte, totalSize)
+	
+	offset := 0
+	
+	// Success flag (1 byte)
+	response[offset] = 1
+	offset += 1
+	
+	// Frame ID (4 bytes, little-endian)
+	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(frameID))
+	offset += 4
+	
+	// Processing time (4 bytes, little-endian)
+	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(processingTime))
+	offset += 4
+	
+	// Image length (4 bytes, little-endian)
+	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(imageLen))
+	offset += 4
+	
+	// Image data
+	copy(response[offset:offset+imageLen], imageData)
+	offset += imageLen
+	
+	// Bounds length (4 bytes, little-endian)
+	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(boundsLen))
+	offset += 4
+	
+	// Bounds data (float32 array)
+	for _, bound := range bounds {
+		binary.LittleEndian.PutUint32(response[offset:offset+4], math.Float32bits(bound))
+		offset += 4
+	}
+	
+	return response
+}
+
 // handleWebSocket handles a WebSocket connection
 func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -326,8 +372,14 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		// Send response to browser
 		if isBinary {
-			// Binary protocol: just send JPEG bytes directly
-			err = conn.WriteMessage(websocket.BinaryMessage, grpcResp.PredictionData)
+			// Binary protocol: send structured binary response
+			binaryResp := createBinaryResponse(
+				grpcResp.FrameId,
+				grpcResp.ProcessingTimeMs,
+				grpcResp.PredictionData,
+				grpcResp.Bounds,
+			)
+			err = conn.WriteMessage(websocket.BinaryMessage, binaryResp)
 			if err != nil {
 				log.Printf("❌ Failed to send binary response to %s: %v", clientAddr, err)
 				break

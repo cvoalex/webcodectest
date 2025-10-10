@@ -138,7 +138,7 @@ class OptimizedLipSyncServicer(optimized_lipsyncsrv_pb2_grpc.OptimizedLipSyncSer
         
         try:
             # Get the model package
-            package = self.engine.get_model(request.model_name)
+            package = optimized_engine.get_model(request.model_name)
             
             if package is None:
                 print(f"❌ Model not found: {request.model_name}")
@@ -279,7 +279,7 @@ class OptimizedLipSyncServicer(optimized_lipsyncsrv_pb2_grpc.OptimizedLipSyncSer
         
         try:
             # Get the model package
-            package = self.engine.get_model(request.model_name)
+            package = optimized_engine.get_model(request.model_name)
             
             if package is None:
                 print(f"❌ Model not found: {request.model_name}")

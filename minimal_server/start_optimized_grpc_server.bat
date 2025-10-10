@@ -12,7 +12,7 @@ echo.
 cd /d "%~dp0"
 
 REM Use virtual environment Python directly
-set PYTHON_PATH=..\..\.venv312\Scripts\python.exe
+set PYTHON_PATH=..\.venv312\Scripts\python.exe
 
 REM Start the gRPC server
 "%PYTHON_PATH%" optimized_grpc_server.py

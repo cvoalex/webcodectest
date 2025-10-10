@@ -242,6 +242,15 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			case "get_video_frame":
 				p.handleGetVideoFrame(conn, req.ModelName, req.FrameID, req.VideoType)
 				continue
+			case "switch_to_binary", "test_binary":
+				// Protocol detection - just acknowledge
+				response := map[string]interface{}{
+					"type":    "protocol_ack",
+					"message": "Binary protocol supported",
+				}
+				jsonData, _ := json.Marshal(response)
+				conn.WriteMessage(websocket.TextMessage, jsonData)
+				continue
 			case "inference", "":
 				// Fallthrough to inference handling
 				modelName = req.ModelName

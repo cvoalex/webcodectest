@@ -243,6 +243,112 @@ class OptimizedLipSyncServicer(optimized_lipsyncsrv_pb2_grpc.OptimizedLipSyncSer
             response = await self.GenerateInference(request, context)
             yield response
     
+    async def GenerateBatchWithAudio(
+        self,
+        request: optimized_lipsyncsrv_pb2.BatchInferenceWithAudioRequest,
+        context: grpc.aio.ServicerContext
+    ) -> optimized_lipsyncsrv_pb2.BatchInferenceResponse:
+        """
+        Optimized batch inference with audio chunks
+        Eliminates redundant audio data by sending contiguous audio array
+        """
+        
+        start_time = time.time()
+        
+        start_frame = request.start_frame_id
+        frame_count = request.frame_count
+        audio_chunks = request.audio_chunks
+        
+        print(f"🎵 AUDIO BATCH: model={request.model_name}, frames={start_frame}-{start_frame+frame_count-1} ({frame_count} frames)")
+        print(f"   Audio chunks: {len(audio_chunks)} (expected: {frame_count + 15})")
+        
+        # Validate audio chunks
+        required_chunks = frame_count + 15  # 8 before + N frames + 7 after
+        if len(audio_chunks) < required_chunks:
+            error_msg = f"Insufficient audio chunks: need {required_chunks}, got {len(audio_chunks)}"
+            print(f"❌ {error_msg}")
+            error_response = optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                success=False,
+                error=error_msg
+            )
+            return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                responses=[error_response] * frame_count,
+                total_processing_time_ms=0,
+                avg_frame_time_ms=0
+            )
+        
+        try:
+            # Get the model package
+            package = self.engine.get_model(request.model_name)
+            
+            if package is None:
+                print(f"❌ Model not found: {request.model_name}")
+                error_response = optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                    success=False,
+                    error=f"Model '{request.model_name}' not found"
+                )
+                return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                    responses=[error_response] * frame_count,
+                    total_processing_time_ms=0,
+                    avg_frame_time_ms=0
+                )
+            
+            # Process each frame with its audio window
+            responses = []
+            
+            for i in range(frame_count):
+                frame_id = start_frame + i
+                
+                # Extract 16-chunk audio window for this frame
+                # Window starts at index i (since first 8 chunks are for frame start_frame)
+                window_start = i
+                window_end = i + 16
+                frame_audio_chunks = audio_chunks[window_start:window_end]
+                
+                print(f"   Frame {frame_id}: audio chunks[{window_start}:{window_end}]")
+                
+                # TODO: In future, use audio chunks for real-time inference
+                # For now, use pre-extracted features from package
+                inference_request = optimized_lipsyncsrv_pb2.OptimizedInferenceRequest(
+                    model_name=request.model_name,
+                    frame_id=frame_id
+                )
+                
+                response = await self.GenerateInference(inference_request, context)
+                responses.append(response)
+            
+            total_time = int((time.time() - start_time) * 1000)
+            avg_time = total_time / frame_count if frame_count else 0
+            
+            # Calculate bandwidth savings
+            old_chunks = frame_count * 16
+            new_chunks = len(audio_chunks)
+            savings_pct = ((old_chunks - new_chunks) / old_chunks * 100) if old_chunks > 0 else 0
+            
+            print(f"✅ AUDIO BATCH complete: {frame_count} frames in {total_time}ms")
+            print(f"   Bandwidth savings: {old_chunks} → {new_chunks} chunks ({savings_pct:.1f}% reduction)")
+            
+            return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                responses=responses,
+                total_processing_time_ms=total_time,
+                avg_frame_time_ms=avg_time
+            )
+            
+        except Exception as e:
+            print(f"❌ Audio batch inference error: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            error_response = optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                success=False,
+                error=str(e)
+            )
+            return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                responses=[error_response] * frame_count,
+                total_processing_time_ms=0,
+                avg_frame_time_ms=0
+            )
+    
     async def LoadPackage(
         self,
         request: optimized_lipsyncsrv_pb2.LoadPackageRequest,

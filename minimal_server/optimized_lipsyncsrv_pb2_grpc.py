@@ -45,6 +45,11 @@ class OptimizedLipSyncServiceStub(object):
                 request_serializer=optimized__lipsyncsrv__pb2.BatchInferenceRequest.SerializeToString,
                 response_deserializer=optimized__lipsyncsrv__pb2.BatchInferenceResponse.FromString,
                 _registered_method=True)
+        self.GenerateBatchWithAudio = channel.unary_unary(
+                '/optimized_lipsyncsrv.OptimizedLipSyncService/GenerateBatchWithAudio',
+                request_serializer=optimized__lipsyncsrv__pb2.BatchInferenceWithAudioRequest.SerializeToString,
+                response_deserializer=optimized__lipsyncsrv__pb2.BatchInferenceResponse.FromString,
+                _registered_method=True)
         self.StreamInference = channel.stream_stream(
                 '/optimized_lipsyncsrv.OptimizedLipSyncService/StreamInference',
                 request_serializer=optimized__lipsyncsrv__pb2.OptimizedInferenceRequest.SerializeToString,
@@ -94,7 +99,14 @@ class OptimizedLipSyncServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GenerateBatchInference(self, request, context):
-        """Batch inference for multiple frames
+        """Batch inference for multiple frames (uses pre-extracted features)
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GenerateBatchWithAudio(self, request, context):
+        """Optimized batch inference with audio chunks (avoids redundant data transfer)
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -160,6 +172,11 @@ def add_OptimizedLipSyncServiceServicer_to_server(servicer, server):
             'GenerateBatchInference': grpc.unary_unary_rpc_method_handler(
                     servicer.GenerateBatchInference,
                     request_deserializer=optimized__lipsyncsrv__pb2.BatchInferenceRequest.FromString,
+                    response_serializer=optimized__lipsyncsrv__pb2.BatchInferenceResponse.SerializeToString,
+            ),
+            'GenerateBatchWithAudio': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateBatchWithAudio,
+                    request_deserializer=optimized__lipsyncsrv__pb2.BatchInferenceWithAudioRequest.FromString,
                     response_serializer=optimized__lipsyncsrv__pb2.BatchInferenceResponse.SerializeToString,
             ),
             'StreamInference': grpc.stream_stream_rpc_method_handler(
@@ -252,6 +269,33 @@ class OptimizedLipSyncService(object):
             target,
             '/optimized_lipsyncsrv.OptimizedLipSyncService/GenerateBatchInference',
             optimized__lipsyncsrv__pb2.BatchInferenceRequest.SerializeToString,
+            optimized__lipsyncsrv__pb2.BatchInferenceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateBatchWithAudio(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/optimized_lipsyncsrv.OptimizedLipSyncService/GenerateBatchWithAudio',
+            optimized__lipsyncsrv__pb2.BatchInferenceWithAudioRequest.SerializeToString,
             optimized__lipsyncsrv__pb2.BatchInferenceResponse.FromString,
             options,
             channel_credentials,

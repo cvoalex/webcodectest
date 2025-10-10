@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -31,6 +32,7 @@ func main() {
 	modelName := flag.String("model", "sanders", "Model name to use")
 	startFrame := flag.Int("start", 95, "Starting frame ID")
 	count := flag.Int("count", 5, "Number of frames to generate")
+	parallel := flag.Bool("parallel", true, "Send requests in parallel (default: true)")
 	flag.Parse()
 
 	fmt.Printf("🔌 Connecting to gRPC server at %s...\n", *serverAddr)
@@ -45,62 +47,142 @@ func main() {
 	client := pb.NewOptimizedLipSyncServiceClient(conn)
 
 	fmt.Printf("✅ Connected!\n\n")
-	fmt.Printf("📊 Generating %d frames (frames %d-%d)...\n", *count, *startFrame, *startFrame+*count-1)
+	
+	mode := "sequentially"
+	if *parallel {
+		mode = "in parallel (concurrent)"
+	}
+	fmt.Printf("📊 Generating %d frames (frames %d-%d) %s...\n", *count, *startFrame, *startFrame+*count-1, mode)
 	fmt.Printf("   Model: %s\n", *modelName)
 	fmt.Printf("   Note: Uses pre-extracted audio features\n\n")
 
 	// Generate multiple frames and collect stats
-	results := make([]FrameResult, 0, *count)
+	var results []FrameResult
+	var mu sync.Mutex
 	totalStartTime := time.Now()
 
-	for i := 0; i < *count; i++ {
-		frameID := int32(*startFrame + i)
+	if *parallel {
+		// Parallel execution - send all requests at once
+		var wg sync.WaitGroup
+		results = make([]FrameResult, *count)
 		
-		// Create request
-		req := &pb.OptimizedInferenceRequest{
-			ModelName: *modelName,
-			FrameId:   frameID,
-		}
-
-		// Call the gRPC method
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		startTime := time.Now()
-		resp, err := client.GenerateInference(ctx, req)
-		elapsed := time.Since(startTime)
-		cancel()
-
-		result := FrameResult{
-			FrameID:   frameID,
-			TotalTime: elapsed,
-		}
-
-		if err != nil {
-			result.Success = false
-			result.Error = err.Error()
-			fmt.Printf("❌ Frame %d: Failed - %v\n", frameID, err)
-		} else {
-			result.Success = resp.Success
-			result.ProcessingTime = float64(resp.ProcessingTimeMs)
-			result.InferenceTime = resp.InferenceTimeMs
-			result.ImageSize = len(resp.PredictionData)
-
-			if resp.Success {
-				// Save the image
-				filename := fmt.Sprintf("frame_%d.jpg", frameID)
-				err = os.WriteFile(filename, resp.PredictionData, 0644)
-				if err != nil {
-					fmt.Printf("⚠️  Frame %d: Generated but failed to save - %v\n", frameID, err)
-				} else {
-					fmt.Printf("✅ Frame %d: %.2fms (%.2fms inference) - %d bytes - saved to %s\n",
-						frameID, elapsed.Seconds()*1000, resp.InferenceTimeMs, len(resp.PredictionData), filename)
+		for i := 0; i < *count; i++ {
+			wg.Add(1)
+			go func(index int) {
+				defer wg.Done()
+				
+				frameID := int32(*startFrame + index)
+				
+				// Create request
+				req := &pb.OptimizedInferenceRequest{
+					ModelName: *modelName,
+					FrameId:   frameID,
 				}
-			} else {
-				result.Error = "Server returned success=false"
-				fmt.Printf("❌ Frame %d: Server error\n", frameID)
-			}
-		}
 
-		results = append(results, result)
+				// Call the gRPC method
+				ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+				startTime := time.Now()
+				resp, err := client.GenerateInference(ctx, req)
+				elapsed := time.Since(startTime)
+				cancel()
+
+				result := FrameResult{
+					FrameID:   frameID,
+					TotalTime: elapsed,
+				}
+
+				if err != nil {
+					result.Success = false
+					result.Error = err.Error()
+					mu.Lock()
+					fmt.Printf("❌ Frame %d: Failed - %v\n", frameID, err)
+					mu.Unlock()
+				} else {
+					result.Success = resp.Success
+					result.ProcessingTime = float64(resp.ProcessingTimeMs)
+					result.InferenceTime = resp.InferenceTimeMs
+					result.ImageSize = len(resp.PredictionData)
+
+					if resp.Success {
+						// Save the image
+						filename := fmt.Sprintf("frame_%d.jpg", frameID)
+						err = os.WriteFile(filename, resp.PredictionData, 0644)
+						
+						mu.Lock()
+						if err != nil {
+							fmt.Printf("⚠️  Frame %d: Generated but failed to save - %v\n", frameID, err)
+						} else {
+							fmt.Printf("✅ Frame %d: %.2fms (%.2fms inference) - %d bytes - saved to %s\n",
+								frameID, elapsed.Seconds()*1000, resp.InferenceTimeMs, len(resp.PredictionData), filename)
+						}
+						mu.Unlock()
+					} else {
+						result.Error = "Server returned success=false"
+						mu.Lock()
+						fmt.Printf("❌ Frame %d: Server error\n", frameID)
+						mu.Unlock()
+					}
+				}
+
+				results[index] = result
+			}(i)
+		}
+		
+		wg.Wait()
+		
+	} else {
+		// Sequential execution - one at a time
+		results = make([]FrameResult, 0, *count)
+		
+		for i := 0; i < *count; i++ {
+			frameID := int32(*startFrame + i)
+			
+			// Create request
+			req := &pb.OptimizedInferenceRequest{
+				ModelName: *modelName,
+				FrameId:   frameID,
+			}
+
+			// Call the gRPC method
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			startTime := time.Now()
+			resp, err := client.GenerateInference(ctx, req)
+			elapsed := time.Since(startTime)
+			cancel()
+
+			result := FrameResult{
+				FrameID:   frameID,
+				TotalTime: elapsed,
+			}
+
+			if err != nil {
+				result.Success = false
+				result.Error = err.Error()
+				fmt.Printf("❌ Frame %d: Failed - %v\n", frameID, err)
+			} else {
+				result.Success = resp.Success
+				result.ProcessingTime = float64(resp.ProcessingTimeMs)
+				result.InferenceTime = resp.InferenceTimeMs
+				result.ImageSize = len(resp.PredictionData)
+
+				if resp.Success {
+					// Save the image
+					filename := fmt.Sprintf("frame_%d.jpg", frameID)
+					err = os.WriteFile(filename, resp.PredictionData, 0644)
+					if err != nil {
+						fmt.Printf("⚠️  Frame %d: Generated but failed to save - %v\n", frameID, err)
+					} else {
+						fmt.Printf("✅ Frame %d: %.2fms (%.2fms inference) - %d bytes - saved to %s\n",
+							frameID, elapsed.Seconds()*1000, resp.InferenceTimeMs, len(resp.PredictionData), filename)
+					}
+				} else {
+					result.Error = "Server returned success=false"
+					fmt.Printf("❌ Frame %d: Server error\n", frameID)
+				}
+			}
+
+			results = append(results, result)
+		}
 	}
 
 	totalElapsed := time.Since(totalStartTime)

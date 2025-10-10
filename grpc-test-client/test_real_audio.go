@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"time"
 
 	pb "github.com/cvoalex/lipsync-proxy/pb"
@@ -173,12 +174,9 @@ func testRealAudioBatch() {
 	fmt.Printf("   Total chunks duration: %.2f seconds\n", float64(len(chunks))*0.04)
 
 	// Calculate how many frames we can generate
-	// Need: 8 chunks before + N frames + 7 chunks after
-	maxPossibleFrames := len(chunks) - 15
-	if maxPossibleFrames <= 0 {
-		log.Fatalf("❌ Audio file too short! Need at least 15 chunks (0.6 seconds), got %d chunks", len(chunks))
-	}
-
+	// With padding, we can generate as many frames as we have audio chunks!
+	maxPossibleFrames := len(chunks)
+	
 	// Limit to user's max or what's possible
 	frameCount := *maxFrames
 	if frameCount > maxPossibleFrames {
@@ -186,18 +184,31 @@ func testRealAudioBatch() {
 		fmt.Printf("⚠️  Limiting to %d frames (audio duration constraint)\n", frameCount)
 	}
 
-	// Calculate audio chunks needed
-	audioChunksNeeded := frameCount + 15 // 8 before + N frames + 7 after
-	audioChunksStart := *startFrame - 8
-	if audioChunksStart < 0 {
-		// Adjust start frame if we can't go 8 chunks back
-		*startFrame = 8
-		audioChunksStart = 0
-		fmt.Printf("⚠️  Adjusted start frame to %d (need 8 chunks before)\n", *startFrame)
+	// Pad audio chunks at the boundaries
+	// For each frame, we need 16 chunks: 8 before + current + 7 after
+	// Total chunks needed: frameCount + 15
+	audioChunksNeeded := frameCount + 15
+	
+	// Create padded chunks array
+	paddedChunks := make([][]byte, audioChunksNeeded)
+	
+	// Fill with repeated edge chunks at boundaries
+	for i := 0; i < audioChunksNeeded; i++ {
+		// Map to actual chunk index
+		chunkIdx := i - 8 + *startFrame
+		
+		if chunkIdx < 0 {
+			// Repeat first chunk for frames at the beginning
+			paddedChunks[i] = chunks[0]
+		} else if chunkIdx >= len(chunks) {
+			// Repeat last chunk for frames at the end
+			paddedChunks[i] = chunks[len(chunks)-1]
+		} else {
+			paddedChunks[i] = chunks[chunkIdx]
+		}
 	}
 
-	// Extract the chunks we need
-	audioChunksForRequest := chunks[audioChunksStart : audioChunksStart+audioChunksNeeded]
+	audioChunksForRequest := paddedChunks
 
 	oldMethod := frameCount * 16
 	savings := float64(oldMethod-audioChunksNeeded) / float64(oldMethod) * 100
@@ -332,6 +343,57 @@ func testRealAudioBatch() {
 	fmt.Printf("\n🎉 SUCCESS! Generated %d lip-sync frames from real audio!\n", successCount)
 	fmt.Println("======================================================================")
 	fmt.Println()
+
+	// Assemble video from frames
+	if successCount > 0 {
+		fmt.Println("\n🎬 Assembling video from frames...")
+		videoFile := "lipsync_output.mp4"
+		err := assembleVideo(*audioFile, videoFile, *startFrame, frameCount)
+		if err != nil {
+			fmt.Printf("⚠️  Video assembly failed: %v\n", err)
+			fmt.Println("   (Frames are still saved individually)")
+		} else {
+			fmt.Printf("✅ Video saved: %s\n", videoFile)
+		}
+	}
+}
+
+func assembleVideo(audioFile string, outputFile string, startFrame int, frameCount int) error {
+	// Create a file list for ffmpeg
+	listFile := "frames_list.txt"
+	f, err := os.Create(listFile)
+	if err != nil {
+		return fmt.Errorf("failed to create frame list: %w", err)
+	}
+	
+	// Write frame paths
+	for i := startFrame; i < startFrame+frameCount; i++ {
+		framePath := fmt.Sprintf("real_audio_frame_%d.jpg", i)
+		// Each frame is 40ms (25 fps)
+		fmt.Fprintf(f, "file '%s'\n", framePath)
+		fmt.Fprintf(f, "duration 0.04\n")
+	}
+	// Add last frame again without duration for ffmpeg
+	lastFramePath := fmt.Sprintf("real_audio_frame_%d.jpg", startFrame+frameCount-1)
+	fmt.Fprintf(f, "file '%s'\n", lastFramePath)
+	f.Close()
+	defer os.Remove(listFile)
+
+	// Use ffmpeg to combine frames and audio
+	// ffmpeg -f concat -safe 0 -i frames_list.txt -i audio.wav -c:v libx264 -pix_fmt yuv420p -c:a aac output.mp4
+	fmt.Println("   Running FFmpeg...")
+	
+	cmd := fmt.Sprintf("ffmpeg -y -f concat -safe 0 -i %s -i %s -c:v libx264 -pix_fmt yuv420p -preset fast -crf 23 -c:a aac -b:a 128k %s",
+		listFile, audioFile, outputFile)
+	
+	// Execute ffmpeg
+	result := exec.Command("cmd", "/C", cmd)
+	output, err := result.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("ffmpeg failed: %w\nOutput: %s", err, string(output))
+	}
+
+	return nil
 }
 
 func main() {

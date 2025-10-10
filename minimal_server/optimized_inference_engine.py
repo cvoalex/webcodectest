@@ -508,15 +508,16 @@ class OptimizedModelPackage:
 
 
 class OptimizedMultiModelEngine:
-    """Multi-model engine for optimized packages"""
+    """Multi-model engine for optimized packages with batch support"""
     
-    def __init__(self):
+    def __init__(self, max_batch_size: int = 4):
         self.packages: Dict[str, OptimizedModelPackage] = {}
         self.executor = ThreadPoolExecutor(max_workers=4)
-        print("🚀 Optimized Multi-Model Engine initialized")
+        self.max_batch_size = max_batch_size
+        print(f"🚀 Optimized Multi-Model Engine initialized (batch_size={max_batch_size})")
     
-    async def load_package(self, package_name: str, package_dir: str) -> Dict[str, Any]:
-        """Load an optimized model package"""
+    async def load_package(self, package_name: str, package_dir: str, enable_batching: bool = True) -> Dict[str, Any]:
+        """Load an optimized model package with optional batch support"""
         
         if package_name in self.packages:
             return {
@@ -525,7 +526,18 @@ class OptimizedMultiModelEngine:
             }
         
         try:
-            package = OptimizedModelPackage(package_dir)
+            # Try to import BatchInferenceEngine if available
+            if enable_batching:
+                try:
+                    from batch_inference_engine import BatchInferenceEngine
+                    package = BatchInferenceEngine(package_dir, max_batch_size=self.max_batch_size)
+                    print(f"✅ Using BatchInferenceEngine for {package_name}")
+                except ImportError:
+                    print(f"⚠️  BatchInferenceEngine not available, using standard package")
+                    package = OptimizedModelPackage(package_dir)
+            else:
+                package = OptimizedModelPackage(package_dir)
+            
             result = await package.initialize()
             
             self.packages[package_name] = package
@@ -558,6 +570,10 @@ class OptimizedMultiModelEngine:
             raise ValueError(f"Model '{model_name}' not loaded")
         
         return await self.packages[model_name].generate_inference_only(frame_id)
+    
+    def get_model(self, model_name: str) -> Optional[OptimizedModelPackage]:
+        """Get model package by name"""
+        return self.packages.get(model_name)
     
     def list_models(self) -> Dict[str, Any]:
         """List loaded models"""
@@ -644,8 +660,8 @@ class OptimizedMultiModelEngine:
         }
 
 
-# Global optimized engine instance
-optimized_engine = OptimizedMultiModelEngine()
+# Global optimized engine instance with configurable batch size
+optimized_engine = OptimizedMultiModelEngine(max_batch_size=8)
 
 
 async def test_optimized_engine():

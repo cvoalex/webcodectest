@@ -129,33 +129,106 @@ class OptimizedLipSyncServicer(optimized_lipsyncsrv_pb2_grpc.OptimizedLipSyncSer
         request: optimized_lipsyncsrv_pb2.BatchInferenceRequest,
         context: grpc.aio.ServicerContext
     ) -> optimized_lipsyncsrv_pb2.BatchInferenceResponse:
-        """Generate batch inference for multiple frames"""
+        """Generate batch inference for multiple frames using GPU batching"""
         
         start_time = time.time()
-        responses = []
         
-        print(f"📦 Batch inference: model={request.model_name}, frames={len(request.frame_ids)}")
+        batch_size = len(request.frame_ids)
+        print(f"� BATCH inference: model={request.model_name}, frames={batch_size} (GPU batched)")
         
-        # Process each frame
-        for frame_id in request.frame_ids:
-            inference_request = optimized_lipsyncsrv_pb2.OptimizedInferenceRequest(
-                model_name=request.model_name,
-                frame_id=frame_id
+        try:
+            # Get the model package
+            package = self.engine.get_model(request.model_name)
+            
+            if package is None:
+                print(f"❌ Model not found: {request.model_name}")
+                # Return error responses for all frames
+                error_response = optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                    success=False,
+                    error=f"Model '{request.model_name}' not found"
+                )
+                return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                    responses=[error_response] * batch_size,
+                    total_processing_time_ms=0,
+                    avg_frame_time_ms=0
+                )
+            
+            # Check if package supports batch inference (has the method)
+            if not hasattr(package, 'generate_frames_batch_inference_only'):
+                print(f"⚠️  Model doesn't support batch inference, falling back to sequential")
+                # Fallback to sequential processing
+                responses = []
+                for frame_id in request.frame_ids:
+                    inference_request = optimized_lipsyncsrv_pb2.OptimizedInferenceRequest(
+                        model_name=request.model_name,
+                        frame_id=frame_id
+                    )
+                    response = await self.GenerateInference(inference_request, context)
+                    responses.append(response)
+                
+                total_time = int((time.time() - start_time) * 1000)
+                avg_time = total_time / batch_size if batch_size else 0
+                
+                return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                    responses=responses,
+                    total_processing_time_ms=total_time,
+                    avg_frame_time_ms=avg_time
+                )
+            
+            # Use GPU batch processing!
+            frame_ids_list = list(request.frame_ids)
+            results = await package.generate_frames_batch_inference_only(frame_ids_list)
+            
+            # Convert results to gRPC responses
+            responses = []
+            for prediction, bounds, metadata in results:
+                # Encode prediction as JPEG
+                success, buffer = cv2.imencode('.jpg', prediction, [cv2.IMWRITE_JPEG_QUALITY, 95])
+                if not success:
+                    responses.append(optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                        success=False,
+                        error="Failed to encode prediction"
+                    ))
+                    continue
+                
+                response = optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                    success=True,
+                    prediction_data=buffer.tobytes(),
+                    bounds=bounds.tolist(),
+                    processing_time_ms=int(metadata["processing_time_ms"]),
+                    model_name=metadata["model_name"],
+                    frame_id=metadata["frame_id"],
+                    prediction_shape=f"{prediction.shape[0]}x{prediction.shape[1]}x{prediction.shape[2]}",
+                    inference_time_ms=metadata["inference_time_ms"],
+                    optimizations=["GPU_BATCH_PROCESSING", "PRE_LOADED_RESOURCES", "MEMORY_MAPPED_AUDIO"]
+                )
+                responses.append(response)
+            
+            total_time = int((time.time() - start_time) * 1000)
+            avg_time = total_time / batch_size if batch_size else 0
+            
+            print(f"✅ BATCH complete: {batch_size} frames in {total_time}ms (avg: {avg_time:.1f}ms/frame) - {batch_size/max(total_time/1000, 0.001):.1f} FPS")
+            
+            return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                responses=responses,
+                total_processing_time_ms=total_time,
+                avg_frame_time_ms=avg_time
             )
             
-            response = await self.GenerateInference(inference_request, context)
-            responses.append(response)
-        
-        total_time = int((time.time() - start_time) * 1000)
-        avg_time = total_time / len(request.frame_ids) if request.frame_ids else 0
-        
-        print(f"✅ Batch complete: {len(request.frame_ids)} frames in {total_time}ms (avg: {avg_time:.1f}ms/frame)")
-        
-        return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
-            responses=responses,
-            total_processing_time_ms=total_time,
-            avg_frame_time_ms=avg_time
-        )
+        except Exception as e:
+            print(f"❌ Batch inference error: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            error_response = optimized_lipsyncsrv_pb2.OptimizedInferenceResponse(
+                success=False,
+                error=str(e)
+            )
+            return optimized_lipsyncsrv_pb2.BatchInferenceResponse(
+                responses=[error_response] * batch_size,
+                total_processing_time_ms=0,
+                avg_frame_time_ms=0
+            )
     
     async def StreamInference(
         self,

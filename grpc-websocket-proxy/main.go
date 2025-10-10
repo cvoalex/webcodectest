@@ -145,8 +145,9 @@ type BinaryRequest struct {
 // JSONRequest represents a JSON protocol request from browser
 type JSONRequest struct {
 	Type      string `json:"type"`
-	ModelName string `json:"model_name"`
-	FrameID   int32  `json:"frame_id"`
+	ModelName string `json:"model_name,omitempty"`
+	FrameID   int32  `json:"frame_id,omitempty"`
+	VideoType string `json:"video_type,omitempty"`
 }
 
 // JSONResponse represents a JSON protocol response to browser
@@ -207,13 +208,13 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		startTime := time.Now()
 
-		// Determine protocol (binary vs JSON)
+		// Determine protocol and message type
 		var modelName string
 		var frameID int32
 		var isBinary bool
 
 		if messageType == websocket.BinaryMessage {
-			// Binary protocol
+			// Binary protocol - always inference
 			req, err := parseBinaryRequest(data)
 			if err != nil {
 				log.Printf("❌ Invalid binary request from %s: %v", clientAddr, err)
@@ -223,15 +224,39 @@ func (p *ProxyServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			frameID = req.FrameID
 			isBinary = true
 		} else {
-			// JSON protocol
+			// JSON protocol - check message type
 			var req JSONRequest
 			if err := json.Unmarshal(data, &req); err != nil {
 				log.Printf("❌ Invalid JSON request from %s: %v", clientAddr, err)
 				continue
 			}
-			modelName = req.ModelName
-			frameID = req.FrameID
-			isBinary = false
+
+			// Handle non-inference requests
+			switch req.Type {
+			case "list_models":
+				p.handleListModels(conn)
+				continue
+			case "get_metadata":
+				p.handleGetMetadata(conn, req.ModelName)
+				continue
+			case "get_video_frame":
+				p.handleGetVideoFrame(conn, req.ModelName, req.FrameID, req.VideoType)
+				continue
+			case "inference", "":
+				// Fallthrough to inference handling
+				modelName = req.ModelName
+				frameID = req.FrameID
+				isBinary = false
+			default:
+				log.Printf("❌ Unknown message type: %s", req.Type)
+				errorResp := map[string]interface{}{
+					"type":  "error",
+					"error": "Unknown message type: " + req.Type,
+				}
+				jsonData, _ := json.Marshal(errorResp)
+				conn.WriteMessage(websocket.TextMessage, jsonData)
+				continue
+			}
 		}
 
 		// Get next backend (round-robin)
@@ -435,6 +460,174 @@ func main() {
 	fmt.Println()
 
 	log.Fatal(http.ListenAndServe(addr, nil))
+}
+
+// Handler for ListModels request
+func (p *ProxyServer) handleListModels(conn *websocket.Conn) {
+	backend := p.getNextBackend()
+	if backend == nil {
+		log.Printf("❌ No backends available for list_models")
+		errorResp := map[string]interface{}{
+			"type":  "model_list",
+			"error": "no backends available",
+		}
+		jsonData, _ := json.Marshal(errorResp)
+		conn.WriteMessage(websocket.TextMessage, jsonData)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	grpcResp, err := backend.client.ListModels(ctx, &pb.ListModelsRequest{})
+	if err != nil {
+		log.Printf("❌ ListModels gRPC error: %v", err)
+		errorResp := map[string]interface{}{
+			"type":  "model_list",
+			"error": err.Error(),
+		}
+		jsonData, _ := json.Marshal(errorResp)
+		conn.WriteMessage(websocket.TextMessage, jsonData)
+		return
+	}
+
+	response := map[string]interface{}{
+		"type":   "model_list",
+		"models": grpcResp.LoadedModels,
+		"count":  grpcResp.Count,
+	}
+	jsonData, _ := json.Marshal(response)
+	conn.WriteMessage(websocket.TextMessage, jsonData)
+	log.Printf("✅ ListModels: %d models", grpcResp.Count)
+}
+
+// Handler for GetModelMetadata request
+func (p *ProxyServer) handleGetMetadata(conn *websocket.Conn, modelName string) {
+	backend := p.getNextBackend()
+	if backend == nil {
+		log.Printf("❌ No backends available for get_metadata")
+		errorResp := map[string]interface{}{
+			"type":  "metadata",
+			"error": "no backends available",
+		}
+		jsonData, _ := json.Marshal(errorResp)
+		conn.WriteMessage(websocket.TextMessage, jsonData)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	grpcReq := &pb.GetModelMetadataRequest{
+		ModelName: modelName,
+	}
+	grpcResp, err := backend.client.GetModelMetadata(ctx, grpcReq)
+	if err != nil {
+		log.Printf("❌ GetModelMetadata gRPC error for %s: %v", modelName, err)
+		errorResp := map[string]interface{}{
+			"type":       "metadata",
+			"error":      err.Error(),
+			"model_name": modelName,
+		}
+		jsonData, _ := json.Marshal(errorResp)
+		conn.WriteMessage(websocket.TextMessage, jsonData)
+		return
+	}
+
+	response := map[string]interface{}{
+		"type":             "metadata",
+		"success":          grpcResp.Success,
+		"model_name":       grpcResp.ModelName,
+		"frame_count":      grpcResp.FrameCount,
+		"available_videos": grpcResp.AvailableVideos,
+		"audio_path":       grpcResp.AudioPath,
+		"bounds":           grpcResp.Bounds,
+	}
+	if grpcResp.Error != nil && *grpcResp.Error != "" {
+		response["error"] = *grpcResp.Error
+	}
+	jsonData, _ := json.Marshal(response)
+	conn.WriteMessage(websocket.TextMessage, jsonData)
+	log.Printf("✅ GetModelMetadata: %s (%d frames)", modelName, grpcResp.FrameCount)
+}
+
+// Handler for GetVideoFrame request
+func (p *ProxyServer) handleGetVideoFrame(conn *websocket.Conn, modelName string, frameID int32, videoType string) {
+	backend := p.getNextBackend()
+	if backend == nil {
+		log.Printf("❌ No backends available for get_video_frame")
+		errorResp := map[string]interface{}{
+			"type":  "video_frame",
+			"error": "no backends available",
+		}
+		jsonData, _ := json.Marshal(errorResp)
+		conn.WriteMessage(websocket.TextMessage, jsonData)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	grpcReq := &pb.GetVideoFrameRequest{
+		ModelName: modelName,
+		FrameId:   frameID,
+		VideoType: videoType,
+	}
+	grpcResp, err := backend.client.GetVideoFrame(ctx, grpcReq)
+	if err != nil {
+		log.Printf("❌ GetVideoFrame gRPC error for %s frame %d: %v", modelName, frameID, err)
+		errorResp := map[string]interface{}{
+			"type":       "video_frame",
+			"error":      err.Error(),
+			"model_name": modelName,
+			"frame_id":   frameID,
+		}
+		jsonData, _ := json.Marshal(errorResp)
+		conn.WriteMessage(websocket.TextMessage, jsonData)
+		return
+	}
+
+	// Send binary response: [type:1][frame_id:4][video_type_len:1][video_type:N][data_len:4][jpeg_data:N]
+	videoTypeBytes := []byte(grpcResp.VideoType)
+	response := make([]byte, 1+4+1+len(videoTypeBytes)+4+len(grpcResp.FrameData))
+	
+	offset := 0
+	response[offset] = 2 // Message type: video frame
+	offset++
+	
+	// Frame ID (little endian)
+	response[offset] = byte(grpcResp.FrameId)
+	response[offset+1] = byte(grpcResp.FrameId >> 8)
+	response[offset+2] = byte(grpcResp.FrameId >> 16)
+	response[offset+3] = byte(grpcResp.FrameId >> 24)
+	offset += 4
+	
+	// Video type length
+	response[offset] = byte(len(videoTypeBytes))
+	offset++
+	
+	// Video type string
+	copy(response[offset:], videoTypeBytes)
+	offset += len(videoTypeBytes)
+	
+	// Data length (little endian)
+	dataLen := uint32(len(grpcResp.FrameData))
+	response[offset] = byte(dataLen)
+	response[offset+1] = byte(dataLen >> 8)
+	response[offset+2] = byte(dataLen >> 16)
+	response[offset+3] = byte(dataLen >> 24)
+	offset += 4
+	
+	// JPEG data
+	copy(response[offset:], grpcResp.FrameData)
+	
+	err = conn.WriteMessage(websocket.BinaryMessage, response)
+	if err != nil {
+		log.Printf("❌ Failed to send video frame to client: %v", err)
+		return
+	}
+	
+	log.Printf("✅ GetVideoFrame: %s frame %d %s (%d bytes)", modelName, frameID, videoType, len(grpcResp.FrameData))
 }
 
 func parseAddresses(addrsStr string) []string {

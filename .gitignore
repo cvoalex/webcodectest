@@ -118,3 +118,9 @@ coverage.xml
 *.mp3
 *.flac
 *.aac
+
+# Large model/data packages (over 100MB)
+**/test_optimized_package*.zip
+**/default_model.zip
+**/sanders_dataset_package.zip
+archive/*.zip

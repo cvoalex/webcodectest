@@ -191,43 +191,43 @@ func parseBinaryRequest(data []byte) (*BinaryRequest, error) {
 func createBinaryResponse(frameID int32, processingTime int32, imageData []byte, bounds []float32) []byte {
 	imageLen := len(imageData)
 	boundsLen := len(bounds) * 4 // 4 bytes per float32
-	
+
 	// Calculate total size
 	totalSize := 1 + 4 + 4 + 4 + imageLen + 4 + boundsLen
 	response := make([]byte, totalSize)
-	
+
 	offset := 0
-	
+
 	// Success flag (1 byte)
 	response[offset] = 1
 	offset += 1
-	
+
 	// Frame ID (4 bytes, little-endian)
 	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(frameID))
 	offset += 4
-	
+
 	// Processing time (4 bytes, little-endian)
 	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(processingTime))
 	offset += 4
-	
+
 	// Image length (4 bytes, little-endian)
 	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(imageLen))
 	offset += 4
-	
+
 	// Image data
 	copy(response[offset:offset+imageLen], imageData)
 	offset += imageLen
-	
+
 	// Bounds length (4 bytes, little-endian)
 	binary.LittleEndian.PutUint32(response[offset:offset+4], uint32(boundsLen))
 	offset += 4
-	
+
 	// Bounds data (float32 array)
 	for _, bound := range bounds {
 		binary.LittleEndian.PutUint32(response[offset:offset+4], math.Float32bits(bound))
 		offset += 4
 	}
-	
+
 	return response
 }
 
@@ -651,26 +651,26 @@ func (p *ProxyServer) handleGetVideoFrame(conn *websocket.Conn, modelName string
 	// Send binary response: [type:1][frame_id:4][video_type_len:1][video_type:N][data_len:4][jpeg_data:N]
 	videoTypeBytes := []byte(grpcResp.VideoType)
 	response := make([]byte, 1+4+1+len(videoTypeBytes)+4+len(grpcResp.FrameData))
-	
+
 	offset := 0
 	response[offset] = 2 // Message type: video frame
 	offset++
-	
+
 	// Frame ID (little endian)
 	response[offset] = byte(grpcResp.FrameId)
 	response[offset+1] = byte(grpcResp.FrameId >> 8)
 	response[offset+2] = byte(grpcResp.FrameId >> 16)
 	response[offset+3] = byte(grpcResp.FrameId >> 24)
 	offset += 4
-	
+
 	// Video type length
 	response[offset] = byte(len(videoTypeBytes))
 	offset++
-	
+
 	// Video type string
 	copy(response[offset:], videoTypeBytes)
 	offset += len(videoTypeBytes)
-	
+
 	// Data length (little endian)
 	dataLen := uint32(len(grpcResp.FrameData))
 	response[offset] = byte(dataLen)
@@ -678,16 +678,16 @@ func (p *ProxyServer) handleGetVideoFrame(conn *websocket.Conn, modelName string
 	response[offset+2] = byte(dataLen >> 16)
 	response[offset+3] = byte(dataLen >> 24)
 	offset += 4
-	
+
 	// JPEG data
 	copy(response[offset:], grpcResp.FrameData)
-	
+
 	err = conn.WriteMessage(websocket.BinaryMessage, response)
 	if err != nil {
 		log.Printf("❌ Failed to send video frame to client: %v", err)
 		return
 	}
-	
+
 	log.Printf("✅ GetVideoFrame: %s frame %d %s (%d bytes)", modelName, frameID, videoType, len(grpcResp.FrameData))
 }
 

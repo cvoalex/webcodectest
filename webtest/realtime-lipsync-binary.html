@@ -363,13 +363,13 @@
                     </label>
                     
                     <label>
-                        <input type="checkbox" id="fixedFrameMode" checked onchange="toggleFixedFrameMode()"> 
+                        <input type="checkbox" id="fixedFrameMode" onchange="toggleFixedFrameMode()"> 
                         Fixed Frame Mode (Focus on mouth)
                     </label>
                     
-                    <label id="fixedFrameControls" style="display: inline;">
+                    <label id="fixedFrameControls" style="display: none;">
                         Frame ID: 
-                        <input type="number" id="fixedFrameId" value="1000" min="0" max="3304" style="width: 80px; padding: 2px;">
+                        <input type="number" id="fixedFrameId" value="100" min="0" max="3304" style="width: 80px; padding: 2px;">
                     </label>
                 </div>
             </div>
@@ -589,8 +589,8 @@
                 this.useBinaryProtocol = true;
                 
                 // Fixed frame mode for mouth focus testing
-                this.useFixedFrame = true;  // Default to fixed frame mode
-                this.fixedFrameId = 1000; // Try frame 1000 for better mouth variation
+                this.useFixedFrame = false;  // Default to sequential frame mode
+                this.fixedFrameId = 100; // Default frame if mode is enabled
                 
                 this.initializeUI();
                 this.initializeCanvases();

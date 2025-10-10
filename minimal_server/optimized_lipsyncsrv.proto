@@ -35,6 +35,16 @@ message BatchInferenceRequest {
     repeated int32 frame_ids = 2;
 }
 
+// Optimized batch request with audio chunks (avoids redundant audio data)
+message BatchInferenceWithAudioRequest {
+    string model_name = 1;
+    int32 start_frame_id = 2;           // First frame to generate
+    int32 frame_count = 3;              // Number of consecutive frames
+    repeated bytes audio_chunks = 4;    // Audio chunks (40ms each)
+                                        // Need: 8 + frame_count + 7 chunks
+                                        // Example: 4 frames = 8+4+7 = 19 chunks
+}
+
 // Batch response
 message BatchInferenceResponse {
     repeated OptimizedInferenceResponse responses = 1;
@@ -140,8 +150,11 @@ service OptimizedLipSyncService {
     // Single frame inference (optimized)
     rpc GenerateInference(OptimizedInferenceRequest) returns (OptimizedInferenceResponse);
     
-    // Batch inference for multiple frames
+    // Batch inference for multiple frames (uses pre-extracted features)
     rpc GenerateBatchInference(BatchInferenceRequest) returns (BatchInferenceResponse);
+    
+    // Optimized batch inference with audio chunks (avoids redundant data transfer)
+    rpc GenerateBatchWithAudio(BatchInferenceWithAudioRequest) returns (BatchInferenceResponse);
     
     // Streaming inference for real-time applications (50+ FPS capable)
     rpc StreamInference(stream OptimizedInferenceRequest) returns (stream OptimizedInferenceResponse);

@@ -98,29 +98,17 @@ htmlcov/
 coverage.xml
 *.cover
 .hypothesis/
-.pytest_cache/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Go executables
+*.exe
 
-# GPU cache
-.nv/
-
-# Large media files
+# Generated media files
+*.jpg
+*.jpeg
+*.png
 *.mp4
-*.avi
-*.mov
-*.wmv
-*.flv
-*.webm
-*.mkv
 *.wav
-*.mp3
-*.flac
-*.aac
 
-# Large model/data packages (over 100MB)
-**/test_optimized_package*.zip
-**/default_model.zip
-**/sanders_dataset_package.zip
-archive/*.zip
+# Local directories
+protoc-tools/
+*.zip

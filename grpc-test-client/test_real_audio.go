@@ -160,7 +160,7 @@ func testRealAudioBatch() {
 	fmt.Printf("   Channels: %d\n", header.NumChannels)
 	fmt.Printf("   Bits Per Sample: %d\n", header.BitsPerSample)
 	fmt.Printf("   Audio Data Size: %d bytes (%.2f MB)\n", len(audioData), float64(len(audioData))/(1024*1024))
-	
+
 	audioDurationSec := float64(len(audioData)) / float64(header.ByteRate)
 	fmt.Printf("   Duration: %.2f seconds\n", audioDurationSec)
 
@@ -168,7 +168,7 @@ func testRealAudioBatch() {
 	fmt.Printf("\n🎵 Splitting audio into 40ms chunks...\n")
 	bytesPerSample := int(header.BitsPerSample) / 8
 	chunks := splitIntoChunks(audioData, header.SampleRate, 40, int(header.NumChannels), bytesPerSample)
-	
+
 	fmt.Printf("✅ Created %d audio chunks (40ms each)\n", len(chunks))
 	fmt.Printf("   Chunk size: %d bytes each\n", len(chunks[0]))
 	fmt.Printf("   Total chunks duration: %.2f seconds\n", float64(len(chunks))*0.04)
@@ -176,7 +176,7 @@ func testRealAudioBatch() {
 	// Calculate how many frames we can generate
 	// With padding, we can generate as many frames as we have audio chunks!
 	maxPossibleFrames := len(chunks)
-	
+
 	// Limit to user's max or what's possible
 	frameCount := *maxFrames
 	if frameCount > maxPossibleFrames {
@@ -188,15 +188,15 @@ func testRealAudioBatch() {
 	// For each frame, we need 16 chunks: 8 before + current + 7 after
 	// Total chunks needed: frameCount + 15
 	audioChunksNeeded := frameCount + 15
-	
+
 	// Create padded chunks array
 	paddedChunks := make([][]byte, audioChunksNeeded)
-	
+
 	// Fill with repeated edge chunks at boundaries
 	for i := 0; i < audioChunksNeeded; i++ {
 		// Map to actual chunk index
 		chunkIdx := i - 8 + *startFrame
-		
+
 		if chunkIdx < 0 {
 			// Repeat first chunk for frames at the beginning
 			paddedChunks[i] = chunks[0]
@@ -365,7 +365,7 @@ func assembleVideo(audioFile string, outputFile string, startFrame int, frameCou
 	if err != nil {
 		return fmt.Errorf("failed to create frame list: %w", err)
 	}
-	
+
 	// Write frame paths
 	for i := startFrame; i < startFrame+frameCount; i++ {
 		framePath := fmt.Sprintf("real_audio_frame_%d.jpg", i)
@@ -382,10 +382,10 @@ func assembleVideo(audioFile string, outputFile string, startFrame int, frameCou
 	// Use ffmpeg to combine frames and audio
 	// ffmpeg -f concat -safe 0 -i frames_list.txt -i audio.wav -c:v libx264 -pix_fmt yuv420p -c:a aac output.mp4
 	fmt.Println("   Running FFmpeg...")
-	
+
 	cmd := fmt.Sprintf("ffmpeg -y -f concat -safe 0 -i %s -i %s -c:v libx264 -pix_fmt yuv420p -preset fast -crf 23 -c:a aac -b:a 128k %s",
 		listFile, audioFile, outputFile)
-	
+
 	// Execute ffmpeg
 	result := exec.Command("cmd", "/C", cmd)
 	output, err := result.CombinedOutput()

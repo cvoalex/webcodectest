@@ -54,7 +54,7 @@ func testBatchInference() {
 
 	// Send batch request
 	batchStart := time.Now()
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -84,7 +84,7 @@ func testBatchInference() {
 			successCount++
 			size := len(r.PredictionData)
 			totalSize += size
-			
+
 			fmt.Printf("  ✅ Frame %d: %dms (%.2fms inference) - %d bytes (%.2f KB)\n",
 				r.FrameId,
 				r.ProcessingTimeMs,
@@ -113,12 +113,12 @@ func testBatchInference() {
 	fmt.Printf("   Server Total: %dms\n", resp.TotalProcessingTimeMs)
 	fmt.Printf("   Server Avg: %.2fms per frame\n", resp.AvgFrameTimeMs)
 	fmt.Printf("   Success Rate: %d/%d frames\n", successCount, *count)
-	
+
 	if batchDuration.Seconds() > 0 {
 		fps := float64(*count) / batchDuration.Seconds()
 		fmt.Printf("   Throughput: %.2f FPS\n", fps)
 	}
-	
+
 	if totalSize > 0 {
 		fmt.Printf("   Total Data: %d bytes (%.2f MB)\n", totalSize, float64(totalSize)/(1024*1024))
 		dataRate := float64(totalSize) / (1024 * 1024) / batchDuration.Seconds()

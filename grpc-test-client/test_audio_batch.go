@@ -30,7 +30,7 @@ func testAudioBatchInference() {
 	fmt.Printf("📊 Frames: %d-%d (%d frames)\n", *startFrame, *startFrame+*count-1, *count)
 
 	// Calculate audio chunks needed
-	audioChunksNeeded := *count + 15  // 8 before + N frames + 7 after
+	audioChunksNeeded := *count + 15 // 8 before + N frames + 7 after
 	oldMethod := *count * 16
 	savings := float64(oldMethod-audioChunksNeeded) / float64(oldMethod) * 100
 

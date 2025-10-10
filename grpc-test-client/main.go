@@ -47,7 +47,7 @@ func main() {
 	client := pb.NewOptimizedLipSyncServiceClient(conn)
 
 	fmt.Printf("✅ Connected!\n\n")
-	
+
 	mode := "sequentially"
 	if *parallel {
 		mode = "in parallel (concurrent)"
@@ -65,14 +65,14 @@ func main() {
 		// Parallel execution - send all requests at once
 		var wg sync.WaitGroup
 		results = make([]FrameResult, *count)
-		
+
 		for i := 0; i < *count; i++ {
 			wg.Add(1)
 			go func(index int) {
 				defer wg.Done()
-				
+
 				frameID := int32(*startFrame + index)
-				
+
 				// Create request
 				req := &pb.OptimizedInferenceRequest{
 					ModelName: *modelName,
@@ -107,7 +107,7 @@ func main() {
 						// Save the image
 						filename := fmt.Sprintf("frame_%d.jpg", frameID)
 						err = os.WriteFile(filename, resp.PredictionData, 0644)
-						
+
 						mu.Lock()
 						if err != nil {
 							fmt.Printf("⚠️  Frame %d: Generated but failed to save - %v\n", frameID, err)
@@ -127,16 +127,16 @@ func main() {
 				results[index] = result
 			}(i)
 		}
-		
+
 		wg.Wait()
-		
+
 	} else {
 		// Sequential execution - one at a time
 		results = make([]FrameResult, 0, *count)
-		
+
 		for i := 0; i < *count; i++ {
 			frameID := int32(*startFrame + i)
-			
+
 			// Create request
 			req := &pb.OptimizedInferenceRequest{
 				ModelName: *modelName,

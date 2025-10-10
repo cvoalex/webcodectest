@@ -166,18 +166,18 @@ type JSONResponse struct {
 
 // parseBinaryRequest parses binary protocol request
 func parseBinaryRequest(data []byte) (*BinaryRequest, error) {
-	if len(data) < 5 {
-		return nil, fmt.Errorf("invalid binary request: too short")
+	if len(data) < 12 {
+		return nil, fmt.Errorf("invalid binary request: too short (need at least 12 bytes)")
 	}
 
-	// Format: [model_name_len:1][model_name:N][frame_id:4]
-	modelNameLen := int(data[0])
-	if len(data) < 1+modelNameLen+4 {
+	// Format: [model_name_len:4][model_name:N][frame_id:4][audio_len:4][audio_data:N]
+	modelNameLen := int(binary.LittleEndian.Uint32(data[0:4]))
+	if len(data) < 4+modelNameLen+4+4 {
 		return nil, fmt.Errorf("invalid binary request: incomplete data")
 	}
 
-	modelName := string(data[1 : 1+modelNameLen])
-	frameID := int32(binary.LittleEndian.Uint32(data[1+modelNameLen : 1+modelNameLen+4]))
+	modelName := string(data[4 : 4+modelNameLen])
+	frameID := int32(binary.LittleEndian.Uint32(data[4+modelNameLen : 4+modelNameLen+4]))
 
 	return &BinaryRequest{
 		ModelName: modelName,

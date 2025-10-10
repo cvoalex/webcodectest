@@ -583,23 +583,17 @@ class OptimizedMultiModelEngine:
         
         package = self.packages[model_name]
         
-        # Map video_type to video array
-        video_map = {
-            "full_body": package.full_body_video,
-            "face_regions": package.face_regions_video,
-            "masked_regions": package.masked_regions_video
-        }
+        # Get video cache
+        if video_type not in package.video_caches:
+            raise ValueError(f"Invalid video_type: {video_type}. Available: {list(package.video_caches.keys())}")
         
-        if video_type not in video_map:
-            raise ValueError(f"Invalid video_type: {video_type}")
+        video_cache = package.video_caches[video_type]
         
-        video = video_map[video_type]
-        
-        if frame_id < 0 or frame_id >= len(video):
-            raise ValueError(f"Invalid frame_id: {frame_id} (valid range: 0-{len(video)-1})")
+        if frame_id < 0 or frame_id >= len(video_cache.frames):
+            raise ValueError(f"Invalid frame_id: {frame_id} (valid range: 0-{len(video_cache.frames)-1})")
         
         # Get frame and encode as JPEG
-        frame = video[frame_id]
+        frame = video_cache.frames[frame_id]
         
         # Convert to uint8 if needed
         if frame.dtype != np.uint8:
@@ -621,26 +615,31 @@ class OptimizedMultiModelEngine:
         
         package = self.packages[model_name]
         
-        # Determine available videos
-        available_videos = []
-        if package.full_body_video is not None:
-            available_videos.append("full_body")
-        if package.face_regions_video is not None:
-            available_videos.append("face_regions")
-        if package.masked_regions_video is not None:
-            available_videos.append("masked_regions")
+        # Get available videos from video_caches
+        available_videos = list(package.video_caches.keys())
+        
+        # Get frame count from first available video
+        frame_count = 0
+        if available_videos:
+            first_video = package.video_caches[available_videos[0]]
+            frame_count = len(first_video.frames)
         
         # Get default bounds (use first frame if available)
         bounds = []
-        if len(package.crop_rectangles) > 0:
-            first_bounds = package.crop_rectangles[0]
+        if package.crop_rectangles and len(package.crop_rectangles) > 0:
+            # crop_rectangles might be a dict or list
+            if isinstance(package.crop_rectangles, dict):
+                first_key = next(iter(package.crop_rectangles))
+                first_bounds = package.crop_rectangles[first_key]
+            else:
+                first_bounds = package.crop_rectangles[0]
             bounds = [float(first_bounds[0]), float(first_bounds[1]), 
                      float(first_bounds[2]), float(first_bounds[3])]
         
         return {
-            "frame_count": len(package.full_body_video) if package.full_body_video is not None else 0,
+            "frame_count": frame_count,
             "available_videos": available_videos,
-            "audio_path": str(package.audio_features_path) if hasattr(package, 'audio_features_path') else "",
+            "audio_path": "",  # Not needed for this implementation
             "bounds": bounds
         }
 

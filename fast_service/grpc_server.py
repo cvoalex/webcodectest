@@ -16,6 +16,9 @@ import base64
 import lipsyncsrv_pb2
 import lipsyncsrv_pb2_grpc
 
+# Import reflection library
+from grpc_reflection.v1alpha import reflection
+
 # Import our existing engine
 from multi_model_engine import multi_model_engine
 
@@ -251,17 +254,25 @@ def serve():
         LipSyncServicer(), server
     )
     
+    # Enable server reflection
+    SERVICE_NAMES = (
+        lipsyncsrv_pb2.DESCRIPTOR.services_by_name['LipSyncService'].full_name,
+        reflection.SERVICE_NAME,
+    )
+    reflection.enable_server_reflection(SERVICE_NAMES, server)
+    
     # Listen on port 50051 (standard gRPC port)
     server.add_insecure_port('[::]:50051')
     
     print("🚀 Starting High-Performance gRPC Lip Sync Server...")
     print("📡 Listening on port 50051")
+    print("💡 Server reflection enabled")
     print("⚡ Optimized for maximum speed with binary streaming")
     
     server.start()
     
-    # Auto-load default model on startup
-    print("🔄 Auto-loading default model...")
+    # Auto-load sanders model on startup
+    print("🔄 Auto-loading sanders model...")
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -269,21 +280,21 @@ def serve():
         try:
             result = loop.run_until_complete(
                 multi_model_engine.load_model(
-                    "default_model",
-                    "models/default_model",
+                    "sanders",
+                    "models/sanders",
                     None
                 )
             )
             
             if result["status"] == "loaded" or result["status"] == "already_loaded":
-                print("✅ Default model loaded successfully")
+                print("✅ Sanders model loaded successfully")
             else:
-                print(f"❌ Failed to load default model: {result.get('error', 'Unknown error')}")
+                print(f"❌ Failed to load sanders model: {result.get('error', 'Unknown error')}")
                 
         finally:
             loop.close()
     except Exception as e:
-        print(f"❌ Error loading default model: {e}")
+        print(f"❌ Error loading sanders model: {e}")
     
     try:
         server.wait_for_termination()

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package lipsync;
+
+option go_package = "go-onnx-inference/proto/lipsync";
+
+// LipSync service for real-time inference
+service LipSync {
+  // Batch inference: send 1-25 frames at once
+  rpc InferBatch(BatchRequest) returns (BatchResponse);
+  
+  // Health check
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message BatchRequest {
+  // Visual frames: flattened array [batch_size * 6 * 320 * 320]
+  // Each frame is 6 channels (RGB + masked RGB) at 320x320
+  repeated float visual_frames = 1;
+  
+  // Audio features: single window [32 * 16 * 16]
+  // One audio window covers ~16 visual frames
+  repeated float audio_features = 2;
+  
+  // Number of frames in this batch (1-25)
+  int32 batch_size = 3;
+  
+  // Starting frame index for crop rectangle lookup (optional)
+  int32 start_frame_idx = 4;
+}
+
+message BatchResponse {
+  // Output frames: flattened array [batch_size * 3 * 320 * 320]
+  // Each frame is 3 channels (RGB) at 320x320
+  repeated float output_frames = 1;
+  
+  // Inference time in milliseconds
+  double inference_time_ms = 2;
+  
+  // Success flag
+  bool success = 3;
+  
+  // Error message if failed
+  string error = 4;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool healthy = 1;
+  string model_path = 2;
+  bool cuda_available = 3;
+}

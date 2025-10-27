@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package inference;
+
+option go_package = "go-inference-server/proto";
+
+// InferenceService provides GPU-accelerated lip sync inference only.
+// No compositing, no backgrounds, no encoding - just raw mouth region output.
+service InferenceService {
+    // InferBatch performs inference on a batch of frames
+    rpc InferBatch(InferBatchRequest) returns (InferBatchResponse);
+    
+    // ListModels returns available models
+    rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+    
+    // LoadModel explicitly loads a model into GPU memory
+    rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+    
+    // UnloadModel explicitly unloads a model from GPU memory
+    rpc UnloadModel(UnloadModelRequest) returns (UnloadModelResponse);
+    
+    // GetModelStats returns usage statistics for models
+    rpc GetModelStats(GetModelStatsRequest) returns (GetModelStatsResponse);
+    
+    // Health returns server health status
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// ============================================================================
+// Inference RPCs
+// ============================================================================
+
+message InferBatchRequest {
+    string model_id = 1;           // Model to use (e.g., "sanders", "bob")
+    bytes visual_frames = 2;       // 6*320*320 float32 per frame (batch_size frames)
+    
+    // Audio input - ONE OF the following:
+    bytes raw_audio = 3;           // Raw PCM audio bytes (640ms @ 16kHz = 10,240 samples)
+    bytes audio_features = 4;      // Pre-computed audio features (DEPRECATED - for backward compat)
+    
+    int32 batch_size = 5;          // Number of frames in batch (1-25)
+    int32 sample_rate = 6;         // Audio sample rate (default: 16000)
+}
+
+message InferBatchResponse {
+    repeated RawMouthRegion outputs = 1;  // Raw 320×320×3 float32 mouth regions
+    float inference_time_ms = 2;           // GPU inference time only
+    float audio_processing_ms = 3;         // Audio encoding time (mel-spec + audio encoder)
+    bool success = 4;
+    string error = 5;
+    int32 worker_id = 6;                   // Which worker processed this
+    int32 gpu_id = 7;                      // Which GPU processed this
+}
+
+message RawMouthRegion {
+    bytes data = 1;  // 3*320*320 float32 array (307,200 floats = 1.2MB per frame)
+    // Data layout: [R_channel (320×320), G_channel (320×320), B_channel (320×320)]
+    // Each pixel is float32 in range [0, 1]
+}
+
+// ============================================================================
+// Model Management RPCs
+// ============================================================================
+
+message ListModelsRequest {
+    // Empty - returns all configured models
+}
+
+message ListModelsResponse {
+    repeated ModelInfo models = 1;
+}
+
+message LoadModelRequest {
+    string model_id = 1;
+    bool force_reload = 2;  // Unload and reload if already loaded
+}
+
+message LoadModelResponse {
+    bool success = 1;
+    string error = 2;
+    float load_time_ms = 3;
+    ModelStats stats = 4;
+}
+
+message UnloadModelRequest {
+    string model_id = 1;
+}
+
+message UnloadModelResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message GetModelStatsRequest {
+    string model_id = 1;  // Empty string = all models
+}
+
+message GetModelStatsResponse {
+    repeated ModelInfo models = 1;
+    int32 max_models = 2;
+    int32 loaded_models = 3;
+    int64 total_memory_bytes = 4;
+    int64 max_memory_bytes = 5;
+}
+
+// ============================================================================
+// Health Check
+// ============================================================================
+
+message HealthRequest {
+    // Empty
+}
+
+message HealthResponse {
+    bool healthy = 1;
+    bool cuda_available = 2;
+    int32 loaded_models = 3;
+    int32 max_models = 4;
+    int32 gpu_count = 5;
+    string version = 6;
+    repeated GPUInfo gpus = 7;
+}
+
+message GPUInfo {
+    int32 gpu_id = 1;
+    string name = 2;
+    int64 total_memory_bytes = 3;
+    int64 used_memory_bytes = 4;
+    int32 loaded_models = 5;
+}
+
+// ============================================================================
+// Supporting Types
+// ============================================================================
+
+message ModelInfo {
+    string model_id = 1;
+    bool loaded = 2;
+    string model_path = 3;
+    ModelStats stats = 4;
+    int32 gpu_id = 5;  // Which GPU this model is loaded on
+}
+
+message ModelStats {
+    int64 usage_count = 1;
+    int64 last_used_unix_ms = 2;
+    double total_inference_time_ms = 3;
+    int64 memory_bytes = 4;
+    int64 loaded_unix_ms = 5;
+}

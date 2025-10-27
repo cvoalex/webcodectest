@@ -1,0 +1,47 @@
+# Multi-Tenant LipSync Server Configuration
+
+# Server settings
+server:
+  port: ":50053"
+  max_message_size_mb: 200
+  worker_count: 4                  # Parallel inference workers (4-8 recommended)
+  queue_size: 100                  # Max concurrent requests queued
+
+# Model capacity limits
+capacity:
+  max_models: 80                   # Maximum models in memory (for 96GB GPU + 256GB RAM)
+  max_memory_gb: 75                # Maximum GPU memory (leave headroom)
+  eviction_policy: "lfu"           # lfu (Least Frequently Used) or lru (Least Recently Used)
+  idle_unload_minutes: 30          # Unload models after X minutes of inactivity
+  background_cache_frames: 50      # Frames to cache per model (50 frames = ~175MB RAM)
+
+# ONNX Runtime configuration
+onnx:
+  library_path: "C:\\onnxruntime-1.22.0\\lib\\onnxruntime.dll"
+  cuda_enabled: true
+
+# Model definitions
+models:
+  sanders:
+    model_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/checkpoint/model_best.onnx"
+    background_dir: "d:/Projects/webcodecstest/minimal_server/models/sanders/frames"
+    crop_rects_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/cache/crop_rectangles.json"
+    num_frames: 100
+    preload: true              # Load on server startup
+    memory_estimate_mb: 500    # Approximate GPU memory usage
+  
+  # Example: Add bob model (uncomment and configure paths)
+  # bob:
+  #   model_path: "d:/Projects/webcodecstest/minimal_server/models/bob/checkpoint/model_best.onnx"
+  #   background_dir: "d:/Projects/webcodecstest/minimal_server/models/bob/frames"
+  #   crop_rects_path: "d:/Projects/webcodecstest/minimal_server/models/bob/cache/crop_rectangles.json"
+  #   num_frames: 100
+  #   preload: false
+  #   memory_estimate_mb: 500
+
+# Logging
+logging:
+  level: "info"                # debug, info, warn, error
+  log_model_operations: true   # Log model load/unload events
+  stats_report_minutes: 5      # Periodic stats logging (0 = disabled)
+  log_file: ""                 # Empty = stdout only

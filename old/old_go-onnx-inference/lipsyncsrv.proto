@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package lipsyncsrv;
+
+option go_package = "./lipsyncsrv";
+
+// LipSync service for real-time lip synchronization
+service LipSyncService {
+    // Process a batch of frames (1-25 frames)
+    // Audio is 16 frames window, client extracts appropriate slice
+    rpc ProcessBatch(BatchRequest) returns (BatchResponse);
+}
+
+message BatchRequest {
+    // Visual input: [batch_size, 6, 320, 320] flattened
+    // Each frame is 6 channels (RGB of masked face + RGB of reference)
+    repeated float visual_frames = 1;
+    
+    // Audio input: [32, 16, 16] for the batch (shared across frames in window)
+    repeated float audio_features = 2;
+    
+    // Number of frames in this batch (1-25)
+    int32 batch_size = 3;
+    
+    // Starting frame index (for crop rectangle lookup)
+    int32 start_frame_idx = 4;
+}
+
+message BatchResponse {
+    // Output frames: [batch_size, 3, 320, 320] flattened
+    // Each frame is 3 channels (BGR) of generated mouth region
+    repeated float output_frames = 1;
+    
+    // Processing time in milliseconds
+    float inference_time_ms = 2;
+    
+    // Success status
+    bool success = 3;
+    
+    // Error message if any
+    string error = 4;
+}

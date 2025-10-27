@@ -1,0 +1,17 @@
+{
+  "num_frames": 5,
+  "visual_shape": [
+    5,
+    6,
+    320,
+    320
+  ],
+  "audio_shape": [
+    5,
+    32,
+    16,
+    16
+  ],
+  "format": "BGR",
+  "description": "Small 5-frame test dataset for parallel testing"
+}

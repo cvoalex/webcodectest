@@ -1,0 +1,72 @@
+server:
+  port: ":50052"              # Different port from inference server
+  max_message_size_mb: 100    # Increased for larger batches (batch size 32)
+  
+inference_server:
+  url: "localhost:50051"      # Inference server gRPC endpoint
+  timeout_seconds: 10
+  max_retries: 3
+
+capacity:
+  max_models: 11000           # 2TB RAM / 175MB per model with backgrounds
+  background_cache_frames: 600 # Cache all frames (sanders has 523)
+  eviction_policy: "lfu"      # Least Frequently Used
+  idle_timeout_minutes: 60
+
+output:
+  format: "jpeg"              # Output format: "jpeg" or "raw"
+  jpeg_quality: 75            # JPEG quality (1-100), lower = faster encoding
+
+# Root directory for all models (optional - allows relative paths in model configs)
+# If specified, background_dir and crop_rects_path that are not absolute will be resolved relative to this
+# Example: models_root + "sanders/frames"
+models_root: "d:/Projects/webcodecstest/minimal_server/models"
+
+# Model configurations
+models:
+  sanders:
+    # With models_root set, these can be relative paths:
+    model_path: "sanders/checkpoint/model_best.onnx"  # For reference (not used by compositing server)
+    background_dir: "sanders/frames"
+    crop_rects_path: "sanders/crop_rects.json"
+    # Or use absolute paths (will be used as-is):
+    # background_dir: "d:/Projects/webcodecstest/minimal_server/models/sanders/frames"
+    # crop_rects_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/crop_rects.json"
+    num_frames: 523
+    preload_backgrounds: true  # Preload all frames into memory
+    
+  sanders1:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    background_dir: "sanders/frames"
+    crop_rects_path: "sanders/crop_rects.json"
+    num_frames: 2000
+    preload_backgrounds: false
+
+  sanders2:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    background_dir: "sanders/frames"
+    crop_rects_path: "sanders/crop_rects.json"
+    num_frames: 2000
+    preload_backgrounds: false
+
+  sanders3:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    background_dir: "sanders/frames"
+    crop_rects_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/crop_rects.json"
+    num_frames: 2000
+    preload_backgrounds: false
+
+  # Add more models as needed...
+  # With 2TB RAM and lazy loading, can support 11,000+ models
+
+logging:
+  level: "info"
+  log_compositing_times: true
+  log_cache_stats: true
+  
+  # Buffered logging - ZERO impact on request latency!
+  # Logs are accumulated in memory and flushed asynchronously
+  buffered_logging: true    # Enable buffered logging
+  sample_rate: 0            # 0 = log all requests, N = log 1 in N requests
+  auto_flush: true          # Auto-flush logs periodically
+  flush_interval_ms: 100    # Flush logs every 100ms

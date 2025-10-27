@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package monolithic;
+
+option go_package = "go-monolithic-server/proto";
+
+// MonolithicService provides inference + compositing in a single process
+service MonolithicService {
+    // InferBatchComposite performs inference + compositing + encoding
+    rpc InferBatchComposite(CompositeBatchRequest) returns (CompositeBatchResponse);
+    
+    // ListModels returns available models
+    rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+    
+    // LoadModel explicitly loads a model
+    rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+    
+    // UnloadModel explicitly unloads a model
+    rpc UnloadModel(UnloadModelRequest) returns (UnloadModelResponse);
+    
+    // GetModelStats returns usage statistics
+    rpc GetModelStats(GetModelStatsRequest) returns (GetModelStatsResponse);
+    
+    // Health returns server health status
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// ============================================================================
+// Main RPC: InferBatchComposite
+// ============================================================================
+
+message CompositeBatchRequest {
+    string model_id = 1;           // Model to use (e.g., "sanders", "bob")
+    bytes visual_frames = 2;       // 6*320*320 float32 per frame (batch_size frames)
+    
+    // Audio input - ONE OF the following:
+    bytes raw_audio = 3;           // Raw PCM audio bytes (640ms @ 16kHz = 10,240 samples)
+    bytes audio_features = 4;      // Pre-computed audio features (DEPRECATED)
+    
+    int32 batch_size = 5;          // Number of frames in batch (1-25)
+    int32 start_frame_idx = 6;     // Starting frame index for backgrounds
+    int32 sample_rate = 7;         // Audio sample rate (default: 16000)
+}
+
+message CompositeBatchResponse {
+    repeated bytes composited_frames = 1;  // JPEG-encoded frames
+    float inference_time_ms = 2;            // GPU inference time
+    float composite_time_ms = 3;            // Compositing time
+    float total_time_ms = 4;                // Total time
+    float audio_processing_ms = 5;          // Audio processing time
+    bool model_loaded = 6;                  // True if model was loaded on-demand
+    float model_load_time_ms = 7;
+    bool success = 8;
+    string error = 9;
+    int32 gpu_id = 10;                      // Which GPU was used
+}
+
+// ============================================================================
+// Model Management RPCs
+// ============================================================================
+
+message ListModelsRequest {
+    // Empty - returns all configured models
+}
+
+message ListModelsResponse {
+    repeated ModelInfo models = 1;
+}
+
+message ModelInfo {
+    string model_id = 1;
+    bool loaded = 2;
+    int32 gpu_id = 3;
+    int64 memory_mb = 4;
+    int32 request_count = 5;
+    float avg_inference_ms = 6;
+}
+
+message LoadModelRequest {
+    string model_id = 1;
+    int32 preferred_gpu = 2;  // -1 for auto
+}
+
+message LoadModelResponse {
+    bool success = 1;
+    string error = 2;
+    int32 gpu_id = 3;
+    float load_time_ms = 4;
+}
+
+message UnloadModelRequest {
+    string model_id = 1;
+}
+
+message UnloadModelResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message GetModelStatsRequest {
+    // Empty - returns stats for all models
+}
+
+message GetModelStatsResponse {
+    repeated ModelStats models = 1;
+}
+
+message ModelStats {
+    string model_id = 1;
+    bool loaded = 2;
+    int32 gpu_id = 3;
+    int64 memory_mb = 4;
+    int32 request_count = 5;
+    int64 total_inference_ms = 6;
+    float avg_inference_ms = 7;
+    int64 last_used_timestamp = 8;
+}
+
+// ============================================================================
+// Health Check
+// ============================================================================
+
+message HealthRequest {
+    // Empty
+}
+
+message HealthResponse {
+    bool healthy = 1;
+    int32 loaded_models = 2;
+    int32 max_models = 3;
+    repeated int32 gpu_ids = 4;
+    repeated float gpu_memory_used_gb = 5;
+}

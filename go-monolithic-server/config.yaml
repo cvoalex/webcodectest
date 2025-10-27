@@ -1,0 +1,72 @@
+server:
+  port: ":50053"              # Monolithic server port
+  max_message_size_mb: 100
+  worker_count_per_gpu: 8     # Workers per GPU for parallel inference
+  queue_size: 50
+
+gpus:
+  enabled: true
+  count: 1                    # 1× NVIDIA RTX 4090
+  memory_gb_per_gpu: 24
+  assignment_strategy: "round-robin"
+  allow_multi_gpu_models: false
+
+capacity:
+  max_models: 40              # ~40 models on 24GB GPU (500MB each + backgrounds)
+  max_memory_gb: 20           # 20GB (leave 4GB safety margin)
+  background_cache_frames: 600 # Cache all frames (sanders has 523)
+  eviction_policy: "lfu"      # Least Frequently Used
+  idle_timeout_minutes: 60
+
+onnx:
+  library_path: "C:/onnxruntime-1.22.0/lib/onnxruntime.dll"
+  cuda_streams_per_worker: 2
+  intra_op_threads: 4
+  inter_op_threads: 2
+
+output:
+  format: "jpeg"              # Output format: "jpeg" or "raw"
+  jpeg_quality: 75            # JPEG quality (1-100)
+
+logging:
+  log_inference_times: true   # Log inference times
+  log_level: "info"
+  log_compositing_times: true # Log compositing times
+  log_cache_stats: true       # Log cache statistics
+  
+  # Buffered logging - ZERO impact on request latency!
+  # Logs are accumulated in memory and flushed asynchronously
+  buffered_logging: true      # Enable buffered logging
+  sample_rate: 0              # 0 = log all requests, N = log 1 in N requests
+  auto_flush: true            # Auto-flush logs periodically
+  flush_interval_ms: 100      # Flush logs every 100ms
+
+# Root directory for all models
+models_root: "d:/Projects/webcodecstest/old/old_minimal_server/models"
+
+# Model configurations
+models:
+  sanders:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    background_dir: "sanders/frames"
+    crop_rects_path: "sanders/crop_rects.json"
+    num_frames: 523
+    preload_backgrounds: false  # Load on-demand instead of startup
+    preload_model: false
+    preferred_gpu: 0
+    
+  sanders1:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    background_dir: "sanders/frames"
+    crop_rects_path: "sanders/crop_rects.json"
+    num_frames: 2000
+    preload_backgrounds: false
+    preload_model: false
+    
+  sanders2:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    background_dir: "sanders/frames"
+    crop_rects_path: "sanders/crop_rects.json"
+    num_frames: 2000
+    preload_backgrounds: false
+    preload_model: false

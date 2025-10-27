@@ -1,0 +1,17 @@
+{
+  "num_frames": 10,
+  "start_frame": 100,
+  "visual_shape": [
+    10,
+    6,
+    320,
+    320
+  ],
+  "audio_shape": [
+    10,
+    32,
+    16,
+    16
+  ],
+  "dtype": "float32"
+}

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package lipsync;
+
+option go_package = "go-onnx-inference/proto/lipsync";
+
+// LipSync service with compositing - returns full 1280x720 frames
+service LipSyncComposite {
+  // Batch inference with compositing: send 1-25 frames, get back composited 1280x720 frames
+  rpc InferBatchComposite(CompositeBatchRequest) returns (CompositeBatchResponse);
+  
+  // Health check
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message CompositeBatchRequest {
+  // Visual frames: flattened array [batch_size * 6 * 320 * 320]
+  // Each frame is 6 channels (RGB + masked RGB) at 320x320
+  repeated float visual_frames = 1;
+  
+  // Audio features: single window [32 * 16 * 16]
+  // One audio window covers ~16 visual frames
+  repeated float audio_features = 2;
+  
+  // Number of frames in this batch (1-25)
+  int32 batch_size = 3;
+  
+  // Starting frame index for crop rectangle and background lookup
+  int32 start_frame_idx = 4;
+}
+
+message CompositeBatchResponse {
+  // Composited frames: PNG-encoded bytes for each frame
+  // Each frame is 1280x720 RGB
+  repeated bytes composited_frames = 1;
+  
+  // Inference time in milliseconds
+  double inference_time_ms = 2;
+  
+  // Compositing time in milliseconds
+  double composite_time_ms = 3;
+  
+  // Total time in milliseconds
+  double total_time_ms = 4;
+  
+  // Success flag
+  bool success = 5;
+  
+  // Error message if failed
+  string error = 6;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool healthy = 1;
+  string message = 2;
+}

@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+package lipsync;
+
+option go_package = "go-multitenant-server/proto";
+
+// Multi-tenant LipSync service with dynamic model loading and management
+service MultiTenantLipSync {
+  // Process batch with specific model (auto-loads if needed)
+  rpc InferBatchComposite(CompositeBatchRequest) returns (CompositeBatchResponse);
+  
+  // Model management operations
+  rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+  rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+  rpc UnloadModel(UnloadModelRequest) returns (UnloadModelResponse);
+  rpc GetModelStats(GetModelStatsRequest) returns (GetModelStatsResponse);
+  
+  // Health check
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// ============================================================================
+// Inference Requests/Responses
+// ============================================================================
+
+message CompositeBatchRequest {
+  // Model identifier (e.g., "sanders", "bob", "jane")
+  // Server will auto-load if not already in memory
+  string model_id = 1;
+  
+  // Visual frames: flattened array [batch_size * 6 * 320 * 320]
+  repeated float visual_frames = 2;
+  
+  // Audio features: single window [32 * 16 * 16]
+  repeated float audio_features = 3;
+  
+  // Number of frames in this batch (1-25)
+  int32 batch_size = 4;
+  
+  // Starting frame index for crop rectangle and background lookup
+  int32 start_frame_idx = 5;
+}
+
+message CompositeBatchResponse {
+  // Composited frames: PNG-encoded bytes for each frame
+  repeated bytes composited_frames = 1;
+  
+  // Timing information
+  double inference_time_ms = 2;
+  double composite_time_ms = 3;
+  double total_time_ms = 4;
+  
+  // Model was loaded during this request
+  bool model_loaded = 5;
+  double model_load_time_ms = 6;
+  
+  // Success/error
+  bool success = 7;
+  string error = 8;
+}
+
+// ============================================================================
+// Model Management
+// ============================================================================
+
+message ListModelsRequest {
+  // Empty - list all configured models
+}
+
+message ListModelsResponse {
+  repeated ModelInfo models = 1;
+}
+
+message ModelInfo {
+  string model_id = 1;
+  bool loaded = 2;                    // Currently loaded in memory
+  string model_path = 3;
+  string background_dir = 4;
+  string crop_rects_path = 5;
+  
+  // Usage statistics (if loaded)
+  ModelStats stats = 6;
+}
+
+message ModelStats {
+  int64 usage_count = 1;              // Total number of inferences
+  int64 last_used_unix_ms = 2;        // Last access time (Unix milliseconds)
+  double total_inference_time_ms = 3; // Cumulative inference time
+  int64 memory_bytes = 4;             // Estimated memory usage
+  int64 loaded_unix_ms = 5;           // When model was loaded
+}
+
+message LoadModelRequest {
+  string model_id = 1;
+  bool force_reload = 2;  // Reload even if already loaded
+}
+
+message LoadModelResponse {
+  bool success = 1;
+  string error = 2;
+  double load_time_ms = 3;
+  ModelStats stats = 4;
+}
+
+message UnloadModelRequest {
+  string model_id = 1;
+}
+
+message UnloadModelResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message GetModelStatsRequest {
+  string model_id = 1;  // Empty string = all models
+}
+
+message GetModelStatsResponse {
+  repeated ModelInfo models = 1;
+  
+  // Server capacity info
+  int32 max_models = 2;
+  int32 loaded_models = 3;
+  int64 total_memory_bytes = 4;
+  int64 max_memory_bytes = 5;
+}
+
+// ============================================================================
+// Health Check
+// ============================================================================
+
+message HealthRequest {
+  // Empty
+}
+
+message HealthResponse {
+  bool healthy = 1;
+  bool cuda_available = 2;
+  int32 loaded_models = 3;
+  int32 max_models = 4;
+  string version = 5;
+}

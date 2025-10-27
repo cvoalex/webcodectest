@@ -1,0 +1,70 @@
+server:
+  port: ":50051"
+  max_message_size_mb: 100    # 100MB max (handles batch size 32)
+  worker_count_per_gpu: 8     # 8 workers per GPU = 8 total workers (increased from 4)
+  queue_size: 50              # Queue for high throughput
+
+gpus:
+  enabled: true
+  count: 1                    # 1× NVIDIA RTX 4090
+  memory_gb_per_gpu: 24
+  
+  # GPU assignment strategy: "round-robin", "least-loaded", "dedicated"
+  assignment_strategy: "round-robin"
+  
+  # Allow models to be loaded on multiple GPUs for redundancy/load balancing
+  allow_multi_gpu_models: false
+
+capacity:
+  max_models: 40              # ~40 models on 24GB GPU (500MB each)
+  max_memory_gb: 20           # 20GB (leave 4GB safety margin)
+  eviction_policy: "lfu"      # Least Frequently Used
+  idle_timeout_minutes: 60    # Unload after 1 hour idle
+
+onnx:
+  library_path: "C:/onnxruntime-1.22.0/lib/onnxruntime.dll"
+  
+  # Execution providers per GPU (CUDA streams)
+  cuda_streams_per_worker: 2
+  
+  # Thread pool settings
+  intra_op_threads: 4         # Threads within each operation
+  inter_op_threads: 2         # Threads across operations
+
+# Root directory for all models (optional - allows relative paths in model configs)
+# If specified, model_path values that are not absolute will be resolved relative to this
+# Example: models_root + "sanders/checkpoint/model_best.onnx"
+models_root: "d:/Projects/webcodecstest/minimal_server/models"
+
+# Model configurations
+models:
+  sanders:
+    # With models_root set, this can be a relative path:
+    model_path: "sanders/checkpoint/model_best.onnx"
+    # Or use absolute path (will be used as-is):
+    # model_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/checkpoint/model_best.onnx"
+    preload: false             # Don't preload on startup
+    preferred_gpu: 0           # Can specify GPU, or -1 for auto
+    
+  sanders1:
+    model_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/checkpoint/model_best.onnx"
+    preload: false
+    preferred_gpu: 0
+
+  sanders2:
+    model_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/checkpoint/model_best.onnx"
+    preload: false
+    preferred_gpu: 0
+
+  sanders3:
+    model_path: "d:/Projects/webcodecstest/minimal_server/models/sanders/checkpoint/model_best.onnx"
+    preload: false
+    preferred_gpu: 0
+
+  # Add more models as needed...
+  # With 1200 model capacity, you can configure hundreds of models here
+
+logging:
+  level: "info"               # debug, info, warn, error
+  log_inference_times: true
+  log_gpu_utilization: true

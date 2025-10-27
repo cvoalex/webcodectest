@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package compositing;
+
+option go_package = "go-compositing-server/proto";
+
+// CompositingService provides compositing + encoding (calls inference server internally)
+service CompositingService {
+    // InferBatchComposite performs inference + compositing + encoding
+    rpc InferBatchComposite(CompositeBatchRequest) returns (CompositeBatchResponse);
+    
+    // ListModels returns available models (from both inference server and local config)
+    rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+    
+    // LoadModel explicitly loads a model (loads on both servers)
+    rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+    
+    // UnloadModel explicitly unloads a model
+    rpc UnloadModel(UnloadModelRequest) returns (UnloadModelResponse);
+    
+    // GetModelStats returns usage statistics
+    rpc GetModelStats(GetModelStatsRequest) returns (GetModelStatsResponse);
+    
+    // Health returns server health status
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// ============================================================================
+// Compositing RPCs
+// ============================================================================
+
+message CompositeBatchRequest {
+    string model_id = 1;           // Model to use (e.g., "sanders", "bob")
+    bytes visual_frames = 2;       // 6*320*320 float32 per frame (batch_size frames)
+    
+    // Audio input - ONE OF the following:
+    bytes raw_audio = 3;           // Raw PCM audio bytes (640ms @ 16kHz = 10,240 samples)
+    bytes audio_features = 4;      // Pre-computed audio features (DEPRECATED - for backward compat)
+    
+    int32 batch_size = 5;          // Number of frames in batch (1-25)
+    int32 start_frame_idx = 6;     // Starting frame index for backgrounds
+    int32 sample_rate = 7;         // Audio sample rate (default: 16000)
+}
+
+message CompositeBatchResponse {
+    repeated bytes composited_frames = 1;  // JPEG-encoded frames
+    float inference_time_ms = 2;            // Time on inference server
+    float composite_time_ms = 3;            // Time for compositing
+    float total_time_ms = 4;                // Total time
+    float audio_processing_ms = 5;          // Audio encoding time (if raw_audio used)
+    bool model_loaded = 6;                  // True if model was loaded on-demand
+    float model_load_time_ms = 7;
+    bool success = 8;
+    string error = 9;
+    int32 gpu_id = 10;                      // Which GPU on inference server
+}
+
+// ============================================================================
+// Model Management RPCs
+// ============================================================================
+
+message ListModelsRequest {
+    // Empty - returns all configured models
+}
+
+message ListModelsResponse {
+    repeated ModelInfo models = 1;
+}
+
+message LoadModelRequest {
+    string model_id = 1;
+    bool force_reload = 2;
+}
+
+message LoadModelResponse {
+    bool success = 1;
+    string error = 2;
+    float load_time_ms = 3;
+    ModelStats stats = 4;
+}
+
+message UnloadModelRequest {
+    string model_id = 1;
+}
+
+message UnloadModelResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message GetModelStatsRequest {
+    string model_id = 1;  // Empty string = all models
+}
+
+message GetModelStatsResponse {
+    repeated ModelInfo models = 1;
+    int32 max_models = 2;
+    int32 loaded_models = 3;
+    int64 total_memory_bytes = 4;
+    int64 max_memory_bytes = 5;
+}
+
+// ============================================================================
+// Health Check
+// ============================================================================
+
+message HealthRequest {
+    // Empty
+}
+
+message HealthResponse {
+    bool healthy = 1;
+    bool inference_server_healthy = 2;
+    int32 loaded_models = 3;
+    int32 max_models = 4;
+    string version = 5;
+    string inference_server_url = 6;
+}
+
+// ============================================================================
+// Supporting Types
+// ============================================================================
+
+message ModelInfo {
+    string model_id = 1;
+    bool loaded = 2;
+    string model_path = 3;
+    string background_dir = 4;
+    string crop_rects_path = 5;
+    ModelStats stats = 6;
+}
+
+message ModelStats {
+    int64 usage_count = 1;
+    int64 last_used_unix_ms = 2;
+    double total_inference_time_ms = 3;
+    int64 memory_bytes = 4;
+    int64 loaded_unix_ms = 5;
+}

@@ -49,6 +49,11 @@ models:
   sanders:
     model_path: "sanders/checkpoint/model_best.onnx"
     background_dir: "sanders/frames"
+    source_video: "sanders/full_body_video.mp4"  # Auto-extract if frames missing
+    crops_video_path: "sanders/crops_328_video.mp4"  # For test visual frames
+    rois_video_path: "sanders/rois_320_video.mp4"    # For test visual frames
+    crops_frames_dir: "sanders/crops_frames"          # Auto-extract crops
+    rois_frames_dir: "sanders/rois_frames"            # Auto-extract ROIs
     crop_rects_path: "sanders/crop_rects.json"
     num_frames: 523
     preload_backgrounds: false  # Load on-demand instead of startup
@@ -58,6 +63,7 @@ models:
   sanders1:
     model_path: "sanders/checkpoint/model_best.onnx"
     background_dir: "sanders/frames"
+    source_video: "sanders/full_body_video.mp4"
     crop_rects_path: "sanders/crop_rects.json"
     num_frames: 2000
     preload_backgrounds: false
@@ -66,6 +72,7 @@ models:
   sanders2:
     model_path: "sanders/checkpoint/model_best.onnx"
     background_dir: "sanders/frames"
+    source_video: "sanders/full_body_video.mp4"
     crop_rects_path: "sanders/crop_rects.json"
     num_frames: 2000
     preload_backgrounds: false

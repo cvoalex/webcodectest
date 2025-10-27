@@ -4,6 +4,19 @@
 
 The monolithic server combines **inference** and **compositing** into a single Go process, eliminating inter-service communication overhead for maximum performance.
 
+## Documentation
+
+📚 **Comprehensive documentation available in [`docs/`](docs/):**
+
+- **[QUICKSTART.md](docs/QUICKSTART.md)** - Get started in 5 minutes
+- **[QUICK_TEST_GUIDE.md](docs/QUICK_TEST_GUIDE.md)** - Running tests and benchmarks
+- **[AUTO_EXTRACTION.md](docs/AUTO_EXTRACTION.md)** - Automatic frame extraction feature
+- **[IMPLEMENTATION_COMPLETE.md](docs/IMPLEMENTATION_COMPLETE.md)** - Complete implementation guide
+- **[PERFORMANCE_RESULTS.md](docs/PERFORMANCE_RESULTS.md)** - Performance benchmarks and analysis
+- **[EXTRACTION_VS_CACHING.md](docs/EXTRACTION_VS_CACHING.md)** - Detailed caching strategy analysis
+- **[AUDIO_PROCESSING_EXPLAINED.md](docs/AUDIO_PROCESSING_EXPLAINED.md)** - Audio pipeline documentation
+- **[AUDIO_VALIDATION_RESULTS.md](docs/AUDIO_VALIDATION_RESULTS.md)** - Audio validation testing
+
 ## Architecture
 
 ```

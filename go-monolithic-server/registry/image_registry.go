@@ -41,6 +41,30 @@ func NewImageRegistry(cfg *config.Config) (*ImageRegistry, error) {
 		config: cfg,
 	}
 
+	// Pre-extract visual frames for testing (crops and ROIs) if configured
+	log.Println("🎬 Checking for visual frame extraction needs...")
+	for modelID, modelCfg := range cfg.Models {
+		// Extract crops frames if directory empty
+		if modelCfg.CropsVideoPath != "" && modelCfg.CropsFramesDir != "" {
+			if isDirectoryEmpty(modelCfg.CropsFramesDir) {
+				log.Printf("📹 Extracting crops frames for '%s' from %s...", modelID, modelCfg.CropsVideoPath)
+				if err := extractFramesFromVideo(modelCfg.CropsVideoPath, modelCfg.CropsFramesDir, modelCfg.NumFrames); err != nil {
+					log.Printf("⚠️  Failed to extract crops frames: %v", err)
+				}
+			}
+		}
+
+		// Extract ROIs frames if directory empty
+		if modelCfg.ROIsVideoPath != "" && modelCfg.ROIsFramesDir != "" {
+			if isDirectoryEmpty(modelCfg.ROIsFramesDir) {
+				log.Printf("📹 Extracting ROIs frames for '%s' from %s...", modelID, modelCfg.ROIsVideoPath)
+				if err := extractFramesFromVideo(modelCfg.ROIsVideoPath, modelCfg.ROIsFramesDir, modelCfg.NumFrames); err != nil {
+					log.Printf("⚠️  Failed to extract ROIs frames: %v", err)
+				}
+			}
+		}
+	}
+
 	// Preload models if configured
 	for modelID, modelCfg := range cfg.Models {
 		if modelCfg.PreloadBackgrounds {
@@ -92,6 +116,18 @@ func (r *ImageRegistry) loadModel(modelID string) (*ImageModelData, error) {
 
 	log.Printf("🖼️  Loading backgrounds for model '%s'...", modelID)
 	startTime := time.Now()
+
+	// Check if we need to extract frames from source video
+	if isDirectoryEmpty(modelCfg.BackgroundDir) {
+		if modelCfg.SourceVideo == "" {
+			return nil, fmt.Errorf("background directory '%s' is empty and no source_video configured", modelCfg.BackgroundDir)
+		}
+
+		log.Printf("📹 Background directory empty, extracting frames from source video...")
+		if err := extractFramesFromVideo(modelCfg.SourceVideo, modelCfg.BackgroundDir, modelCfg.NumFrames); err != nil {
+			return nil, fmt.Errorf("failed to extract frames from video: %w", err)
+		}
+	}
 
 	// Load crop rects
 	cropRects, err := loadCropRects(modelCfg.CropRectsPath, modelCfg.NumFrames)

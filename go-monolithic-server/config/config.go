@@ -70,6 +70,11 @@ type LoggingConfig struct {
 type ModelConfig struct {
 	ModelPath          string `yaml:"model_path"`
 	BackgroundDir      string `yaml:"background_dir"`
+	SourceVideo        string `yaml:"source_video"`     // Source video to extract background frames from
+	CropsVideoPath     string `yaml:"crops_video_path"` // Path to crops video for testing
+	ROIsVideoPath      string `yaml:"rois_video_path"`  // Path to ROIs video for testing
+	CropsFramesDir     string `yaml:"crops_frames_dir"` // Directory for extracted crop frames
+	ROIsFramesDir      string `yaml:"rois_frames_dir"`  // Directory for extracted ROI frames
 	CropRectsPath      string `yaml:"crop_rects_path"`
 	NumFrames          int    `yaml:"num_frames"`
 	PreloadBackgrounds bool   `yaml:"preload_backgrounds"`
@@ -143,6 +148,26 @@ func Load(path string) (*Config, error) {
 			// Resolve background_dir if relative
 			if modelCfg.BackgroundDir != "" && !filepath.IsAbs(modelCfg.BackgroundDir) {
 				modelCfg.BackgroundDir = filepath.Join(cfg.ModelsRoot, modelCfg.BackgroundDir)
+			}
+			// Resolve source_video if relative
+			if modelCfg.SourceVideo != "" && !filepath.IsAbs(modelCfg.SourceVideo) {
+				modelCfg.SourceVideo = filepath.Join(cfg.ModelsRoot, modelCfg.SourceVideo)
+			}
+			// Resolve crops_video_path if relative
+			if modelCfg.CropsVideoPath != "" && !filepath.IsAbs(modelCfg.CropsVideoPath) {
+				modelCfg.CropsVideoPath = filepath.Join(cfg.ModelsRoot, modelCfg.CropsVideoPath)
+			}
+			// Resolve rois_video_path if relative
+			if modelCfg.ROIsVideoPath != "" && !filepath.IsAbs(modelCfg.ROIsVideoPath) {
+				modelCfg.ROIsVideoPath = filepath.Join(cfg.ModelsRoot, modelCfg.ROIsVideoPath)
+			}
+			// Resolve crops_frames_dir if relative
+			if modelCfg.CropsFramesDir != "" && !filepath.IsAbs(modelCfg.CropsFramesDir) {
+				modelCfg.CropsFramesDir = filepath.Join(cfg.ModelsRoot, modelCfg.CropsFramesDir)
+			}
+			// Resolve rois_frames_dir if relative
+			if modelCfg.ROIsFramesDir != "" && !filepath.IsAbs(modelCfg.ROIsFramesDir) {
+				modelCfg.ROIsFramesDir = filepath.Join(cfg.ModelsRoot, modelCfg.ROIsFramesDir)
 			}
 			// Resolve crop_rects_path if relative
 			if modelCfg.CropRectsPath != "" && !filepath.IsAbs(modelCfg.CropRectsPath) {

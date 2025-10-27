@@ -59,7 +59,7 @@ func main() {
 
 	fmt.Printf("✅ Loaded %d samples (%.2f seconds at %d Hz)\n",
 		len(audioSamples), float64(len(audioSamples))/float64(sampleRate), sampleRate)
-	
+
 	// DEBUG: Print first 5 samples to verify correct loading
 	fmt.Print("   🔍 First 5 samples (int16): [")
 	for i := 0; i < 5 && i < len(audioSamples); i++ {
@@ -220,8 +220,8 @@ func loadRealVisualFrames(startFrame, batchSize int) ([][]byte, [][]byte, error)
 	}
 
 	// Calculate expected sizes (both crops and ROIs are 320x320 now)
-	cropSize := batchSize * 3 * 320 * 320 * 4  // float32
-	roiSize := batchSize * 3 * 320 * 320 * 4   // float32
+	cropSize := batchSize * 3 * 320 * 320 * 4 // float32
+	roiSize := batchSize * 3 * 320 * 320 * 4  // float32
 	expectedSize := cropSize + roiSize
 
 	if len(output) != expectedSize {

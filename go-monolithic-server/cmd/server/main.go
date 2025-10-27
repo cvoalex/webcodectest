@@ -588,12 +588,18 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 
 			result := frameResult{index: idx}
 
-			// Get background for this frame
+			// Get background for this frame (backgrounds can cycle)
 			bgIdx := (frameIdx + idx) % len(modelData.Backgrounds)
 			background := modelData.Backgrounds[bgIdx]
 
-			// Get crop rect for this frame
-			cropRect := modelData.CropRects[bgIdx]
+			// Get crop rect for this frame (crop rects are per-frame, don't cycle)
+			actualFrameIdx := frameIdx + idx
+			if actualFrameIdx >= len(modelData.CropRects) {
+				result.err = fmt.Errorf("frame index %d exceeds crop rects length %d", actualFrameIdx, len(modelData.CropRects))
+				resultChan <- result
+				return
+			}
+			cropRect := modelData.CropRects[actualFrameIdx]
 
 			// Extract mouth region from inference output
 			mouthRegionStart := idx * outputFrameSize
@@ -724,9 +730,10 @@ func outputToImage(outputData []float32) *image.RGBA {
 	img := rgbaPool320.Get().(*image.RGBA)
 
 	// Convert BGR float32 [0,1] to RGB bytes [0,255]
+	// Model outputs BGR in [C, H, W] format: [3, 320, 320] (same as OpenCV input)
 	for y := 0; y < 320; y++ {
 		for x := 0; x < 320; x++ {
-			// BGR order from ONNX model
+			// BGR order from ONNX model (OpenCV convention)
 			b := outputData[0*320*320+y*320+x]
 			g := outputData[1*320*320+y*320+x]
 			r := outputData[2*320*320+y*320+x]

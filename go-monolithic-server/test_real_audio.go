@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -101,13 +102,25 @@ func main() {
 		for i := 0; i < iterations; i++ {
 			frameIdx := i * batchSize
 
-			// Generate mock visual frames (still needed - real visual would come from video)
-			visualFrames := generateMockVisualFrames(batchSize)
+			// Load REAL visual frames from video
+			crops, rois, err := loadRealVisualFrames(frameIdx, batchSize)
+			if err != nil {
+				log.Fatalf("❌ Failed to load real visual frames: %v", err)
+			}
+
+			// Flatten crops and ROIs into single byte array: [crops..., rois...]
+			visualFrames := make([]byte, 0, len(crops[0])*batchSize+len(rois[0])*batchSize)
+			for j := 0; j < batchSize; j++ {
+				visualFrames = append(visualFrames, crops[j]...)
+			}
+			for j := 0; j < batchSize; j++ {
+				visualFrames = append(visualFrames, rois[j]...)
+			}
 
 			// Extract REAL audio chunk for this batch (640ms per batch)
 			rawAudio := extractAudioChunk(audioSamples, frameIdx, batchSize, sampleRate)
 
-			// Call monolithic server with REAL AUDIO
+			// Call monolithic server with REAL AUDIO + REAL VISUAL
 			req := &pb.CompositeBatchRequest{
 				ModelId:       modelID,
 				VisualFrames:  visualFrames,
@@ -194,16 +207,48 @@ func main() {
 }
 
 // generateMockVisualFrames creates mock visual input data
-func generateMockVisualFrames(batchSize int) []byte {
-	numFloats := batchSize * 6 * 320 * 320
-	data := make([]byte, numFloats*4)
-
-	for i := 0; i < numFloats; i++ {
-		val := float32(math.Sin(float64(i)*0.01)) * 0.5
-		binary.LittleEndian.PutUint32(data[i*4:], math.Float32bits(val))
+// loadRealVisualFrames loads actual frames from the sanders crop and ROI videos using Python helper
+func loadRealVisualFrames(startFrame, batchSize int) ([][]byte, [][]byte, error) {
+	// Call Python script to load frames
+	cmd := exec.Command("python", "load_frames.py", fmt.Sprintf("%d", startFrame), fmt.Sprintf("%d", batchSize))
+	output, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return nil, nil, fmt.Errorf("Python script failed: %v\nStderr: %s", err, string(exitErr.Stderr))
+		}
+		return nil, nil, fmt.Errorf("failed to run Python script: %v", err)
 	}
 
-	return data
+	// Calculate expected sizes (both crops and ROIs are 320x320 now)
+	cropSize := batchSize * 3 * 320 * 320 * 4  // float32
+	roiSize := batchSize * 3 * 320 * 320 * 4   // float32
+	expectedSize := cropSize + roiSize
+
+	if len(output) != expectedSize {
+		return nil, nil, fmt.Errorf("unexpected output size: got %d, expected %d", len(output), expectedSize)
+	}
+
+	// Split output into crops and ROIs
+	crops := make([][]byte, batchSize)
+	rois := make([][]byte, batchSize)
+
+	singleCropSize := 3 * 320 * 320 * 4
+	singleRoiSize := 3 * 320 * 320 * 4
+
+	for i := 0; i < batchSize; i++ {
+		cropStart := i * singleCropSize
+		cropEnd := cropStart + singleCropSize
+		crops[i] = output[cropStart:cropEnd]
+	}
+
+	roiDataStart := cropSize
+	for i := 0; i < batchSize; i++ {
+		roiStart := roiDataStart + i*singleRoiSize
+		roiEnd := roiStart + singleRoiSize
+		rois[i] = output[roiStart:roiEnd]
+	}
+
+	return crops, rois, nil
 }
 
 // extractAudioChunk extracts 640ms of audio for a batch

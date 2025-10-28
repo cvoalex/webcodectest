@@ -1,0 +1,11 @@
+================================================================================
+🚀 Monolithic Lipsync Server (Inference + Compositing)
+================================================================================
+
+🎮 GPU Status:
+   GPU 0: 0 models, 0 MB used / 24576 MB total
+Loaded mel filterbank from: audio_test_data/mel_filters.json
+Loading audio encoder from: D:\Projects\webcodecstest\audio_encoder.onnx
+✅ Audio encoder loaded successfully
+   Input shape: [1 1 80 16]
+   Output shape: [1 512]

@@ -1,0 +1,373 @@
+package registry
+
+import (
+	"fmt"
+	"log"
+	"path/filepath"
+	"sync"
+	"time"
+
+	"go-monolithic-server/config"
+	"go-monolithic-server/lipsyncinfer"
+)
+
+// ModelInstance represents a loaded model
+type ModelInstance struct {
+	ID               string
+	Config           config.ModelConfig
+	Inferencer       *lipsyncinfer.Inferencer
+	GPUID            int
+	UsageCount       int64
+	LastUsed         time.Time
+	TotalInferenceMs float64
+	MemoryBytes      int64
+	LoadedAt         time.Time
+	Mu               sync.RWMutex
+}
+
+// ModelRegistry manages multiple models with capacity limits
+type ModelRegistry struct {
+	models         map[string]*ModelInstance
+	mu             sync.RWMutex
+	config         *config.Config
+	maxModels      int
+	maxMemoryBytes int64
+	evictionPolicy string
+	nextGPU        int   // For round-robin GPU assignment
+	gpuModelCounts []int // Track models per GPU
+}
+
+// NewModelRegistry creates a new model registry
+func NewModelRegistry(cfg *config.Config) (*ModelRegistry, error) {
+	reg := &ModelRegistry{
+		models:         make(map[string]*ModelInstance),
+		config:         cfg,
+		maxModels:      cfg.Capacity.MaxModels,
+		maxMemoryBytes: int64(cfg.Capacity.MaxMemoryGB) * 1024 * 1024 * 1024,
+		evictionPolicy: cfg.Capacity.EvictionPolicy,
+		nextGPU:        0,
+		gpuModelCounts: make([]int, cfg.GPUs.Count),
+	}
+
+	// Preload models if configured
+	for modelID, modelCfg := range cfg.Models {
+		if modelCfg.PreloadModel {
+			log.Printf("📦 Preloading model: %s", modelID)
+			if err := reg.LoadModel(modelID); err != nil {
+				log.Printf("⚠️  Warning: Failed to preload model '%s': %v", modelID, err)
+			}
+		}
+	}
+
+	return reg, nil
+}
+
+// LoadModel loads a model into memory
+func (r *ModelRegistry) LoadModel(modelID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Check if already loaded
+	if _, exists := r.models[modelID]; exists {
+		return nil // Already loaded
+	}
+
+	// Get model config
+	modelCfg, exists := r.config.Models[modelID]
+	if !exists {
+		return fmt.Errorf("model '%s' not configured", modelID)
+	}
+
+	// Check capacity
+	if len(r.models) >= r.maxModels {
+		// Evict least used model
+		if err := r.evictLeastUsedLocked(); err != nil {
+			return fmt.Errorf("failed to evict model: %w", err)
+		}
+	}
+
+	// Determine GPU assignment
+	gpuID := r.selectGPU(modelCfg.PreferredGPU)
+
+	// Resolve model path (use models_root if path is relative)
+	modelPath := modelCfg.ModelPath
+	if !filepath.IsAbs(modelPath) && r.config.ModelsRoot != "" {
+		modelPath = filepath.Join(r.config.ModelsRoot, modelPath)
+	}
+
+	// Load ONNX model
+	log.Printf("🔄 Loading model '%s' on GPU %d...", modelID, gpuID)
+	log.Printf("   Model path: %s", modelPath)
+	startTime := time.Now()
+
+	inferencer, err := lipsyncinfer.NewInferencer(
+		modelPath,
+		r.config.ONNX.LibraryPath,
+		gpuID,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create inferencer: %w", err)
+	}
+
+	loadTime := time.Since(startTime)
+
+	// Estimate memory usage (model + activations)
+	memoryBytes := int64(500 * 1024 * 1024) // ~500MB per model
+
+	instance := &ModelInstance{
+		ID:               modelID,
+		Config:           modelCfg,
+		Inferencer:       inferencer,
+		GPUID:            gpuID,
+		UsageCount:       0,
+		LastUsed:         time.Now(),
+		TotalInferenceMs: 0,
+		MemoryBytes:      memoryBytes,
+		LoadedAt:         time.Now(),
+	}
+
+	r.models[modelID] = instance
+	r.gpuModelCounts[gpuID]++
+
+	log.Printf("✅ Model '%s' loaded on GPU %d in %.2fs (memory: %d MB)",
+		modelID, gpuID, loadTime.Seconds(), memoryBytes/(1024*1024))
+
+	return nil
+}
+
+// selectGPU chooses which GPU to load the model on
+func (r *ModelRegistry) selectGPU(preferredGPU int) int {
+	// If preferred GPU specified and valid, use it
+	if preferredGPU >= 0 && preferredGPU < r.config.GPUs.Count {
+		return preferredGPU
+	}
+
+	// Use assignment strategy
+	switch r.config.GPUs.AssignmentStrategy {
+	case "least-loaded":
+		// Find GPU with fewest models
+		minCount := r.gpuModelCounts[0]
+		minGPU := 0
+		for i := 1; i < r.config.GPUs.Count; i++ {
+			if r.gpuModelCounts[i] < minCount {
+				minCount = r.gpuModelCounts[i]
+				minGPU = i
+			}
+		}
+		return minGPU
+
+	default: // "round-robin"
+		gpu := r.nextGPU
+		r.nextGPU = (r.nextGPU + 1) % r.config.GPUs.Count
+		return gpu
+	}
+}
+
+// GetOrLoadModel gets a model, loading it if necessary
+func (r *ModelRegistry) GetOrLoadModel(modelID string) (*ModelInstance, error) {
+	// Try to get existing model (read lock)
+	r.mu.RLock()
+	instance, exists := r.models[modelID]
+	r.mu.RUnlock()
+
+	if exists {
+		instance.Mu.Lock()
+		instance.LastUsed = time.Now()
+		instance.Mu.Unlock()
+		return instance, nil
+	}
+
+	// Need to load model (write lock)
+	if err := r.LoadModel(modelID); err != nil {
+		return nil, err
+	}
+
+	// Get the loaded model
+	r.mu.RLock()
+	instance = r.models[modelID]
+	r.mu.RUnlock()
+
+	return instance, nil
+}
+
+// UnloadModel unloads a model from memory
+func (r *ModelRegistry) UnloadModel(modelID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	instance, exists := r.models[modelID]
+	if !exists {
+		return fmt.Errorf("model '%s' not loaded", modelID)
+	}
+
+	// Close inferencer
+	if instance.Inferencer != nil {
+		instance.Inferencer.Close()
+	}
+
+	// Update GPU count
+	r.gpuModelCounts[instance.GPUID]--
+
+	delete(r.models, modelID)
+	log.Printf("📤 Model '%s' unloaded from GPU %d", modelID, instance.GPUID)
+
+	return nil
+}
+
+// evictLeastUsedLocked evicts the least used model (caller must hold write lock)
+func (r *ModelRegistry) evictLeastUsedLocked() error {
+	if len(r.models) == 0 {
+		return fmt.Errorf("no models to evict")
+	}
+
+	var victimID string
+	var oldestTime time.Time
+	var lowestCount int64 = -1
+
+	for id, instance := range r.models {
+		instance.Mu.RLock()
+		if r.evictionPolicy == "lru" {
+			// Least Recently Used
+			if victimID == "" || instance.LastUsed.Before(oldestTime) {
+				victimID = id
+				oldestTime = instance.LastUsed
+			}
+		} else {
+			// Least Frequently Used (default)
+			if lowestCount == -1 || instance.UsageCount < lowestCount {
+				victimID = id
+				lowestCount = instance.UsageCount
+			}
+		}
+		instance.Mu.RUnlock()
+	}
+
+	if victimID == "" {
+		return fmt.Errorf("failed to select victim for eviction")
+	}
+
+	log.Printf("⚠️  Evicting model '%s' (%s policy)", victimID, r.evictionPolicy)
+	instance := r.models[victimID]
+	instance.Inferencer.Close()
+	r.gpuModelCounts[instance.GPUID]--
+	delete(r.models, victimID)
+
+	return nil
+}
+
+// RecordInference records inference statistics
+func (r *ModelRegistry) RecordInference(modelID string, inferenceTimeMs float64) {
+	r.mu.RLock()
+	instance, exists := r.models[modelID]
+	r.mu.RUnlock()
+
+	if exists {
+		instance.Mu.Lock()
+		instance.UsageCount++
+		instance.TotalInferenceMs += inferenceTimeMs
+		instance.LastUsed = time.Now()
+		instance.Mu.Unlock()
+	}
+}
+
+// ListModels returns all loaded models
+func (r *ModelRegistry) ListModels() []*ModelInstance {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	instances := make([]*ModelInstance, 0, len(r.models))
+	for _, instance := range r.models {
+		instances = append(instances, instance)
+	}
+	return instances
+}
+
+// GetStats returns statistics for a specific model or all models
+func (r *ModelRegistry) GetStats(modelID string) ([]*ModelInstance, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	if modelID == "" {
+		// Return all models
+		instances := make([]*ModelInstance, 0, len(r.models))
+		for _, instance := range r.models {
+			instances = append(instances, instance)
+		}
+		return instances, nil
+	}
+
+	// Return specific model
+	instance, exists := r.models[modelID]
+	if !exists {
+		return nil, fmt.Errorf("model '%s' not loaded", modelID)
+	}
+
+	return []*ModelInstance{instance}, nil
+}
+
+// GetLoadedCount returns the number of loaded models
+func (r *ModelRegistry) GetLoadedCount() int {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return len(r.models)
+}
+
+// GetTotalMemory returns total memory used by loaded models
+func (r *ModelRegistry) GetTotalMemory() int64 {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var total int64
+	for _, instance := range r.models {
+		instance.Mu.RLock()
+		total += instance.MemoryBytes
+		instance.Mu.RUnlock()
+	}
+	return total
+}
+
+// GetGPUInfo returns statistics per GPU
+func (r *ModelRegistry) GetGPUInfo() []GPUInfo {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	gpus := make([]GPUInfo, r.config.GPUs.Count)
+	for i := 0; i < r.config.GPUs.Count; i++ {
+		gpus[i] = GPUInfo{
+			GPUID:        i,
+			LoadedModels: r.gpuModelCounts[i],
+			TotalMemory:  int64(r.config.GPUs.MemoryGBPerGPU) * 1024 * 1024 * 1024,
+			UsedMemory:   0, // Will calculate below
+		}
+	}
+
+	// Calculate used memory per GPU
+	for _, instance := range r.models {
+		instance.Mu.RLock()
+		gpus[instance.GPUID].UsedMemory += instance.MemoryBytes
+		instance.Mu.RUnlock()
+	}
+
+	return gpus
+}
+
+// GPUInfo contains GPU statistics
+type GPUInfo struct {
+	GPUID        int
+	LoadedModels int
+	TotalMemory  int64
+	UsedMemory   int64
+}
+
+// Close releases all resources
+func (r *ModelRegistry) Close() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, instance := range r.models {
+		if instance.Inferencer != nil {
+			instance.Inferencer.Close()
+		}
+	}
+	r.models = make(map[string]*ModelInstance)
+}

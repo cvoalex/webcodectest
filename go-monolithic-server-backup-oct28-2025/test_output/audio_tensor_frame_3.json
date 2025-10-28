@@ -1,0 +1,14 @@
+{
+  "frame_index": 3,
+  "max": 5.992237,
+  "mean": 0.22439672,
+  "min": 0,
+  "nonzero_count": 2453,
+  "shape": [
+    1,
+    32,
+    16,
+    16
+  ],
+  "total_elements": 8192
+}

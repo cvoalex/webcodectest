@@ -1,0 +1,20 @@
+2025/10/26 21:56:38 ✅ Configuration loaded from config.yaml
+2025/10/26 21:56:38    GPUs: 1 × 24GB
+2025/10/26 21:56:38    Workers per GPU: 8 (total: 8 workers)
+2025/10/26 21:56:38    Max models: 40
+2025/10/26 21:56:38    Max memory: 20 GB
+2025/10/26 21:56:38    Background cache: 600 frames per model
+2025/10/26 21:56:38    Eviction policy: lfu
+2025/10/26 21:56:38    Configured models: 3
+2025/10/26 21:56:38 
+📦 Initializing model registry...
+2025/10/26 21:56:38 ✅ Model registry initialized (0 models preloaded)
+2025/10/26 21:56:39 
+🖼️  Initializing image registry...
+2025/10/26 21:56:39 ✅ Image registry initialized (0 models loaded)
+2025/10/26 21:56:39 
+🎵 Initializing audio processing pipeline...
+2025/10/26 21:56:39 ✅ Mel-spectrogram processor initialized
+2025/10/26 21:56:40 ✅ Audio encoder initialized (ONNX)
+2025/10/26 21:56:40 ✅ Buffered logging enabled (sample_rate=0, auto_flush=true)
+2025/10/26 21:56:40 ❌ Failed to listen: listen tcp :50053: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.

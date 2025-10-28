@@ -14,9 +14,9 @@ type Server struct {
 	pb.UnimplementedMonolithicServiceServer
 
 	// Core dependencies
-	modelRegistry    *registry.ModelRegistry
-	imageRegistry    *registry.ImageRegistry
-	cfg              *config.Config
+	modelRegistry *registry.ModelRegistry
+	imageRegistry *registry.ImageRegistry
+	cfg           *config.Config
 
 	// Audio processing
 	audioProcessor   *audio.Processor

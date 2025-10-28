@@ -8,7 +8,7 @@ import (
 
 // Frame size constants (EXACT values from original main.go)
 const (
-	visualFrameSize = 3 * 320 * 320 // BGR CHW format (3 channels × 320 × 320)
+	visualFrameSize = 6 * 320 * 320 // BGR CHW format (6 channels × 320 × 320 for double-sided faces)
 	audioFrameSize  = 32 * 16 * 16  // Reshaped audio features (32 × 16 × 16 = 8192)
 	outputFrameSize = 3 * 320 * 320 // Output mouth region (BGR CHW format)
 )

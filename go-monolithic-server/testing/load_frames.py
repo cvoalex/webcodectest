@@ -107,8 +107,8 @@ def load_frames_from_video(crops_path, rois_path, start_frame, batch_size):
 def load_frames(start_frame, batch_size):
     """Load real frames - try pre-extracted files first, fall back to video."""
     # Try to load from pre-extracted frames first (faster)
-    crops_dir = "../old/old_minimal_server/models/sanders/crops_frames"
-    rois_dir = "../old/old_minimal_server/models/sanders/rois_frames"
+    crops_dir = "../../old/old_minimal_server/models/sanders/crops_frames"
+    rois_dir = "../../old/old_minimal_server/models/sanders/rois_frames"
     
     if os.path.isdir(crops_dir) and os.path.isdir(rois_dir):
         result = load_frames_from_disk(crops_dir, rois_dir, start_frame, batch_size)
@@ -116,8 +116,8 @@ def load_frames(start_frame, batch_size):
             return result  # Success! Frames loaded from disk
     
     # Fall back to extracting from video files (slower)
-    crops_path = "../old/old_minimal_server/models/sanders/crops_328_video.mp4"
-    rois_path = "../old/old_minimal_server/models/sanders/rois_320_video.mp4"
+    crops_path = "../../old/old_minimal_server/models/sanders/crops_328_video.mp4"
+    rois_path = "../../old/old_minimal_server/models/sanders/rois_320_video.mp4"
     
     return load_frames_from_video(crops_path, rois_path, start_frame, batch_size)
 

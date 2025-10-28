@@ -348,19 +348,49 @@ func (p *Processor) stft(samples []float32) [][]float32 {
 				// Get frame slice
 				frame := samples[start:end]
 
+				// Safety check: ensure we don't exceed buffer bounds
+				windowLen := len(frame)
+				if windowLen > len(buffers.windowed) {
+					windowLen = len(buffers.windowed)
+				}
+				if windowLen > len(p.window) {
+					windowLen = len(p.window)
+				}
+
 				// Apply Hanning window using pooled buffer
-				for j := 0; j < p.config.WindowSize; j++ {
+				for j := 0; j < windowLen; j++ {
 					buffers.windowed[j] = float64(frame[j]) * float64(p.window[j])
+				}
+				// Zero out remaining if window is shorter than buffer
+				maxZeroIdx := p.config.WindowSize
+				if maxZeroIdx > len(buffers.windowed) {
+					maxZeroIdx = len(buffers.windowed)
+				}
+				for j := windowLen; j < maxZeroIdx; j++ {
+					buffers.windowed[j] = 0
 				}
 
 				// Zero-pad to n_fft if needed
-				copy(buffers.fftInput, buffers.windowed)
-				for j := p.config.WindowSize; j < p.config.NumFFT; j++ {
+				copyLen := len(buffers.windowed)
+				if copyLen > len(buffers.fftInput) {
+					copyLen = len(buffers.fftInput)
+				}
+				copy(buffers.fftInput[:copyLen], buffers.windowed[:copyLen])
+				maxFFTIdx := p.config.NumFFT
+				if maxFFTIdx > len(buffers.fftInput) {
+					maxFFTIdx = len(buffers.fftInput)
+				}
+				startIdx := p.config.WindowSize
+				if startIdx > len(buffers.fftInput) {
+					startIdx = len(buffers.fftInput)
+				}
+				for j := startIdx; j < maxFFTIdx; j++ {
 					buffers.fftInput[j] = 0
 				}
 
-				// Compute FFT
-				fftResult := fftObj.Coefficients(nil, buffers.fftInput)
+				// Compute FFT - pass only the required length
+				fftInputSlice := buffers.fftInput[:p.config.NumFFT]
+				fftResult := fftObj.Coefficients(nil, fftInputSlice)
 
 				// Compute magnitude spectrum using pooled buffer
 				for j := 0; j < numFreqBins; j++ {

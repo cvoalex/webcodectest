@@ -1,0 +1,33 @@
+{
+  "dataset_name": "sanders",
+  "package_version": "2.0",
+  "videos": {
+    "full_body_img": {
+      "video_file": "full_body_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    },
+    "crops_328": {
+      "video_file": "crops_328_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    },
+    "rois_320": {
+      "video_file": "rois_320_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    },
+    "model_inputs": {
+      "video_file": "model_inputs_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    }
+  },
+  "extraction_info": {
+    "full_body_img": "Extract all frames from full_body_video.mp4 to full_body_img/",
+    "crops_328": "Extract all frames from crops_328_video.mp4 to cache/crops_328/",
+    "rois_320": "Extract all frames from rois_320_video.mp4 to cache/rois_320/",
+    "model_inputs": "Extract all frames from model_inputs_video.mp4 to cache/model_inputs/"
+  },
+  "usage": "Run extract_dataset.py to unpack this dataset package"
+}

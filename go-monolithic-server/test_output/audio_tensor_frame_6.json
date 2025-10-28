@@ -1,9 +1,9 @@
 {
   "frame_index": 6,
-  "max": 7.765543,
-  "mean": 0.30873868,
+  "max": 6.639231,
+  "mean": 0.28665736,
   "min": 0,
-  "nonzero_count": 3292,
+  "nonzero_count": 3168,
   "shape": [
     1,
     32,

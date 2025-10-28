@@ -1,0 +1,6278 @@
+{
+  "0": {
+    "rect": [
+      532,
+      210,
+      714,
+      392
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\0.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\0.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\0.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\0_masked.jpg"
+  },
+  "1": {
+    "rect": [
+      532,
+      211,
+      714,
+      393
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\1.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\1.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\1.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\1_masked.jpg"
+  },
+  "2": {
+    "rect": [
+      535,
+      212,
+      717,
+      394
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\2.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\2.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\2.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\2_masked.jpg"
+  },
+  "3": {
+    "rect": [
+      539,
+      215,
+      720,
+      396
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\3.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\3.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\3.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\3_masked.jpg"
+  },
+  "4": {
+    "rect": [
+      540,
+      217,
+      722,
+      399
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\4.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\4.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\4.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\4_masked.jpg"
+  },
+  "5": {
+    "rect": [
+      541,
+      219,
+      724,
+      402
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\5.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\5.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\5.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\5_masked.jpg"
+  },
+  "6": {
+    "rect": [
+      542,
+      222,
+      727,
+      407
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\6.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\6.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\6.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\6_masked.jpg"
+  },
+  "7": {
+    "rect": [
+      543,
+      226,
+      728,
+      411
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\7.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\7.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\7.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\7_masked.jpg"
+  },
+  "8": {
+    "rect": [
+      545,
+      234,
+      733,
+      422
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\8.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\8.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\8.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\8_masked.jpg"
+  },
+  "9": {
+    "rect": [
+      546,
+      239,
+      733,
+      426
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\9.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\9.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\9.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\9_masked.jpg"
+  },
+  "10": {
+    "rect": [
+      547,
+      245,
+      733,
+      431
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\10.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\10.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\10.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\10_masked.jpg"
+  },
+  "11": {
+    "rect": [
+      548,
+      250,
+      734,
+      436
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\11.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\11.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\11.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\11_masked.jpg"
+  },
+  "12": {
+    "rect": [
+      547,
+      255,
+      733,
+      441
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\12.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\12.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\12.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\12_masked.jpg"
+  },
+  "13": {
+    "rect": [
+      548,
+      266,
+      735,
+      453
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\13.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\13.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\13.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\13_masked.jpg"
+  },
+  "14": {
+    "rect": [
+      548,
+      271,
+      736,
+      459
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\14.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\14.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\14.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\14_masked.jpg"
+  },
+  "15": {
+    "rect": [
+      548,
+      276,
+      734,
+      462
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\15.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\15.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\15.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\15_masked.jpg"
+  },
+  "16": {
+    "rect": [
+      548,
+      282,
+      733,
+      467
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\16.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\16.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\16.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\16_masked.jpg"
+  },
+  "17": {
+    "rect": [
+      548,
+      288,
+      734,
+      474
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\17.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\17.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\17.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\17_masked.jpg"
+  },
+  "18": {
+    "rect": [
+      548,
+      298,
+      733,
+      483
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\18.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\18.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\18.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\18_masked.jpg"
+  },
+  "19": {
+    "rect": [
+      549,
+      303,
+      736,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\19.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\19.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\19.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\19_masked.jpg"
+  },
+  "20": {
+    "rect": [
+      551,
+      307,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\20.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\20.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\20.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\20_masked.jpg"
+  },
+  "21": {
+    "rect": [
+      551,
+      310,
+      735,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\21.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\21.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\21.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\21_masked.jpg"
+  },
+  "22": {
+    "rect": [
+      552,
+      312,
+      736,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\22.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\22.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\22.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\22_masked.jpg"
+  },
+  "23": {
+    "rect": [
+      553,
+      313,
+      736,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\23.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\23.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\23.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\23_masked.jpg"
+  },
+  "24": {
+    "rect": [
+      554,
+      314,
+      737,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\24.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\24.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\24.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\24_masked.jpg"
+  },
+  "25": {
+    "rect": [
+      553,
+      313,
+      738,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\25.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\25.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\25.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\25_masked.jpg"
+  },
+  "26": {
+    "rect": [
+      554,
+      313,
+      737,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\26.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\26.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\26.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\26_masked.jpg"
+  },
+  "27": {
+    "rect": [
+      553,
+      313,
+      737,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\27.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\27.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\27.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\27_masked.jpg"
+  },
+  "28": {
+    "rect": [
+      549,
+      314,
+      735,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\28.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\28.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\28.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\28_masked.jpg"
+  },
+  "29": {
+    "rect": [
+      546,
+      315,
+      731,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\29.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\29.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\29.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\29_masked.jpg"
+  },
+  "30": {
+    "rect": [
+      543,
+      315,
+      728,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\30.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\30.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\30.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\30_masked.jpg"
+  },
+  "31": {
+    "rect": [
+      541,
+      316,
+      725,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\31.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\31.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\31.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\31_masked.jpg"
+  },
+  "32": {
+    "rect": [
+      538,
+      317,
+      721,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\32.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\32.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\32.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\32_masked.jpg"
+  },
+  "33": {
+    "rect": [
+      534,
+      315,
+      718,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\33.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\33.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\33.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\33_masked.jpg"
+  },
+  "34": {
+    "rect": [
+      534,
+      314,
+      719,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\34.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\34.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\34.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\34_masked.jpg"
+  },
+  "35": {
+    "rect": [
+      535,
+      313,
+      718,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\35.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\35.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\35.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\35_masked.jpg"
+  },
+  "36": {
+    "rect": [
+      536,
+      312,
+      721,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\36.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\36.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\36.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\36_masked.jpg"
+  },
+  "37": {
+    "rect": [
+      537,
+      310,
+      724,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\37.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\37.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\37.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\37_masked.jpg"
+  },
+  "38": {
+    "rect": [
+      542,
+      308,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\38.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\38.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\38.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\38_masked.jpg"
+  },
+  "39": {
+    "rect": [
+      545,
+      307,
+      730,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\39.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\39.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\39.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\39_masked.jpg"
+  },
+  "40": {
+    "rect": [
+      547,
+      307,
+      734,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\40.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\40.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\40.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\40_masked.jpg"
+  },
+  "41": {
+    "rect": [
+      550,
+      307,
+      736,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\41.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\41.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\41.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\41_masked.jpg"
+  },
+  "42": {
+    "rect": [
+      552,
+      306,
+      739,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\42.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\42.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\42.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\42_masked.jpg"
+  },
+  "43": {
+    "rect": [
+      557,
+      306,
+      742,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\43.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\43.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\43.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\43_masked.jpg"
+  },
+  "44": {
+    "rect": [
+      558,
+      306,
+      743,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\44.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\44.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\44.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\44_masked.jpg"
+  },
+  "45": {
+    "rect": [
+      559,
+      305,
+      744,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\45.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\45.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\45.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\45_masked.jpg"
+  },
+  "46": {
+    "rect": [
+      559,
+      305,
+      744,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\46.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\46.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\46.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\46_masked.jpg"
+  },
+  "47": {
+    "rect": [
+      558,
+      304,
+      743,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\47.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\47.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\47.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\47_masked.jpg"
+  },
+  "48": {
+    "rect": [
+      557,
+      304,
+      742,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\48.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\48.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\48.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\48_masked.jpg"
+  },
+  "49": {
+    "rect": [
+      556,
+      304,
+      741,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\49.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\49.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\49.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\49_masked.jpg"
+  },
+  "50": {
+    "rect": [
+      554,
+      304,
+      740,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\50.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\50.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\50.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\50_masked.jpg"
+  },
+  "51": {
+    "rect": [
+      553,
+      304,
+      739,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\51.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\51.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\51.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\51_masked.jpg"
+  },
+  "52": {
+    "rect": [
+      554,
+      305,
+      739,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\52.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\52.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\52.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\52_masked.jpg"
+  },
+  "53": {
+    "rect": [
+      552,
+      305,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\53.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\53.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\53.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\53_masked.jpg"
+  },
+  "54": {
+    "rect": [
+      553,
+      305,
+      738,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\54.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\54.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\54.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\54_masked.jpg"
+  },
+  "55": {
+    "rect": [
+      553,
+      305,
+      738,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\55.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\55.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\55.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\55_masked.jpg"
+  },
+  "56": {
+    "rect": [
+      552,
+      305,
+      739,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\56.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\56.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\56.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\56_masked.jpg"
+  },
+  "57": {
+    "rect": [
+      552,
+      305,
+      739,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\57.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\57.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\57.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\57_masked.jpg"
+  },
+  "58": {
+    "rect": [
+      552,
+      305,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\58.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\58.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\58.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\58_masked.jpg"
+  },
+  "59": {
+    "rect": [
+      551,
+      305,
+      737,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\59.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\59.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\59.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\59_masked.jpg"
+  },
+  "60": {
+    "rect": [
+      550,
+      305,
+      736,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\60.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\60.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\60.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\60_masked.jpg"
+  },
+  "61": {
+    "rect": [
+      550,
+      305,
+      735,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\61.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\61.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\61.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\61_masked.jpg"
+  },
+  "62": {
+    "rect": [
+      550,
+      306,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\62.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\62.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\62.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\62_masked.jpg"
+  },
+  "63": {
+    "rect": [
+      548,
+      306,
+      734,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\63.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\63.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\63.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\63_masked.jpg"
+  },
+  "64": {
+    "rect": [
+      548,
+      306,
+      733,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\64.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\64.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\64.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\64_masked.jpg"
+  },
+  "65": {
+    "rect": [
+      549,
+      306,
+      733,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\65.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\65.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\65.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\65_masked.jpg"
+  },
+  "66": {
+    "rect": [
+      549,
+      306,
+      735,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\66.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\66.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\66.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\66_masked.jpg"
+  },
+  "67": {
+    "rect": [
+      549,
+      306,
+      734,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\67.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\67.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\67.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\67_masked.jpg"
+  },
+  "68": {
+    "rect": [
+      550,
+      306,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\68.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\68.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\68.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\68_masked.jpg"
+  },
+  "69": {
+    "rect": [
+      550,
+      306,
+      734,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\69.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\69.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\69.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\69_masked.jpg"
+  },
+  "70": {
+    "rect": [
+      550,
+      306,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\70.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\70.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\70.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\70_masked.jpg"
+  },
+  "71": {
+    "rect": [
+      550,
+      306,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\71.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\71.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\71.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\71_masked.jpg"
+  },
+  "72": {
+    "rect": [
+      551,
+      306,
+      735,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\72.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\72.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\72.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\72_masked.jpg"
+  },
+  "73": {
+    "rect": [
+      551,
+      306,
+      736,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\73.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\73.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\73.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\73_masked.jpg"
+  },
+  "74": {
+    "rect": [
+      552,
+      307,
+      736,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\74.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\74.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\74.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\74_masked.jpg"
+  },
+  "75": {
+    "rect": [
+      551,
+      307,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\75.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\75.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\75.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\75_masked.jpg"
+  },
+  "76": {
+    "rect": [
+      551,
+      307,
+      734,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\76.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\76.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\76.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\76_masked.jpg"
+  },
+  "77": {
+    "rect": [
+      551,
+      307,
+      731,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\77.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\77.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\77.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\77_masked.jpg"
+  },
+  "78": {
+    "rect": [
+      547,
+      307,
+      730,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\78.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\78.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\78.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\78_masked.jpg"
+  },
+  "79": {
+    "rect": [
+      544,
+      307,
+      723,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\79.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\79.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\79.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\79_masked.jpg"
+  },
+  "80": {
+    "rect": [
+      541,
+      306,
+      715,
+      480
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\80.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\80.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\80.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\80_masked.jpg"
+  },
+  "81": {
+    "rect": [
+      535,
+      304,
+      708,
+      477
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\81.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\81.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\81.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\81_masked.jpg"
+  },
+  "82": {
+    "rect": [
+      529,
+      302,
+      703,
+      476
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\82.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\82.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\82.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\82_masked.jpg"
+  },
+  "83": {
+    "rect": [
+      517,
+      298,
+      692,
+      473
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\83.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\83.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\83.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\83_masked.jpg"
+  },
+  "84": {
+    "rect": [
+      512,
+      297,
+      688,
+      473
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\84.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\84.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\84.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\84_masked.jpg"
+  },
+  "85": {
+    "rect": [
+      507,
+      296,
+      685,
+      474
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\85.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\85.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\85.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\85_masked.jpg"
+  },
+  "86": {
+    "rect": [
+      506,
+      298,
+      681,
+      473
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\86.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\86.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\86.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\86_masked.jpg"
+  },
+  "87": {
+    "rect": [
+      504,
+      299,
+      678,
+      473
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\87.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\87.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\87.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\87_masked.jpg"
+  },
+  "88": {
+    "rect": [
+      502,
+      300,
+      677,
+      475
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\88.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\88.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\88.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\88_masked.jpg"
+  },
+  "89": {
+    "rect": [
+      503,
+      300,
+      678,
+      475
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\89.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\89.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\89.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\89_masked.jpg"
+  },
+  "90": {
+    "rect": [
+      505,
+      300,
+      679,
+      474
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\90.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\90.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\90.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\90_masked.jpg"
+  },
+  "91": {
+    "rect": [
+      505,
+      300,
+      682,
+      477
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\91.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\91.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\91.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\91_masked.jpg"
+  },
+  "92": {
+    "rect": [
+      509,
+      301,
+      685,
+      477
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\92.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\92.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\92.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\92_masked.jpg"
+  },
+  "93": {
+    "rect": [
+      516,
+      303,
+      693,
+      480
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\93.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\93.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\93.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\93_masked.jpg"
+  },
+  "94": {
+    "rect": [
+      524,
+      305,
+      700,
+      481
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\94.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\94.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\94.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\94_masked.jpg"
+  },
+  "95": {
+    "rect": [
+      531,
+      307,
+      707,
+      483
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\95.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\95.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\95.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\95_masked.jpg"
+  },
+  "96": {
+    "rect": [
+      533,
+      309,
+      710,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\96.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\96.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\96.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\96_masked.jpg"
+  },
+  "97": {
+    "rect": [
+      538,
+      310,
+      716,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\97.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\97.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\97.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\97_masked.jpg"
+  },
+  "98": {
+    "rect": [
+      545,
+      312,
+      728,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\98.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\98.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\98.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\98_masked.jpg"
+  },
+  "99": {
+    "rect": [
+      549,
+      312,
+      731,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\99.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\99.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\99.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\99_masked.jpg"
+  },
+  "100": {
+    "rect": [
+      552,
+      313,
+      734,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\100.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\100.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\100.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\100_masked.jpg"
+  },
+  "101": {
+    "rect": [
+      553,
+      313,
+      735,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\101.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\101.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\101.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\101_masked.jpg"
+  },
+  "102": {
+    "rect": [
+      554,
+      313,
+      734,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\102.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\102.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\102.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\102_masked.jpg"
+  },
+  "103": {
+    "rect": [
+      552,
+      312,
+      732,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\103.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\103.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\103.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\103_masked.jpg"
+  },
+  "104": {
+    "rect": [
+      550,
+      311,
+      731,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\104.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\104.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\104.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\104_masked.jpg"
+  },
+  "105": {
+    "rect": [
+      548,
+      310,
+      730,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\105.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\105.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\105.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\105_masked.jpg"
+  },
+  "106": {
+    "rect": [
+      547,
+      310,
+      728,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\106.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\106.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\106.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\106_masked.jpg"
+  },
+  "107": {
+    "rect": [
+      544,
+      309,
+      727,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\107.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\107.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\107.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\107_masked.jpg"
+  },
+  "108": {
+    "rect": [
+      543,
+      308,
+      726,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\108.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\108.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\108.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\108_masked.jpg"
+  },
+  "109": {
+    "rect": [
+      543,
+      308,
+      726,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\109.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\109.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\109.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\109_masked.jpg"
+  },
+  "110": {
+    "rect": [
+      542,
+      306,
+      726,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\110.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\110.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\110.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\110_masked.jpg"
+  },
+  "111": {
+    "rect": [
+      541,
+      305,
+      726,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\111.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\111.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\111.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\111_masked.jpg"
+  },
+  "112": {
+    "rect": [
+      542,
+      305,
+      726,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\112.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\112.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\112.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\112_masked.jpg"
+  },
+  "113": {
+    "rect": [
+      543,
+      305,
+      729,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\113.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\113.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\113.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\113_masked.jpg"
+  },
+  "114": {
+    "rect": [
+      544,
+      305,
+      729,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\114.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\114.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\114.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\114_masked.jpg"
+  },
+  "115": {
+    "rect": [
+      545,
+      305,
+      730,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\115.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\115.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\115.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\115_masked.jpg"
+  },
+  "116": {
+    "rect": [
+      546,
+      305,
+      732,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\116.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\116.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\116.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\116_masked.jpg"
+  },
+  "117": {
+    "rect": [
+      547,
+      305,
+      733,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\117.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\117.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\117.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\117_masked.jpg"
+  },
+  "118": {
+    "rect": [
+      549,
+      305,
+      735,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\118.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\118.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\118.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\118_masked.jpg"
+  },
+  "119": {
+    "rect": [
+      549,
+      305,
+      736,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\119.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\119.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\119.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\119_masked.jpg"
+  },
+  "120": {
+    "rect": [
+      549,
+      304,
+      737,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\120.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\120.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\120.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\120_masked.jpg"
+  },
+  "121": {
+    "rect": [
+      548,
+      305,
+      736,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\121.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\121.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\121.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\121_masked.jpg"
+  },
+  "122": {
+    "rect": [
+      548,
+      305,
+      736,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\122.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\122.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\122.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\122_masked.jpg"
+  },
+  "123": {
+    "rect": [
+      546,
+      306,
+      735,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\123.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\123.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\123.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\123_masked.jpg"
+  },
+  "124": {
+    "rect": [
+      546,
+      306,
+      734,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\124.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\124.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\124.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\124_masked.jpg"
+  },
+  "125": {
+    "rect": [
+      546,
+      307,
+      733,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\125.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\125.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\125.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\125_masked.jpg"
+  },
+  "126": {
+    "rect": [
+      548,
+      307,
+      733,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\126.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\126.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\126.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\126_masked.jpg"
+  },
+  "127": {
+    "rect": [
+      548,
+      308,
+      733,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\127.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\127.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\127.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\127_masked.jpg"
+  },
+  "128": {
+    "rect": [
+      546,
+      307,
+      733,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\128.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\128.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\128.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\128_masked.jpg"
+  },
+  "129": {
+    "rect": [
+      547,
+      308,
+      733,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\129.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\129.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\129.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\129_masked.jpg"
+  },
+  "130": {
+    "rect": [
+      547,
+      308,
+      733,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\130.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\130.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\130.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\130_masked.jpg"
+  },
+  "131": {
+    "rect": [
+      547,
+      308,
+      733,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\131.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\131.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\131.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\131_masked.jpg"
+  },
+  "132": {
+    "rect": [
+      548,
+      308,
+      733,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\132.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\132.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\132.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\132_masked.jpg"
+  },
+  "133": {
+    "rect": [
+      548,
+      309,
+      732,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\133.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\133.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\133.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\133_masked.jpg"
+  },
+  "134": {
+    "rect": [
+      547,
+      308,
+      729,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\134.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\134.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\134.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\134_masked.jpg"
+  },
+  "135": {
+    "rect": [
+      545,
+      308,
+      730,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\135.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\135.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\135.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\135_masked.jpg"
+  },
+  "136": {
+    "rect": [
+      544,
+      309,
+      727,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\136.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\136.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\136.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\136_masked.jpg"
+  },
+  "137": {
+    "rect": [
+      542,
+      309,
+      721,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\137.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\137.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\137.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\137_masked.jpg"
+  },
+  "138": {
+    "rect": [
+      536,
+      309,
+      712,
+      485
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\138.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\138.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\138.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\138_masked.jpg"
+  },
+  "139": {
+    "rect": [
+      532,
+      309,
+      709,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\139.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\139.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\139.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\139_masked.jpg"
+  },
+  "140": {
+    "rect": [
+      529,
+      311,
+      706,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\140.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\140.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\140.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\140_masked.jpg"
+  },
+  "141": {
+    "rect": [
+      524,
+      312,
+      702,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\141.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\141.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\141.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\141_masked.jpg"
+  },
+  "142": {
+    "rect": [
+      521,
+      313,
+      699,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\142.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\142.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\142.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\142_masked.jpg"
+  },
+  "143": {
+    "rect": [
+      518,
+      315,
+      695,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\143.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\143.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\143.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\143_masked.jpg"
+  },
+  "144": {
+    "rect": [
+      518,
+      315,
+      694,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\144.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\144.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\144.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\144_masked.jpg"
+  },
+  "145": {
+    "rect": [
+      519,
+      314,
+      695,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\145.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\145.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\145.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\145_masked.jpg"
+  },
+  "146": {
+    "rect": [
+      520,
+      313,
+      696,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\146.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\146.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\146.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\146_masked.jpg"
+  },
+  "147": {
+    "rect": [
+      522,
+      313,
+      698,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\147.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\147.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\147.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\147_masked.jpg"
+  },
+  "148": {
+    "rect": [
+      528,
+      310,
+      705,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\148.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\148.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\148.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\148_masked.jpg"
+  },
+  "149": {
+    "rect": [
+      531,
+      309,
+      710,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\149.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\149.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\149.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\149_masked.jpg"
+  },
+  "150": {
+    "rect": [
+      535,
+      308,
+      714,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\150.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\150.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\150.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\150_masked.jpg"
+  },
+  "151": {
+    "rect": [
+      540,
+      307,
+      719,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\151.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\151.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\151.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\151_masked.jpg"
+  },
+  "152": {
+    "rect": [
+      542,
+      307,
+      723,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\152.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\152.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\152.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\152_masked.jpg"
+  },
+  "153": {
+    "rect": [
+      548,
+      307,
+      730,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\153.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\153.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\153.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\153_masked.jpg"
+  },
+  "154": {
+    "rect": [
+      551,
+      307,
+      733,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\154.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\154.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\154.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\154_masked.jpg"
+  },
+  "155": {
+    "rect": [
+      552,
+      308,
+      736,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\155.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\155.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\155.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\155_masked.jpg"
+  },
+  "156": {
+    "rect": [
+      551,
+      309,
+      733,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\156.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\156.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\156.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\156_masked.jpg"
+  },
+  "157": {
+    "rect": [
+      549,
+      310,
+      731,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\157.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\157.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\157.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\157_masked.jpg"
+  },
+  "158": {
+    "rect": [
+      548,
+      313,
+      733,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\158.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\158.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\158.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\158_masked.jpg"
+  },
+  "159": {
+    "rect": [
+      547,
+      313,
+      731,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\159.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\159.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\159.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\159_masked.jpg"
+  },
+  "160": {
+    "rect": [
+      546,
+      313,
+      732,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\160.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\160.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\160.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\160_masked.jpg"
+  },
+  "161": {
+    "rect": [
+      545,
+      313,
+      730,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\161.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\161.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\161.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\161_masked.jpg"
+  },
+  "162": {
+    "rect": [
+      544,
+      313,
+      729,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\162.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\162.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\162.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\162_masked.jpg"
+  },
+  "163": {
+    "rect": [
+      541,
+      314,
+      725,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\163.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\163.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\163.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\163_masked.jpg"
+  },
+  "164": {
+    "rect": [
+      540,
+      314,
+      724,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\164.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\164.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\164.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\164_masked.jpg"
+  },
+  "165": {
+    "rect": [
+      540,
+      313,
+      724,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\165.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\165.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\165.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\165_masked.jpg"
+  },
+  "166": {
+    "rect": [
+      539,
+      311,
+      724,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\166.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\166.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\166.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\166_masked.jpg"
+  },
+  "167": {
+    "rect": [
+      539,
+      311,
+      723,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\167.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\167.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\167.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\167_masked.jpg"
+  },
+  "168": {
+    "rect": [
+      539,
+      310,
+      723,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\168.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\168.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\168.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\168_masked.jpg"
+  },
+  "169": {
+    "rect": [
+      540,
+      309,
+      725,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\169.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\169.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\169.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\169_masked.jpg"
+  },
+  "170": {
+    "rect": [
+      541,
+      309,
+      726,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\170.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\170.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\170.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\170_masked.jpg"
+  },
+  "171": {
+    "rect": [
+      541,
+      310,
+      727,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\171.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\171.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\171.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\171_masked.jpg"
+  },
+  "172": {
+    "rect": [
+      542,
+      310,
+      727,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\172.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\172.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\172.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\172_masked.jpg"
+  },
+  "173": {
+    "rect": [
+      543,
+      310,
+      729,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\173.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\173.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\173.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\173_masked.jpg"
+  },
+  "174": {
+    "rect": [
+      544,
+      311,
+      730,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\174.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\174.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\174.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\174_masked.jpg"
+  },
+  "175": {
+    "rect": [
+      545,
+      311,
+      731,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\175.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\175.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\175.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\175_masked.jpg"
+  },
+  "176": {
+    "rect": [
+      545,
+      311,
+      730,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\176.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\176.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\176.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\176_masked.jpg"
+  },
+  "177": {
+    "rect": [
+      545,
+      311,
+      731,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\177.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\177.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\177.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\177_masked.jpg"
+  },
+  "178": {
+    "rect": [
+      545,
+      310,
+      731,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\178.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\178.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\178.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\178_masked.jpg"
+  },
+  "179": {
+    "rect": [
+      545,
+      311,
+      730,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\179.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\179.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\179.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\179_masked.jpg"
+  },
+  "180": {
+    "rect": [
+      545,
+      311,
+      729,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\180.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\180.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\180.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\180_masked.jpg"
+  },
+  "181": {
+    "rect": [
+      544,
+      311,
+      729,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\181.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\181.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\181.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\181_masked.jpg"
+  },
+  "182": {
+    "rect": [
+      543,
+      312,
+      728,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\182.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\182.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\182.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\182_masked.jpg"
+  },
+  "183": {
+    "rect": [
+      544,
+      312,
+      728,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\183.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\183.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\183.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\183_masked.jpg"
+  },
+  "184": {
+    "rect": [
+      543,
+      312,
+      728,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\184.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\184.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\184.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\184_masked.jpg"
+  },
+  "185": {
+    "rect": [
+      542,
+      312,
+      727,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\185.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\185.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\185.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\185_masked.jpg"
+  },
+  "186": {
+    "rect": [
+      542,
+      312,
+      728,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\186.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\186.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\186.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\186_masked.jpg"
+  },
+  "187": {
+    "rect": [
+      543,
+      311,
+      727,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\187.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\187.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\187.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\187_masked.jpg"
+  },
+  "188": {
+    "rect": [
+      543,
+      311,
+      728,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\188.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\188.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\188.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\188_masked.jpg"
+  },
+  "189": {
+    "rect": [
+      544,
+      311,
+      728,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\189.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\189.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\189.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\189_masked.jpg"
+  },
+  "190": {
+    "rect": [
+      544,
+      312,
+      728,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\190.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\190.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\190.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\190_masked.jpg"
+  },
+  "191": {
+    "rect": [
+      544,
+      312,
+      728,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\191.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\191.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\191.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\191_masked.jpg"
+  },
+  "192": {
+    "rect": [
+      543,
+      313,
+      727,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\192.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\192.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\192.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\192_masked.jpg"
+  },
+  "193": {
+    "rect": [
+      543,
+      313,
+      727,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\193.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\193.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\193.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\193_masked.jpg"
+  },
+  "194": {
+    "rect": [
+      543,
+      317,
+      724,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\194.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\194.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\194.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\194_masked.jpg"
+  },
+  "195": {
+    "rect": [
+      542,
+      319,
+      722,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\195.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\195.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\195.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\195_masked.jpg"
+  },
+  "196": {
+    "rect": [
+      539,
+      322,
+      719,
+      502
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\196.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\196.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\196.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\196_masked.jpg"
+  },
+  "197": {
+    "rect": [
+      537,
+      323,
+      715,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\197.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\197.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\197.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\197_masked.jpg"
+  },
+  "198": {
+    "rect": [
+      534,
+      325,
+      712,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\198.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\198.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\198.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\198_masked.jpg"
+  },
+  "199": {
+    "rect": [
+      533,
+      325,
+      709,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\199.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\199.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\199.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\199_masked.jpg"
+  },
+  "200": {
+    "rect": [
+      532,
+      322,
+      711,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\200.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\200.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\200.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\200_masked.jpg"
+  },
+  "201": {
+    "rect": [
+      533,
+      320,
+      712,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\201.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\201.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\201.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\201_masked.jpg"
+  },
+  "202": {
+    "rect": [
+      533,
+      319,
+      713,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\202.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\202.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\202.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\202_masked.jpg"
+  },
+  "203": {
+    "rect": [
+      534,
+      317,
+      716,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\203.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\203.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\203.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\203_masked.jpg"
+  },
+  "204": {
+    "rect": [
+      536,
+      314,
+      720,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\204.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\204.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\204.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\204_masked.jpg"
+  },
+  "205": {
+    "rect": [
+      538,
+      312,
+      721,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\205.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\205.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\205.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\205_masked.jpg"
+  },
+  "206": {
+    "rect": [
+      540,
+      310,
+      725,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\206.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\206.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\206.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\206_masked.jpg"
+  },
+  "207": {
+    "rect": [
+      543,
+      309,
+      726,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\207.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\207.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\207.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\207_masked.jpg"
+  },
+  "208": {
+    "rect": [
+      547,
+      308,
+      729,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\208.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\208.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\208.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\208_masked.jpg"
+  },
+  "209": {
+    "rect": [
+      550,
+      307,
+      733,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\209.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\209.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\209.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\209_masked.jpg"
+  },
+  "210": {
+    "rect": [
+      551,
+      307,
+      732,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\210.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\210.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\210.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\210_masked.jpg"
+  },
+  "211": {
+    "rect": [
+      554,
+      308,
+      732,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\211.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\211.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\211.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\211_masked.jpg"
+  },
+  "212": {
+    "rect": [
+      553,
+      308,
+      731,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\212.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\212.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\212.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\212_masked.jpg"
+  },
+  "213": {
+    "rect": [
+      552,
+      308,
+      728,
+      484
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\213.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\213.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\213.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\213_masked.jpg"
+  },
+  "214": {
+    "rect": [
+      550,
+      312,
+      726,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\214.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\214.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\214.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\214_masked.jpg"
+  },
+  "215": {
+    "rect": [
+      550,
+      315,
+      726,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\215.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\215.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\215.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\215_masked.jpg"
+  },
+  "216": {
+    "rect": [
+      550,
+      316,
+      726,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\216.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\216.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\216.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\216_masked.jpg"
+  },
+  "217": {
+    "rect": [
+      551,
+      313,
+      727,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\217.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\217.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\217.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\217_masked.jpg"
+  },
+  "218": {
+    "rect": [
+      550,
+      310,
+      729,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\218.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\218.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\218.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\218_masked.jpg"
+  },
+  "219": {
+    "rect": [
+      549,
+      305,
+      732,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\219.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\219.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\219.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\219_masked.jpg"
+  },
+  "220": {
+    "rect": [
+      550,
+      304,
+      734,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\220.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\220.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\220.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\220_masked.jpg"
+  },
+  "221": {
+    "rect": [
+      550,
+      303,
+      733,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\221.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\221.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\221.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\221_masked.jpg"
+  },
+  "222": {
+    "rect": [
+      549,
+      303,
+      731,
+      485
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\222.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\222.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\222.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\222_masked.jpg"
+  },
+  "223": {
+    "rect": [
+      550,
+      302,
+      731,
+      483
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\223.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\223.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\223.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\223_masked.jpg"
+  },
+  "224": {
+    "rect": [
+      549,
+      303,
+      730,
+      484
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\224.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\224.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\224.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\224_masked.jpg"
+  },
+  "225": {
+    "rect": [
+      550,
+      304,
+      730,
+      484
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\225.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\225.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\225.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\225_masked.jpg"
+  },
+  "226": {
+    "rect": [
+      549,
+      305,
+      730,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\226.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\226.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\226.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\226_masked.jpg"
+  },
+  "227": {
+    "rect": [
+      549,
+      306,
+      729,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\227.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\227.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\227.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\227_masked.jpg"
+  },
+  "228": {
+    "rect": [
+      549,
+      306,
+      728,
+      485
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\228.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\228.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\228.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\228_masked.jpg"
+  },
+  "229": {
+    "rect": [
+      549,
+      307,
+      727,
+      485
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\229.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\229.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\229.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\229_masked.jpg"
+  },
+  "230": {
+    "rect": [
+      549,
+      307,
+      729,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\230.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\230.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\230.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\230_masked.jpg"
+  },
+  "231": {
+    "rect": [
+      549,
+      307,
+      728,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\231.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\231.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\231.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\231_masked.jpg"
+  },
+  "232": {
+    "rect": [
+      549,
+      307,
+      728,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\232.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\232.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\232.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\232_masked.jpg"
+  },
+  "233": {
+    "rect": [
+      549,
+      307,
+      727,
+      485
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\233.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\233.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\233.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\233_masked.jpg"
+  },
+  "234": {
+    "rect": [
+      548,
+      307,
+      728,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\234.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\234.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\234.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\234_masked.jpg"
+  },
+  "235": {
+    "rect": [
+      548,
+      307,
+      728,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\235.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\235.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\235.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\235_masked.jpg"
+  },
+  "236": {
+    "rect": [
+      548,
+      307,
+      728,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\236.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\236.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\236.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\236_masked.jpg"
+  },
+  "237": {
+    "rect": [
+      548,
+      307,
+      728,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\237.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\237.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\237.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\237_masked.jpg"
+  },
+  "238": {
+    "rect": [
+      548,
+      307,
+      728,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\238.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\238.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\238.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\238_masked.jpg"
+  },
+  "239": {
+    "rect": [
+      549,
+      309,
+      727,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\239.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\239.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\239.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\239_masked.jpg"
+  },
+  "240": {
+    "rect": [
+      548,
+      309,
+      728,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\240.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\240.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\240.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\240_masked.jpg"
+  },
+  "241": {
+    "rect": [
+      547,
+      309,
+      727,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\241.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\241.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\241.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\241_masked.jpg"
+  },
+  "242": {
+    "rect": [
+      547,
+      310,
+      728,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\242.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\242.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\242.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\242_masked.jpg"
+  },
+  "243": {
+    "rect": [
+      547,
+      310,
+      728,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\243.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\243.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\243.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\243_masked.jpg"
+  },
+  "244": {
+    "rect": [
+      546,
+      309,
+      726,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\244.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\244.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\244.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\244_masked.jpg"
+  },
+  "245": {
+    "rect": [
+      546,
+      308,
+      726,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\245.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\245.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\245.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\245_masked.jpg"
+  },
+  "246": {
+    "rect": [
+      546,
+      308,
+      726,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\246.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\246.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\246.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\246_masked.jpg"
+  },
+  "247": {
+    "rect": [
+      546,
+      308,
+      727,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\247.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\247.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\247.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\247_masked.jpg"
+  },
+  "248": {
+    "rect": [
+      547,
+      308,
+      729,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\248.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\248.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\248.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\248_masked.jpg"
+  },
+  "249": {
+    "rect": [
+      547,
+      309,
+      729,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\249.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\249.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\249.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\249_masked.jpg"
+  },
+  "250": {
+    "rect": [
+      546,
+      309,
+      730,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\250.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\250.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\250.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\250_masked.jpg"
+  },
+  "251": {
+    "rect": [
+      545,
+      310,
+      729,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\251.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\251.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\251.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\251_masked.jpg"
+  },
+  "252": {
+    "rect": [
+      545,
+      311,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\252.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\252.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\252.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\252_masked.jpg"
+  },
+  "253": {
+    "rect": [
+      543,
+      311,
+      726,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\253.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\253.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\253.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\253_masked.jpg"
+  },
+  "254": {
+    "rect": [
+      542,
+      313,
+      725,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\254.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\254.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\254.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\254_masked.jpg"
+  },
+  "255": {
+    "rect": [
+      542,
+      313,
+      725,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\255.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\255.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\255.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\255_masked.jpg"
+  },
+  "256": {
+    "rect": [
+      541,
+      313,
+      724,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\256.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\256.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\256.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\256_masked.jpg"
+  },
+  "257": {
+    "rect": [
+      541,
+      313,
+      725,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\257.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\257.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\257.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\257_masked.jpg"
+  },
+  "258": {
+    "rect": [
+      541,
+      313,
+      725,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\258.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\258.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\258.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\258_masked.jpg"
+  },
+  "259": {
+    "rect": [
+      541,
+      314,
+      724,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\259.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\259.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\259.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\259_masked.jpg"
+  },
+  "260": {
+    "rect": [
+      540,
+      314,
+      724,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\260.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\260.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\260.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\260_masked.jpg"
+  },
+  "261": {
+    "rect": [
+      540,
+      314,
+      723,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\261.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\261.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\261.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\261_masked.jpg"
+  },
+  "262": {
+    "rect": [
+      540,
+      315,
+      723,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\262.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\262.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\262.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\262_masked.jpg"
+  },
+  "263": {
+    "rect": [
+      541,
+      315,
+      723,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\263.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\263.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\263.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\263_masked.jpg"
+  },
+  "264": {
+    "rect": [
+      541,
+      317,
+      725,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\264.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\264.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\264.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\264_masked.jpg"
+  },
+  "265": {
+    "rect": [
+      541,
+      318,
+      723,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\265.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\265.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\265.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\265_masked.jpg"
+  },
+  "266": {
+    "rect": [
+      540,
+      318,
+      723,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\266.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\266.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\266.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\266_masked.jpg"
+  },
+  "267": {
+    "rect": [
+      540,
+      316,
+      722,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\267.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\267.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\267.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\267_masked.jpg"
+  },
+  "268": {
+    "rect": [
+      539,
+      313,
+      721,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\268.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\268.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\268.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\268_masked.jpg"
+  },
+  "269": {
+    "rect": [
+      537,
+      311,
+      722,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\269.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\269.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\269.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\269_masked.jpg"
+  },
+  "270": {
+    "rect": [
+      538,
+      310,
+      722,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\270.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\270.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\270.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\270_masked.jpg"
+  },
+  "271": {
+    "rect": [
+      538,
+      311,
+      721,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\271.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\271.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\271.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\271_masked.jpg"
+  },
+  "272": {
+    "rect": [
+      537,
+      312,
+      719,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\272.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\272.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\272.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\272_masked.jpg"
+  },
+  "273": {
+    "rect": [
+      538,
+      313,
+      718,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\273.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\273.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\273.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\273_masked.jpg"
+  },
+  "274": {
+    "rect": [
+      539,
+      314,
+      717,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\274.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\274.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\274.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\274_masked.jpg"
+  },
+  "275": {
+    "rect": [
+      539,
+      314,
+      717,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\275.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\275.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\275.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\275_masked.jpg"
+  },
+  "276": {
+    "rect": [
+      538,
+      314,
+      718,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\276.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\276.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\276.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\276_masked.jpg"
+  },
+  "277": {
+    "rect": [
+      539,
+      314,
+      718,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\277.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\277.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\277.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\277_masked.jpg"
+  },
+  "278": {
+    "rect": [
+      538,
+      314,
+      718,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\278.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\278.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\278.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\278_masked.jpg"
+  },
+  "279": {
+    "rect": [
+      539,
+      314,
+      717,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\279.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\279.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\279.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\279_masked.jpg"
+  },
+  "280": {
+    "rect": [
+      538,
+      315,
+      717,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\280.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\280.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\280.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\280_masked.jpg"
+  },
+  "281": {
+    "rect": [
+      538,
+      315,
+      718,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\281.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\281.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\281.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\281_masked.jpg"
+  },
+  "282": {
+    "rect": [
+      539,
+      315,
+      719,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\282.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\282.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\282.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\282_masked.jpg"
+  },
+  "283": {
+    "rect": [
+      538,
+      315,
+      718,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\283.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\283.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\283.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\283_masked.jpg"
+  },
+  "284": {
+    "rect": [
+      539,
+      314,
+      719,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\284.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\284.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\284.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\284_masked.jpg"
+  },
+  "285": {
+    "rect": [
+      540,
+      314,
+      720,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\285.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\285.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\285.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\285_masked.jpg"
+  },
+  "286": {
+    "rect": [
+      540,
+      313,
+      720,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\286.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\286.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\286.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\286_masked.jpg"
+  },
+  "287": {
+    "rect": [
+      540,
+      312,
+      720,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\287.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\287.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\287.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\287_masked.jpg"
+  },
+  "288": {
+    "rect": [
+      539,
+      311,
+      721,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\288.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\288.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\288.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\288_masked.jpg"
+  },
+  "289": {
+    "rect": [
+      540,
+      310,
+      721,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\289.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\289.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\289.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\289_masked.jpg"
+  },
+  "290": {
+    "rect": [
+      539,
+      310,
+      721,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\290.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\290.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\290.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\290_masked.jpg"
+  },
+  "291": {
+    "rect": [
+      538,
+      311,
+      720,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\291.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\291.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\291.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\291_masked.jpg"
+  },
+  "292": {
+    "rect": [
+      537,
+      312,
+      717,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\292.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\292.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\292.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\292_masked.jpg"
+  },
+  "293": {
+    "rect": [
+      535,
+      315,
+      714,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\293.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\293.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\293.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\293_masked.jpg"
+  },
+  "294": {
+    "rect": [
+      532,
+      318,
+      711,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\294.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\294.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\294.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\294_masked.jpg"
+  },
+  "295": {
+    "rect": [
+      532,
+      318,
+      711,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\295.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\295.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\295.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\295_masked.jpg"
+  },
+  "296": {
+    "rect": [
+      531,
+      316,
+      712,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\296.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\296.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\296.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\296_masked.jpg"
+  },
+  "297": {
+    "rect": [
+      532,
+      316,
+      712,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\297.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\297.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\297.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\297_masked.jpg"
+  },
+  "298": {
+    "rect": [
+      532,
+      315,
+      712,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\298.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\298.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\298.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\298_masked.jpg"
+  },
+  "299": {
+    "rect": [
+      533,
+      313,
+      718,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\299.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\299.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\299.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\299_masked.jpg"
+  },
+  "300": {
+    "rect": [
+      537,
+      313,
+      721,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\300.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\300.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\300.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\300_masked.jpg"
+  },
+  "301": {
+    "rect": [
+      541,
+      312,
+      722,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\301.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\301.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\301.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\301_masked.jpg"
+  },
+  "302": {
+    "rect": [
+      545,
+      311,
+      726,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\302.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\302.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\302.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\302_masked.jpg"
+  },
+  "303": {
+    "rect": [
+      546,
+      311,
+      728,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\303.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\303.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\303.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\303_masked.jpg"
+  },
+  "304": {
+    "rect": [
+      550,
+      311,
+      728,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\304.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\304.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\304.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\304_masked.jpg"
+  },
+  "305": {
+    "rect": [
+      550,
+      311,
+      729,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\305.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\305.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\305.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\305_masked.jpg"
+  },
+  "306": {
+    "rect": [
+      551,
+      311,
+      729,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\306.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\306.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\306.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\306_masked.jpg"
+  },
+  "307": {
+    "rect": [
+      550,
+      310,
+      732,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\307.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\307.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\307.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\307_masked.jpg"
+  },
+  "308": {
+    "rect": [
+      550,
+      310,
+      730,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\308.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\308.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\308.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\308_masked.jpg"
+  },
+  "309": {
+    "rect": [
+      550,
+      308,
+      733,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\309.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\309.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\309.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\309_masked.jpg"
+  },
+  "310": {
+    "rect": [
+      550,
+      309,
+      733,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\310.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\310.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\310.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\310_masked.jpg"
+  },
+  "311": {
+    "rect": [
+      548,
+      309,
+      732,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\311.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\311.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\311.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\311_masked.jpg"
+  },
+  "312": {
+    "rect": [
+      548,
+      309,
+      730,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\312.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\312.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\312.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\312_masked.jpg"
+  },
+  "313": {
+    "rect": [
+      547,
+      310,
+      729,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\313.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\313.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\313.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\313_masked.jpg"
+  },
+  "314": {
+    "rect": [
+      545,
+      314,
+      724,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\314.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\314.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\314.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\314_masked.jpg"
+  },
+  "315": {
+    "rect": [
+      544,
+      314,
+      723,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\315.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\315.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\315.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\315_masked.jpg"
+  },
+  "316": {
+    "rect": [
+      544,
+      316,
+      723,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\316.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\316.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\316.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\316_masked.jpg"
+  },
+  "317": {
+    "rect": [
+      543,
+      317,
+      722,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\317.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\317.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\317.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\317_masked.jpg"
+  },
+  "318": {
+    "rect": [
+      544,
+      318,
+      721,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\318.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\318.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\318.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\318_masked.jpg"
+  },
+  "319": {
+    "rect": [
+      544,
+      319,
+      722,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\319.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\319.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\319.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\319_masked.jpg"
+  },
+  "320": {
+    "rect": [
+      543,
+      317,
+      726,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\320.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\320.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\320.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\320_masked.jpg"
+  },
+  "321": {
+    "rect": [
+      545,
+      316,
+      728,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\321.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\321.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\321.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\321_masked.jpg"
+  },
+  "322": {
+    "rect": [
+      549,
+      314,
+      733,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\322.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\322.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\322.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\322_masked.jpg"
+  },
+  "323": {
+    "rect": [
+      553,
+      313,
+      736,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\323.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\323.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\323.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\323_masked.jpg"
+  },
+  "324": {
+    "rect": [
+      559,
+      311,
+      742,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\324.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\324.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\324.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\324_masked.jpg"
+  },
+  "325": {
+    "rect": [
+      561,
+      310,
+      746,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\325.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\325.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\325.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\325_masked.jpg"
+  },
+  "326": {
+    "rect": [
+      562,
+      311,
+      749,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\326.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\326.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\326.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\326_masked.jpg"
+  },
+  "327": {
+    "rect": [
+      563,
+      311,
+      749,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\327.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\327.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\327.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\327_masked.jpg"
+  },
+  "328": {
+    "rect": [
+      565,
+      312,
+      750,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\328.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\328.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\328.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\328_masked.jpg"
+  },
+  "329": {
+    "rect": [
+      565,
+      313,
+      750,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\329.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\329.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\329.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\329_masked.jpg"
+  },
+  "330": {
+    "rect": [
+      563,
+      313,
+      750,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\330.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\330.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\330.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\330_masked.jpg"
+  },
+  "331": {
+    "rect": [
+      563,
+      313,
+      748,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\331.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\331.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\331.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\331_masked.jpg"
+  },
+  "332": {
+    "rect": [
+      562,
+      313,
+      747,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\332.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\332.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\332.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\332_masked.jpg"
+  },
+  "333": {
+    "rect": [
+      560,
+      313,
+      747,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\333.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\333.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\333.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\333_masked.jpg"
+  },
+  "334": {
+    "rect": [
+      560,
+      313,
+      745,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\334.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\334.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\334.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\334_masked.jpg"
+  },
+  "335": {
+    "rect": [
+      558,
+      314,
+      743,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\335.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\335.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\335.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\335_masked.jpg"
+  },
+  "336": {
+    "rect": [
+      557,
+      314,
+      742,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\336.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\336.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\336.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\336_masked.jpg"
+  },
+  "337": {
+    "rect": [
+      556,
+      315,
+      741,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\337.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\337.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\337.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\337_masked.jpg"
+  },
+  "338": {
+    "rect": [
+      555,
+      316,
+      740,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\338.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\338.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\338.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\338_masked.jpg"
+  },
+  "339": {
+    "rect": [
+      554,
+      316,
+      737,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\339.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\339.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\339.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\339_masked.jpg"
+  },
+  "340": {
+    "rect": [
+      552,
+      315,
+      734,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\340.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\340.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\340.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\340_masked.jpg"
+  },
+  "341": {
+    "rect": [
+      552,
+      315,
+      732,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\341.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\341.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\341.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\341_masked.jpg"
+  },
+  "342": {
+    "rect": [
+      550,
+      315,
+      729,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\342.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\342.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\342.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\342_masked.jpg"
+  },
+  "343": {
+    "rect": [
+      549,
+      315,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\343.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\343.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\343.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\343_masked.jpg"
+  },
+  "344": {
+    "rect": [
+      547,
+      314,
+      726,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\344.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\344.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\344.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\344_masked.jpg"
+  },
+  "345": {
+    "rect": [
+      546,
+      314,
+      726,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\345.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\345.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\345.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\345_masked.jpg"
+  },
+  "346": {
+    "rect": [
+      545,
+      313,
+      726,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\346.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\346.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\346.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\346_masked.jpg"
+  },
+  "347": {
+    "rect": [
+      545,
+      313,
+      726,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\347.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\347.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\347.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\347_masked.jpg"
+  },
+  "348": {
+    "rect": [
+      546,
+      314,
+      726,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\348.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\348.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\348.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\348_masked.jpg"
+  },
+  "349": {
+    "rect": [
+      546,
+      314,
+      725,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\349.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\349.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\349.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\349_masked.jpg"
+  },
+  "350": {
+    "rect": [
+      543,
+      315,
+      723,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\350.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\350.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\350.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\350_masked.jpg"
+  },
+  "351": {
+    "rect": [
+      543,
+      315,
+      725,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\351.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\351.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\351.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\351_masked.jpg"
+  },
+  "352": {
+    "rect": [
+      542,
+      315,
+      723,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\352.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\352.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\352.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\352_masked.jpg"
+  },
+  "353": {
+    "rect": [
+      542,
+      316,
+      723,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\353.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\353.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\353.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\353_masked.jpg"
+  },
+  "354": {
+    "rect": [
+      540,
+      316,
+      721,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\354.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\354.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\354.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\354_masked.jpg"
+  },
+  "355": {
+    "rect": [
+      541,
+      315,
+      721,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\355.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\355.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\355.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\355_masked.jpg"
+  },
+  "356": {
+    "rect": [
+      543,
+      315,
+      723,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\356.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\356.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\356.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\356_masked.jpg"
+  },
+  "357": {
+    "rect": [
+      543,
+      315,
+      724,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\357.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\357.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\357.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\357_masked.jpg"
+  },
+  "358": {
+    "rect": [
+      544,
+      315,
+      724,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\358.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\358.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\358.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\358_masked.jpg"
+  },
+  "359": {
+    "rect": [
+      544,
+      314,
+      724,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\359.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\359.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\359.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\359_masked.jpg"
+  },
+  "360": {
+    "rect": [
+      546,
+      315,
+      727,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\360.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\360.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\360.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\360_masked.jpg"
+  },
+  "361": {
+    "rect": [
+      548,
+      315,
+      726,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\361.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\361.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\361.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\361_masked.jpg"
+  },
+  "362": {
+    "rect": [
+      549,
+      315,
+      729,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\362.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\362.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\362.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\362_masked.jpg"
+  },
+  "363": {
+    "rect": [
+      549,
+      315,
+      730,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\363.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\363.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\363.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\363_masked.jpg"
+  },
+  "364": {
+    "rect": [
+      550,
+      316,
+      730,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\364.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\364.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\364.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\364_masked.jpg"
+  },
+  "365": {
+    "rect": [
+      549,
+      315,
+      729,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\365.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\365.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\365.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\365_masked.jpg"
+  },
+  "366": {
+    "rect": [
+      548,
+      315,
+      728,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\366.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\366.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\366.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\366_masked.jpg"
+  },
+  "367": {
+    "rect": [
+      548,
+      316,
+      727,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\367.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\367.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\367.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\367_masked.jpg"
+  },
+  "368": {
+    "rect": [
+      547,
+      316,
+      727,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\368.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\368.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\368.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\368_masked.jpg"
+  },
+  "369": {
+    "rect": [
+      546,
+      316,
+      727,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\369.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\369.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\369.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\369_masked.jpg"
+  },
+  "370": {
+    "rect": [
+      545,
+      317,
+      725,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\370.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\370.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\370.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\370_masked.jpg"
+  },
+  "371": {
+    "rect": [
+      545,
+      317,
+      725,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\371.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\371.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\371.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\371_masked.jpg"
+  },
+  "372": {
+    "rect": [
+      545,
+      317,
+      724,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\372.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\372.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\372.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\372_masked.jpg"
+  },
+  "373": {
+    "rect": [
+      545,
+      318,
+      725,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\373.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\373.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\373.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\373_masked.jpg"
+  },
+  "374": {
+    "rect": [
+      544,
+      319,
+      724,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\374.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\374.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\374.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\374_masked.jpg"
+  },
+  "375": {
+    "rect": [
+      545,
+      320,
+      725,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\375.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\375.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\375.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\375_masked.jpg"
+  },
+  "376": {
+    "rect": [
+      545,
+      320,
+      725,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\376.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\376.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\376.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\376_masked.jpg"
+  },
+  "377": {
+    "rect": [
+      544,
+      319,
+      724,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\377.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\377.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\377.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\377_masked.jpg"
+  },
+  "378": {
+    "rect": [
+      545,
+      318,
+      725,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\378.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\378.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\378.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\378_masked.jpg"
+  },
+  "379": {
+    "rect": [
+      546,
+      318,
+      726,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\379.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\379.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\379.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\379_masked.jpg"
+  },
+  "380": {
+    "rect": [
+      547,
+      319,
+      727,
+      499
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\380.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\380.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\380.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\380_masked.jpg"
+  },
+  "381": {
+    "rect": [
+      550,
+      321,
+      730,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\381.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\381.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\381.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\381_masked.jpg"
+  },
+  "382": {
+    "rect": [
+      552,
+      321,
+      732,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\382.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\382.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\382.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\382_masked.jpg"
+  },
+  "383": {
+    "rect": [
+      554,
+      321,
+      734,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\383.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\383.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\383.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\383_masked.jpg"
+  },
+  "384": {
+    "rect": [
+      556,
+      321,
+      738,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\384.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\384.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\384.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\384_masked.jpg"
+  },
+  "385": {
+    "rect": [
+      559,
+      322,
+      744,
+      507
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\385.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\385.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\385.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\385_masked.jpg"
+  },
+  "386": {
+    "rect": [
+      561,
+      323,
+      744,
+      506
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\386.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\386.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\386.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\386_masked.jpg"
+  },
+  "387": {
+    "rect": [
+      563,
+      323,
+      745,
+      505
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\387.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\387.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\387.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\387_masked.jpg"
+  },
+  "388": {
+    "rect": [
+      567,
+      323,
+      744,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\388.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\388.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\388.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\388_masked.jpg"
+  },
+  "389": {
+    "rect": [
+      567,
+      324,
+      745,
+      502
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\389.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\389.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\389.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\389_masked.jpg"
+  },
+  "390": {
+    "rect": [
+      572,
+      323,
+      751,
+      502
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\390.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\390.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\390.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\390_masked.jpg"
+  },
+  "391": {
+    "rect": [
+      575,
+      324,
+      754,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\391.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\391.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\391.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\391_masked.jpg"
+  },
+  "392": {
+    "rect": [
+      576,
+      324,
+      756,
+      504
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\392.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\392.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\392.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\392_masked.jpg"
+  },
+  "393": {
+    "rect": [
+      578,
+      324,
+      757,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\393.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\393.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\393.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\393_masked.jpg"
+  },
+  "394": {
+    "rect": [
+      578,
+      324,
+      759,
+      505
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\394.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\394.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\394.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\394_masked.jpg"
+  },
+  "395": {
+    "rect": [
+      580,
+      324,
+      759,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\395.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\395.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\395.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\395_masked.jpg"
+  },
+  "396": {
+    "rect": [
+      580,
+      325,
+      758,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\396.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\396.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\396.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\396_masked.jpg"
+  },
+  "397": {
+    "rect": [
+      580,
+      325,
+      758,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\397.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\397.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\397.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\397_masked.jpg"
+  },
+  "398": {
+    "rect": [
+      578,
+      325,
+      758,
+      505
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\398.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\398.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\398.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\398_masked.jpg"
+  },
+  "399": {
+    "rect": [
+      577,
+      324,
+      757,
+      504
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\399.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\399.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\399.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\399_masked.jpg"
+  },
+  "400": {
+    "rect": [
+      577,
+      324,
+      755,
+      502
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\400.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\400.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\400.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\400_masked.jpg"
+  },
+  "401": {
+    "rect": [
+      575,
+      324,
+      754,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\401.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\401.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\401.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\401_masked.jpg"
+  },
+  "402": {
+    "rect": [
+      571,
+      326,
+      749,
+      504
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\402.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\402.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\402.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\402_masked.jpg"
+  },
+  "403": {
+    "rect": [
+      571,
+      329,
+      746,
+      504
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\403.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\403.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\403.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\403_masked.jpg"
+  },
+  "404": {
+    "rect": [
+      568,
+      329,
+      744,
+      505
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\404.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\404.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\404.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\404_masked.jpg"
+  },
+  "405": {
+    "rect": [
+      563,
+      329,
+      742,
+      508
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\405.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\405.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\405.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\405_masked.jpg"
+  },
+  "406": {
+    "rect": [
+      559,
+      329,
+      739,
+      509
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\406.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\406.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\406.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\406_masked.jpg"
+  },
+  "407": {
+    "rect": [
+      559,
+      329,
+      737,
+      507
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\407.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\407.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\407.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\407_masked.jpg"
+  },
+  "408": {
+    "rect": [
+      554,
+      327,
+      733,
+      506
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\408.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\408.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\408.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\408_masked.jpg"
+  },
+  "409": {
+    "rect": [
+      550,
+      326,
+      727,
+      503
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\409.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\409.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\409.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\409_masked.jpg"
+  },
+  "410": {
+    "rect": [
+      545,
+      325,
+      726,
+      506
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\410.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\410.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\410.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\410_masked.jpg"
+  },
+  "411": {
+    "rect": [
+      543,
+      324,
+      723,
+      504
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\411.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\411.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\411.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\411_masked.jpg"
+  },
+  "412": {
+    "rect": [
+      541,
+      323,
+      720,
+      502
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\412.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\412.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\412.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\412_masked.jpg"
+  },
+  "413": {
+    "rect": [
+      540,
+      323,
+      719,
+      502
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\413.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\413.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\413.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\413_masked.jpg"
+  },
+  "414": {
+    "rect": [
+      541,
+      322,
+      719,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\414.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\414.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\414.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\414_masked.jpg"
+  },
+  "415": {
+    "rect": [
+      542,
+      322,
+      720,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\415.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\415.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\415.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\415_masked.jpg"
+  },
+  "416": {
+    "rect": [
+      543,
+      322,
+      722,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\416.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\416.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\416.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\416_masked.jpg"
+  },
+  "417": {
+    "rect": [
+      545,
+      323,
+      723,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\417.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\417.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\417.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\417_masked.jpg"
+  },
+  "418": {
+    "rect": [
+      546,
+      323,
+      724,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\418.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\418.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\418.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\418_masked.jpg"
+  },
+  "419": {
+    "rect": [
+      546,
+      323,
+      727,
+      504
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\419.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\419.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\419.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\419_masked.jpg"
+  },
+  "420": {
+    "rect": [
+      549,
+      323,
+      732,
+      506
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\420.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\420.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\420.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\420_masked.jpg"
+  },
+  "421": {
+    "rect": [
+      551,
+      323,
+      733,
+      505
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\421.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\421.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\421.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\421_masked.jpg"
+  },
+  "422": {
+    "rect": [
+      551,
+      324,
+      735,
+      508
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\422.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\422.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\422.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\422_masked.jpg"
+  },
+  "423": {
+    "rect": [
+      551,
+      325,
+      736,
+      510
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\423.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\423.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\423.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\423_masked.jpg"
+  },
+  "424": {
+    "rect": [
+      551,
+      325,
+      735,
+      509
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\424.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\424.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\424.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\424_masked.jpg"
+  },
+  "425": {
+    "rect": [
+      551,
+      327,
+      734,
+      510
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\425.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\425.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\425.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\425_masked.jpg"
+  },
+  "426": {
+    "rect": [
+      553,
+      326,
+      734,
+      507
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\426.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\426.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\426.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\426_masked.jpg"
+  },
+  "427": {
+    "rect": [
+      553,
+      327,
+      735,
+      509
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\427.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\427.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\427.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\427_masked.jpg"
+  },
+  "428": {
+    "rect": [
+      552,
+      327,
+      735,
+      510
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\428.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\428.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\428.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\428_masked.jpg"
+  },
+  "429": {
+    "rect": [
+      552,
+      327,
+      735,
+      510
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\429.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\429.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\429.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\429_masked.jpg"
+  },
+  "430": {
+    "rect": [
+      553,
+      327,
+      738,
+      512
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\430.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\430.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\430.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\430_masked.jpg"
+  },
+  "431": {
+    "rect": [
+      554,
+      326,
+      736,
+      508
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\431.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\431.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\431.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\431_masked.jpg"
+  },
+  "432": {
+    "rect": [
+      554,
+      324,
+      736,
+      506
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\432.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\432.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\432.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\432_masked.jpg"
+  },
+  "433": {
+    "rect": [
+      554,
+      323,
+      736,
+      505
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\433.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\433.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\433.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\433_masked.jpg"
+  },
+  "434": {
+    "rect": [
+      555,
+      322,
+      734,
+      501
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\434.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\434.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\434.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\434_masked.jpg"
+  },
+  "435": {
+    "rect": [
+      555,
+      318,
+      737,
+      500
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\435.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\435.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\435.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\435_masked.jpg"
+  },
+  "436": {
+    "rect": [
+      555,
+      316,
+      737,
+      498
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\436.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\436.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\436.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\436_masked.jpg"
+  },
+  "437": {
+    "rect": [
+      555,
+      315,
+      737,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\437.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\437.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\437.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\437_masked.jpg"
+  },
+  "438": {
+    "rect": [
+      553,
+      313,
+      737,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\438.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\438.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\438.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\438_masked.jpg"
+  },
+  "439": {
+    "rect": [
+      553,
+      312,
+      737,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\439.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\439.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\439.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\439_masked.jpg"
+  },
+  "440": {
+    "rect": [
+      553,
+      310,
+      735,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\440.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\440.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\440.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\440_masked.jpg"
+  },
+  "441": {
+    "rect": [
+      553,
+      310,
+      735,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\441.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\441.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\441.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\441_masked.jpg"
+  },
+  "442": {
+    "rect": [
+      552,
+      309,
+      736,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\442.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\442.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\442.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\442_masked.jpg"
+  },
+  "443": {
+    "rect": [
+      551,
+      309,
+      736,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\443.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\443.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\443.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\443_masked.jpg"
+  },
+  "444": {
+    "rect": [
+      551,
+      310,
+      735,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\444.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\444.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\444.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\444_masked.jpg"
+  },
+  "445": {
+    "rect": [
+      549,
+      308,
+      733,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\445.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\445.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\445.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\445_masked.jpg"
+  },
+  "446": {
+    "rect": [
+      548,
+      304,
+      733,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\446.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\446.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\446.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\446_masked.jpg"
+  },
+  "447": {
+    "rect": [
+      547,
+      301,
+      733,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\447.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\447.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\447.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\447_masked.jpg"
+  },
+  "448": {
+    "rect": [
+      547,
+      299,
+      733,
+      485
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\448.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\448.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\448.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\448_masked.jpg"
+  },
+  "449": {
+    "rect": [
+      548,
+      299,
+      735,
+      486
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\449.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\449.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\449.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\449_masked.jpg"
+  },
+  "450": {
+    "rect": [
+      549,
+      302,
+      734,
+      487
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\450.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\450.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\450.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\450_masked.jpg"
+  },
+  "451": {
+    "rect": [
+      550,
+      303,
+      736,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\451.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\451.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\451.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\451_masked.jpg"
+  },
+  "452": {
+    "rect": [
+      551,
+      304,
+      736,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\452.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\452.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\452.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\452_masked.jpg"
+  },
+  "453": {
+    "rect": [
+      551,
+      304,
+      735,
+      488
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\453.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\453.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\453.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\453_masked.jpg"
+  },
+  "454": {
+    "rect": [
+      551,
+      305,
+      736,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\454.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\454.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\454.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\454_masked.jpg"
+  },
+  "455": {
+    "rect": [
+      553,
+      307,
+      737,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\455.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\455.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\455.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\455_masked.jpg"
+  },
+  "456": {
+    "rect": [
+      553,
+      307,
+      738,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\456.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\456.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\456.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\456_masked.jpg"
+  },
+  "457": {
+    "rect": [
+      553,
+      307,
+      738,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\457.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\457.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\457.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\457_masked.jpg"
+  },
+  "458": {
+    "rect": [
+      554,
+      307,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\458.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\458.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\458.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\458_masked.jpg"
+  },
+  "459": {
+    "rect": [
+      554,
+      307,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\459.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\459.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\459.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\459_masked.jpg"
+  },
+  "460": {
+    "rect": [
+      554,
+      307,
+      736,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\460.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\460.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\460.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\460_masked.jpg"
+  },
+  "461": {
+    "rect": [
+      554,
+      307,
+      736,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\461.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\461.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\461.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\461_masked.jpg"
+  },
+  "462": {
+    "rect": [
+      553,
+      308,
+      737,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\462.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\462.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\462.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\462_masked.jpg"
+  },
+  "463": {
+    "rect": [
+      553,
+      308,
+      738,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\463.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\463.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\463.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\463_masked.jpg"
+  },
+  "464": {
+    "rect": [
+      554,
+      308,
+      737,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\464.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\464.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\464.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\464_masked.jpg"
+  },
+  "465": {
+    "rect": [
+      554,
+      308,
+      737,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\465.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\465.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\465.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\465_masked.jpg"
+  },
+  "466": {
+    "rect": [
+      555,
+      308,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\466.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\466.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\466.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\466_masked.jpg"
+  },
+  "467": {
+    "rect": [
+      555,
+      308,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\467.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\467.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\467.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\467_masked.jpg"
+  },
+  "468": {
+    "rect": [
+      555,
+      308,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\468.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\468.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\468.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\468_masked.jpg"
+  },
+  "469": {
+    "rect": [
+      556,
+      308,
+      739,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\469.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\469.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\469.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\469_masked.jpg"
+  },
+  "470": {
+    "rect": [
+      555,
+      308,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\470.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\470.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\470.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\470_masked.jpg"
+  },
+  "471": {
+    "rect": [
+      555,
+      308,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\471.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\471.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\471.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\471_masked.jpg"
+  },
+  "472": {
+    "rect": [
+      555,
+      308,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\472.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\472.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\472.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\472_masked.jpg"
+  },
+  "473": {
+    "rect": [
+      555,
+      308,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\473.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\473.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\473.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\473_masked.jpg"
+  },
+  "474": {
+    "rect": [
+      555,
+      308,
+      736,
+      489
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\474.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\474.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\474.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\474_masked.jpg"
+  },
+  "475": {
+    "rect": [
+      555,
+      308,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\475.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\475.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\475.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\475_masked.jpg"
+  },
+  "476": {
+    "rect": [
+      555,
+      308,
+      737,
+      490
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\476.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\476.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\476.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\476_masked.jpg"
+  },
+  "477": {
+    "rect": [
+      555,
+      308,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\477.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\477.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\477.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\477_masked.jpg"
+  },
+  "478": {
+    "rect": [
+      555,
+      308,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\478.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\478.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\478.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\478_masked.jpg"
+  },
+  "479": {
+    "rect": [
+      555,
+      309,
+      738,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\479.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\479.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\479.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\479_masked.jpg"
+  },
+  "480": {
+    "rect": [
+      555,
+      308,
+      739,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\480.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\480.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\480.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\480_masked.jpg"
+  },
+  "481": {
+    "rect": [
+      555,
+      308,
+      739,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\481.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\481.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\481.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\481_masked.jpg"
+  },
+  "482": {
+    "rect": [
+      556,
+      308,
+      739,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\482.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\482.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\482.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\482_masked.jpg"
+  },
+  "483": {
+    "rect": [
+      556,
+      309,
+      738,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\483.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\483.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\483.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\483_masked.jpg"
+  },
+  "484": {
+    "rect": [
+      555,
+      310,
+      738,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\484.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\484.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\484.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\484_masked.jpg"
+  },
+  "485": {
+    "rect": [
+      553,
+      312,
+      737,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\485.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\485.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\485.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\485_masked.jpg"
+  },
+  "486": {
+    "rect": [
+      552,
+      313,
+      736,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\486.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\486.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\486.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\486_masked.jpg"
+  },
+  "487": {
+    "rect": [
+      550,
+      312,
+      735,
+      497
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\487.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\487.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\487.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\487_masked.jpg"
+  },
+  "488": {
+    "rect": [
+      550,
+      312,
+      734,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\488.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\488.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\488.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\488_masked.jpg"
+  },
+  "489": {
+    "rect": [
+      550,
+      312,
+      730,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\489.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\489.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\489.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\489_masked.jpg"
+  },
+  "490": {
+    "rect": [
+      550,
+      312,
+      729,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\490.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\490.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\490.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\490_masked.jpg"
+  },
+  "491": {
+    "rect": [
+      550,
+      312,
+      729,
+      491
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\491.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\491.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\491.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\491_masked.jpg"
+  },
+  "492": {
+    "rect": [
+      550,
+      313,
+      730,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\492.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\492.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\492.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\492_masked.jpg"
+  },
+  "493": {
+    "rect": [
+      550,
+      313,
+      730,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\493.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\493.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\493.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\493_masked.jpg"
+  },
+  "494": {
+    "rect": [
+      550,
+      313,
+      730,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\494.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\494.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\494.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\494_masked.jpg"
+  },
+  "495": {
+    "rect": [
+      548,
+      313,
+      728,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\495.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\495.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\495.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\495_masked.jpg"
+  },
+  "496": {
+    "rect": [
+      548,
+      314,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\496.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\496.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\496.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\496_masked.jpg"
+  },
+  "497": {
+    "rect": [
+      548,
+      314,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\497.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\497.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\497.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\497_masked.jpg"
+  },
+  "498": {
+    "rect": [
+      548,
+      314,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\498.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\498.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\498.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\498_masked.jpg"
+  },
+  "499": {
+    "rect": [
+      548,
+      314,
+      728,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\499.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\499.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\499.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\499_masked.jpg"
+  },
+  "500": {
+    "rect": [
+      547,
+      313,
+      726,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\500.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\500.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\500.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\500_masked.jpg"
+  },
+  "501": {
+    "rect": [
+      548,
+      313,
+      727,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\501.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\501.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\501.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\501_masked.jpg"
+  },
+  "502": {
+    "rect": [
+      546,
+      312,
+      726,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\502.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\502.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\502.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\502_masked.jpg"
+  },
+  "503": {
+    "rect": [
+      544,
+      311,
+      726,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\503.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\503.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\503.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\503_masked.jpg"
+  },
+  "504": {
+    "rect": [
+      542,
+      311,
+      724,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\504.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\504.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\504.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\504_masked.jpg"
+  },
+  "505": {
+    "rect": [
+      541,
+      311,
+      723,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\505.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\505.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\505.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\505_masked.jpg"
+  },
+  "506": {
+    "rect": [
+      539,
+      310,
+      721,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\506.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\506.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\506.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\506_masked.jpg"
+  },
+  "507": {
+    "rect": [
+      538,
+      311,
+      721,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\507.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\507.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\507.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\507_masked.jpg"
+  },
+  "508": {
+    "rect": [
+      538,
+      312,
+      721,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\508.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\508.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\508.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\508_masked.jpg"
+  },
+  "509": {
+    "rect": [
+      539,
+      313,
+      721,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\509.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\509.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\509.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\509_masked.jpg"
+  },
+  "510": {
+    "rect": [
+      540,
+      312,
+      722,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\510.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\510.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\510.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\510_masked.jpg"
+  },
+  "511": {
+    "rect": [
+      543,
+      312,
+      723,
+      492
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\511.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\511.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\511.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\511_masked.jpg"
+  },
+  "512": {
+    "rect": [
+      544,
+      311,
+      726,
+      493
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\512.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\512.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\512.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\512_masked.jpg"
+  },
+  "513": {
+    "rect": [
+      547,
+      312,
+      730,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\513.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\513.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\513.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\513_masked.jpg"
+  },
+  "514": {
+    "rect": [
+      550,
+      312,
+      732,
+      494
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\514.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\514.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\514.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\514_masked.jpg"
+  },
+  "515": {
+    "rect": [
+      554,
+      312,
+      737,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\515.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\515.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\515.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\515_masked.jpg"
+  },
+  "516": {
+    "rect": [
+      559,
+      313,
+      742,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\516.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\516.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\516.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\516_masked.jpg"
+  },
+  "517": {
+    "rect": [
+      561,
+      312,
+      744,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\517.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\517.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\517.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\517_masked.jpg"
+  },
+  "518": {
+    "rect": [
+      563,
+      312,
+      746,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\518.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\518.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\518.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\518_masked.jpg"
+  },
+  "519": {
+    "rect": [
+      563,
+      312,
+      747,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\519.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\519.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\519.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\519_masked.jpg"
+  },
+  "520": {
+    "rect": [
+      563,
+      312,
+      747,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\520.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\520.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\520.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\520_masked.jpg"
+  },
+  "521": {
+    "rect": [
+      563,
+      312,
+      746,
+      495
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\521.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\521.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\521.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\521_masked.jpg"
+  },
+  "522": {
+    "rect": [
+      563,
+      312,
+      747,
+      496
+    ],
+    "original_path": ".\\dataset\\sanders\\full_body_img\\522.jpg",
+    "crop_328_path": ".\\dataset\\sanders\\cache\\crops_328\\522.jpg",
+    "roi_320_path": ".\\dataset\\sanders\\cache\\rois_320\\522.jpg",
+    "masked_path": ".\\dataset\\sanders\\cache\\model_inputs\\522_masked.jpg"
+  }
+}

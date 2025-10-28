@@ -56,8 +56,8 @@ models:
     rois_frames_dir: "sanders/rois_frames"            # Auto-extract ROIs
     crop_rects_path: "sanders/crop_rects.json"
     num_frames: 523
-    preload_backgrounds: false  # Load on-demand instead of startup
-    preload_model: false
+    preload_backgrounds: true   # ✅ PRELOAD ALL 523 FRAMES
+    preload_model: true         # ✅ PRELOAD ONNX MODEL
     preferred_gpu: 0
     
   sanders1:

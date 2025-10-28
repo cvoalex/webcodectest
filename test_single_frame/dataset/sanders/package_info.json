@@ -1,0 +1,73 @@
+{
+  "package_type": "mp4_video_package",
+  "package_version": "2.0",
+  "created_at": "1085970013105700",
+  "dataset_name": "sanders",
+  "original_shape": [
+    328,
+    328
+  ],
+  "videos": {
+    "full_body_img": {
+      "video_file": "full_body_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    },
+    "crops_328": {
+      "video_file": "crops_328_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    },
+    "rois_320": {
+      "video_file": "rois_320_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    },
+    "model_inputs": {
+      "video_file": "model_inputs_video.mp4",
+      "frame_count": 523,
+      "fps": 25
+    }
+  },
+  "video_mapping": {
+    "full_body_video.mp4": "Full body images for final compositing",
+    "crops_328_video.mp4": "328x328 face crops for template",
+    "rois_320_video.mp4": "320x320 ROI regions for model input",
+    "model_inputs_video.mp4": "Masked input images for model"
+  },
+  "extraction_info": {
+    "full_body_img": "Extract all frames from full_body_video.mp4 to full_body_img/",
+    "crops_328": "Extract all frames from crops_328_video.mp4 to cache/crops_328/",
+    "rois_320": "Extract all frames from rois_320_video.mp4 to cache/rois_320/",
+    "model_inputs": "Extract all frames from model_inputs_video.mp4 to cache/model_inputs/"
+  },
+  "usage": "Use inference_from_package.py to run inference directly from this package",
+  "onnx": {
+    "file": "checkpoint/model_best.onnx",
+    "opset": 17,
+    "asr_mode": "ave",
+    "input_shapes": {
+      "input": [
+        1,
+        6,
+        320,
+        320
+      ],
+      "audio": [
+        1,
+        32,
+        16,
+        16
+      ]
+    },
+    "dynamic_axes": [
+      "batch"
+    ],
+    "exported_at": "2025-09-27T21:17:42.987674Z",
+    "validation": {
+      "max_abs": 5.885958671569824e-07,
+      "mean_abs": 3.411437532463424e-08,
+      "rmse": 4.762019756299196e-08
+    }
+  }
+}

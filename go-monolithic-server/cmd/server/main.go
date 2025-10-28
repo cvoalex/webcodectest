@@ -62,6 +62,17 @@ var rgbaPoolResize = sync.Pool{
 	},
 }
 
+// Pool for mel windows [80][16] used in audio processing
+var melWindowPool = sync.Pool{
+	New: func() interface{} {
+		window := make([][]float32, 80)
+		for i := 0; i < 80; i++ {
+			window[i] = make([]float32, 16)
+		}
+		return window
+	},
+}
+
 type monolithicServer struct {
 	pb.UnimplementedMonolithicServiceServer
 	modelRegistry  *registry.ModelRegistry
@@ -316,10 +327,8 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 			}
 
 			// Extract 16-step mel window [16, 80] and transpose to [80, 16]
-			window := make([][]float32, 80)
-			for i := 0; i < 80; i++ {
-				window[i] = make([]float32, 16)
-			}
+			// Use pooled window
+			window := melWindowPool.Get().([][]float32)
 
 			for step := 0; step < 16; step++ {
 				srcIdx := startIdx + step
@@ -331,7 +340,13 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 				}
 			}
 
-			allMelWindows = append(allMelWindows, window)
+			// Copy window for storage (we'll return the pooled one later)
+			windowCopy := make([][]float32, 80)
+			for i := 0; i < 80; i++ {
+				windowCopy[i] = make([]float32, 16)
+				copy(windowCopy[i], window[i])
+			}
+			allMelWindows = append(allMelWindows, windowCopy)
 
 			// DEBUG: Save first few mel windows for comparison with Python
 			if frameIdx < 10 {
@@ -347,6 +362,9 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 					f.Close()
 				}
 			}
+
+			// Return window to pool
+			melWindowPool.Put(window)
 		}
 
 		log.Printf("🎵 Encoding %d mel windows to audio features...", len(allMelWindows))

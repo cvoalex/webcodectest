@@ -6,9 +6,27 @@ import (
 	"math"
 	"math/cmplx"
 	"os"
+	"sync"
 
 	"gonum.org/v1/gonum/dsp/fourier"
 )
+
+// Buffer pools for STFT processing to avoid repeated allocations
+var stftBufferPool = sync.Pool{
+	New: func() interface{} {
+		return &stftBuffers{
+			windowed:   make([]float64, 640),
+			fftInput:   make([]float64, 1024),
+			magnitudes: make([]float32, 513),
+		}
+	},
+}
+
+type stftBuffers struct {
+	windowed   []float64
+	fftInput   []float64
+	magnitudes []float32
+}
 
 // ProcessorConfig holds audio processing parameters
 type ProcessorConfig struct {
@@ -250,6 +268,10 @@ func (p *Processor) stft(samples []float32) [][]float32 {
 
 	result := make([][]float32, numFrames)
 
+	// Get buffers from pool
+	buffers := stftBufferPool.Get().(*stftBuffers)
+	defer stftBufferPool.Put(buffers)
+
 	for i := 0; i < numFrames; i++ {
 		// Extract frame
 		start := i * p.config.HopLength
@@ -263,26 +285,29 @@ func (p *Processor) stft(samples []float32) [][]float32 {
 		// Get frame slice
 		frame := samples[start:end]
 
-		// Apply Hanning window
-		windowed := make([]float64, p.config.WindowSize)
+		// Apply Hanning window using pooled buffer
 		for j := 0; j < p.config.WindowSize; j++ {
-			windowed[j] = float64(frame[j]) * float64(p.window[j])
+			buffers.windowed[j] = float64(frame[j]) * float64(p.window[j])
 		}
 
 		// Zero-pad to n_fft if needed (in our case WindowSize == NumFFT)
-		fftInput := make([]float64, p.config.NumFFT)
-		copy(fftInput, windowed)
-
-		// Compute FFT using gonum
-		fftResult := p.fftObj.Coefficients(nil, fftInput)
-
-		// Compute magnitude spectrum (only positive frequencies)
-		magnitudes := make([]float32, numFreqBins)
-		for j := 0; j < numFreqBins; j++ {
-			magnitudes[j] = float32(cmplx.Abs(fftResult[j]))
+		copy(buffers.fftInput, buffers.windowed)
+		// Clear the rest if NumFFT > WindowSize
+		for j := p.config.WindowSize; j < p.config.NumFFT; j++ {
+			buffers.fftInput[j] = 0
 		}
 
-		result[i] = magnitudes
+		// Compute FFT using gonum
+		fftResult := p.fftObj.Coefficients(nil, buffers.fftInput)
+
+		// Compute magnitude spectrum (only positive frequencies) using pooled buffer
+		for j := 0; j < numFreqBins; j++ {
+			buffers.magnitudes[j] = float32(cmplx.Abs(fftResult[j]))
+		}
+
+		// Allocate and copy magnitudes for this frame
+		result[i] = make([]float32, numFreqBins)
+		copy(result[i], buffers.magnitudes[:numFreqBins])
 	}
 
 	return result
@@ -307,21 +332,20 @@ func (p *Processor) fft(samples []float32) []complex128 {
 // linearToMel converts linear spectrogram to mel scale
 func (p *Processor) linearToMel(spectrogram [][]float32) [][]float32 {
 	numFrames := len(spectrogram)
+	
+	// Pre-allocate entire result matrix
 	result := make([][]float32, numFrames)
-
 	for i := 0; i < numFrames; i++ {
-		melFrame := make([]float32, p.config.NumMelBins)
-
+		result[i] = make([]float32, p.config.NumMelBins)
+		
 		// Apply mel filterbank
 		for j := 0; j < p.config.NumMelBins; j++ {
 			sum := float32(0.0)
 			for k := 0; k < len(spectrogram[i]); k++ {
 				sum += spectrogram[i][k] * p.melFilters[j][k]
 			}
-			melFrame[j] = sum
+			result[i][j] = sum
 		}
-
-		result[i] = melFrame
 	}
 
 	return result
@@ -329,15 +353,14 @@ func (p *Processor) linearToMel(spectrogram [][]float32) [][]float32 {
 
 // ampToDB converts amplitude to decibels
 // Uses 20 * log10(amplitude) to match librosa
+// Operates in-place for memory efficiency
 func (p *Processor) ampToDB(melSpec [][]float32) [][]float32 {
-	result := make([][]float32, len(melSpec))
-
 	// Minimum level to avoid log(0)
 	// min_level = exp(min_level_db / 20 * log(10))
 	minLevel := float32(math.Exp(float64(p.config.MinLevelDB) / 20.0 * math.Log(10.0)))
+	refLevel := float32(p.config.RefLevelDB)
 
 	for i := 0; i < len(melSpec); i++ {
-		frame := make([]float32, len(melSpec[i]))
 		for j := 0; j < len(melSpec[i]); j++ {
 			// Clamp to minimum level
 			amp := melSpec[i][j]
@@ -345,52 +368,48 @@ func (p *Processor) ampToDB(melSpec [][]float32) [][]float32 {
 				amp = minLevel
 			}
 
-			// Convert amplitude to dB: 20 * log10(amp)
-			db := float32(20.0 * math.Log10(float64(amp)))
-			db -= float32(p.config.RefLevelDB)
-
-			frame[j] = db
+			// Convert amplitude to dB: 20 * log10(amp) - ref_level
+			// Operate in-place
+			melSpec[i][j] = float32(20.0*math.Log10(float64(amp))) - refLevel
 		}
-		result[i] = frame
 	}
 
-	return result
+	return melSpec
 }
 
 // normalize normalizes the mel-spectrogram to match original Python code
 // Uses symmetric normalization: range [-4, +4]
+// Operates in-place for memory efficiency
 func (p *Processor) normalize(melSpecDB [][]float32) [][]float32 {
-	result := make([][]float32, len(melSpecDB))
-
 	// Parameters from hparams.py:
 	// symmetric_mels=True, max_abs_value=4.0, allow_clipping=True
 	// Formula: clip(8 * ((S + 100) / 100) - 4, -4, 4)
 	//        = clip(0.08 * S + 4, -4, 4)
 
 	const maxAbsValue = 4.0
+	minLevelDB := float32(p.config.MinLevelDB)
+	negMinLevelDB := -minLevelDB
 
 	for i := 0; i < len(melSpecDB); i++ {
-		frame := make([]float32, len(melSpecDB[i]))
 		for j := 0; j < len(melSpecDB[i]); j++ {
 			val := melSpecDB[i][j]
 
 			// Symmetric normalization with clipping
 			// normalized = (2 * max_abs_value) * ((S - min_level_db) / (-min_level_db)) - max_abs_value
-			normalized := (2.0*maxAbsValue)*((val-float32(p.config.MinLevelDB))/-float32(p.config.MinLevelDB)) - maxAbsValue
+			normalized := (2.0*maxAbsValue)*((val-minLevelDB)/negMinLevelDB) - maxAbsValue
 
-			// Clip to [-4, +4]
+			// Clip to [-4, +4] and store in-place
 			if normalized < -maxAbsValue {
 				normalized = -maxAbsValue
 			} else if normalized > maxAbsValue {
 				normalized = maxAbsValue
 			}
 
-			frame[j] = normalized
+			melSpecDB[i][j] = normalized
 		}
-		result[i] = frame
 	}
 
-	return result
+	return melSpecDB
 }
 
 // loadMelFilterbank loads the pre-computed mel filterbank from a JSON file.

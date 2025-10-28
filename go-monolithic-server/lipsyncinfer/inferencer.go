@@ -2,10 +2,19 @@ package lipsyncinfer
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	ort "github.com/yalue/onnxruntime_go"
 )
+
+// Pool for output buffers to avoid repeated allocations
+var outputBufferPool = sync.Pool{
+	New: func() interface{} {
+		// Output size: 3 * 320 * 320 = 307,200 float32 values
+		return make([]float32, 3*320*320)
+	},
+}
 
 // Inferencer handles ONNX model inference for lip sync
 type Inferencer struct {
@@ -141,8 +150,8 @@ func (inf *Inferencer) Infer(visualInput, audioInput []float32) ([]float32, erro
 		return nil, fmt.Errorf("failed to run inference: %w", err)
 	}
 
-	// Get output data
-	outputData := make([]float32, len(inf.outputTensor.GetData()))
+	// Get output data using pooled buffer
+	outputData := outputBufferPool.Get().([]float32)
 	copy(outputData, inf.outputTensor.GetData())
 
 	return outputData, nil
@@ -183,6 +192,9 @@ func (inf *Inferencer) InferBatch(visualInput, audioInput []float32, batchSize i
 
 		outputStart := i * outputFrameSize
 		copy(outputs[outputStart:outputStart+outputFrameSize], output)
+		
+		// Return the pooled buffer after copying
+		outputBufferPool.Put(output)
 	}
 
 	return outputs, nil

@@ -176,10 +176,14 @@ func (e *AudioEncoder) Encode(melWindow [][]float32) ([]float32, error) {
 	return features, nil
 }
 
-// EncodeBatch processes multiple mel-spectrogram windows
+// EncodeBatch processes multiple mel-spectrogram windows in parallel
 // Input: melWindows [][80][16]float32 (array of mel windows)
 // Output: [][]float32 (array of 512-dimensional feature vectors)
 func (e *AudioEncoder) EncodeBatch(melWindows [][][]float32) ([][]float32, error) {
+	// CRITICAL: ONNX Runtime sessions are NOT thread-safe for concurrent inference
+	// We must run sequentially. Parallelization would require multiple session instances.
+	// TODO: Consider creating a pool of encoder instances for true parallelization
+
 	features := make([][]float32, len(melWindows))
 
 	for i, window := range melWindows {

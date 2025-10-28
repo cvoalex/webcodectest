@@ -140,11 +140,11 @@ func (p *Processor) ProcessAudio(audioSamples []float32) ([][]float32, error) {
 	// Add n_fft/2 zeros on each side
 	padSize := p.config.NumFFT / 2
 	paddedLen := len(emphasized) + 2*padSize
-	
+
 	// Get pooled buffer (might be larger than needed)
 	padded := paddedAudioPool.Get().([]float32)
 	defer paddedAudioPool.Put(padded)
-	
+
 	// Ensure buffer is large enough
 	if len(padded) < paddedLen {
 		// Buffer too small, allocate a larger one and update pool
@@ -156,7 +156,7 @@ func (p *Processor) ProcessAudio(audioSamples []float32) ([][]float32, error) {
 			padded[i] = 0
 		}
 	}
-	
+
 	copy(padded[padSize:], emphasized)
 
 	if debugMode {
@@ -289,7 +289,7 @@ func (p *Processor) preEmphasis(samples []float32) []float32 {
 	// result[i] = samples[i] - coef * samples[i-1]
 	// We can do this in-place by working backwards, since each position
 	// only depends on the previous (unmodified) value
-	
+
 	// Actually, we need to work FORWARD but save the previous value
 	prev := samples[0]
 	for i := 1; i < len(samples); i++ {
@@ -301,7 +301,7 @@ func (p *Processor) preEmphasis(samples []float32) []float32 {
 	return samples
 }
 
-// stft performs Short-Time Fourier Transform
+// stft performs Short-Time Fourier Transform with parallel processing
 // Matches librosa.stft behavior exactly
 func (p *Processor) stft(samples []float32) [][]float32 {
 	// Calculate number of frames
@@ -311,47 +311,76 @@ func (p *Processor) stft(samples []float32) [][]float32 {
 
 	result := make([][]float32, numFrames)
 
-	// Get buffers from pool
-	buffers := stftBufferPool.Get().(*stftBuffers)
-	defer stftBufferPool.Put(buffers)
-
-	for i := 0; i < numFrames; i++ {
-		// Extract frame
-		start := i * p.config.HopLength
-		end := start + p.config.WindowSize
-
-		// Safety check
-		if end > len(samples) {
-			break
-		}
-
-		// Get frame slice
-		frame := samples[start:end]
-
-		// Apply Hanning window using pooled buffer
-		for j := 0; j < p.config.WindowSize; j++ {
-			buffers.windowed[j] = float64(frame[j]) * float64(p.window[j])
-		}
-
-		// Zero-pad to n_fft if needed (in our case WindowSize == NumFFT)
-		copy(buffers.fftInput, buffers.windowed)
-		// Clear the rest if NumFFT > WindowSize
-		for j := p.config.WindowSize; j < p.config.NumFFT; j++ {
-			buffers.fftInput[j] = 0
-		}
-
-		// Compute FFT using gonum
-		fftResult := p.fftObj.Coefficients(nil, buffers.fftInput)
-
-		// Compute magnitude spectrum (only positive frequencies) using pooled buffer
-		for j := 0; j < numFreqBins; j++ {
-			buffers.magnitudes[j] = float32(cmplx.Abs(fftResult[j]))
-		}
-
-		// Allocate and copy magnitudes for this frame
-		result[i] = make([]float32, numFreqBins)
-		copy(result[i], buffers.magnitudes[:numFreqBins])
+	// Parallelize STFT computation across frames
+	// Use worker pool to limit concurrency and buffer reuse
+	const maxWorkers = 8
+	numWorkers := numFrames
+	if numWorkers > maxWorkers {
+		numWorkers = maxWorkers
 	}
+
+	var wg sync.WaitGroup
+	frameChan := make(chan int, numFrames)
+
+	// Spawn workers
+	for w := 0; w < numWorkers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			// Each worker gets its own buffer
+			buffers := stftBufferPool.Get().(*stftBuffers)
+			defer stftBufferPool.Put(buffers)
+
+			// Create worker-specific FFT object (gonum FFT is not thread-safe)
+			fftObj := fourier.NewFFT(p.config.NumFFT)
+
+			for i := range frameChan {
+				// Extract frame
+				start := i * p.config.HopLength
+				end := start + p.config.WindowSize
+
+				// Safety check
+				if end > len(samples) {
+					continue
+				}
+
+				// Get frame slice
+				frame := samples[start:end]
+
+				// Apply Hanning window using pooled buffer
+				for j := 0; j < p.config.WindowSize; j++ {
+					buffers.windowed[j] = float64(frame[j]) * float64(p.window[j])
+				}
+
+				// Zero-pad to n_fft if needed
+				copy(buffers.fftInput, buffers.windowed)
+				for j := p.config.WindowSize; j < p.config.NumFFT; j++ {
+					buffers.fftInput[j] = 0
+				}
+
+				// Compute FFT
+				fftResult := fftObj.Coefficients(nil, buffers.fftInput)
+
+				// Compute magnitude spectrum using pooled buffer
+				for j := 0; j < numFreqBins; j++ {
+					buffers.magnitudes[j] = float32(cmplx.Abs(fftResult[j]))
+				}
+
+				// Allocate and copy magnitudes for this frame
+				result[i] = make([]float32, numFreqBins)
+				copy(result[i], buffers.magnitudes[:numFreqBins])
+			}
+		}()
+	}
+
+	// Feed frames to workers
+	for i := 0; i < numFrames; i++ {
+		frameChan <- i
+	}
+	close(frameChan)
+
+	wg.Wait()
 
 	return result
 }
@@ -372,24 +401,54 @@ func (p *Processor) fft(samples []float32) []complex128 {
 	return coeffs
 }
 
-// linearToMel converts linear spectrogram to mel scale
+// linearToMel converts linear spectrogram to mel scale with parallel processing
 func (p *Processor) linearToMel(spectrogram [][]float32) [][]float32 {
 	numFrames := len(spectrogram)
 
 	// Pre-allocate entire result matrix
 	result := make([][]float32, numFrames)
-	for i := 0; i < numFrames; i++ {
-		result[i] = make([]float32, p.config.NumMelBins)
 
-		// Apply mel filterbank
-		for j := 0; j < p.config.NumMelBins; j++ {
-			sum := float32(0.0)
-			for k := 0; k < len(spectrogram[i]); k++ {
-				sum += spectrogram[i][k] * p.melFilters[j][k]
-			}
-			result[i][j] = sum
-		}
+	// Parallelize mel filterbank application
+	const maxWorkers = 8
+	numWorkers := numFrames
+	if numWorkers > maxWorkers {
+		numWorkers = maxWorkers
 	}
+	if numWorkers < 1 {
+		numWorkers = 1
+	}
+
+	var wg sync.WaitGroup
+	frameChan := make(chan int, numFrames)
+
+	// Spawn workers
+	for w := 0; w < numWorkers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			for i := range frameChan {
+				result[i] = make([]float32, p.config.NumMelBins)
+
+				// Apply mel filterbank
+				for j := 0; j < p.config.NumMelBins; j++ {
+					sum := float32(0.0)
+					for k := 0; k < len(spectrogram[i]); k++ {
+						sum += spectrogram[i][k] * p.melFilters[j][k]
+					}
+					result[i][j] = sum
+				}
+			}
+		}()
+	}
+
+	// Feed frames to workers
+	for i := 0; i < numFrames; i++ {
+		frameChan <- i
+	}
+	close(frameChan)
+
+	wg.Wait()
 
 	return result
 }
@@ -536,7 +595,7 @@ func TransposeForEncoder(melWindow [][]float32) [][]float32 {
 	}
 
 	numMelBins := len(melWindow[0])
-	
+
 	// Get pooled transpose matrix
 	transposed := transposedMelPool.Get().([][]float32)
 

@@ -22,6 +22,27 @@ var stftBufferPool = sync.Pool{
 	},
 }
 
+// Pool for transposed mel matrices [80][16] used in TransposeForEncoder
+var transposedMelPool = sync.Pool{
+	New: func() interface{} {
+		transposed := make([][]float32, 80)
+		for i := 0; i < 80; i++ {
+			transposed[i] = make([]float32, 16)
+		}
+		return transposed
+	},
+}
+
+// Pool for padded audio buffers (~26K floats)
+var paddedAudioPool = sync.Pool{
+	New: func() interface{} {
+		// Max size for 25fps video: ~1040 samples/frame * 25 frames + padding
+		// Actually for our use case: 16000 samples + 2*512 padding = ~17024
+		// Let's use 32K to be safe for all cases
+		return make([]float32, 32768)
+	},
+}
+
 type stftBuffers struct {
 	windowed   []float64
 	fftInput   []float64
@@ -119,7 +140,23 @@ func (p *Processor) ProcessAudio(audioSamples []float32) ([][]float32, error) {
 	// Add n_fft/2 zeros on each side
 	padSize := p.config.NumFFT / 2
 	paddedLen := len(emphasized) + 2*padSize
-	padded := make([]float32, paddedLen)
+	
+	// Get pooled buffer (might be larger than needed)
+	padded := paddedAudioPool.Get().([]float32)
+	defer paddedAudioPool.Put(padded)
+	
+	// Ensure buffer is large enough
+	if len(padded) < paddedLen {
+		// Buffer too small, allocate a larger one and update pool
+		padded = make([]float32, paddedLen)
+	} else {
+		// Use only the slice we need and zero it
+		padded = padded[:paddedLen]
+		for i := range padded {
+			padded[i] = 0
+		}
+	}
+	
 	copy(padded[padSize:], emphasized)
 
 	if debugMode {
@@ -242,20 +279,26 @@ func min(a, b int) int {
 	return b
 }
 
-// preEmphasis applies pre-emphasis filter
+// preEmphasis applies pre-emphasis filter in-place
 func (p *Processor) preEmphasis(samples []float32) []float32 {
 	if p.config.PreEmphasis == 0 {
 		return samples
 	}
 
-	result := make([]float32, len(samples))
-	result[0] = samples[0]
-
+	// Apply filter in reverse to avoid needing a temporary buffer
+	// result[i] = samples[i] - coef * samples[i-1]
+	// We can do this in-place by working backwards, since each position
+	// only depends on the previous (unmodified) value
+	
+	// Actually, we need to work FORWARD but save the previous value
+	prev := samples[0]
 	for i := 1; i < len(samples); i++ {
-		result[i] = samples[i] - float32(p.config.PreEmphasis)*samples[i-1]
+		current := samples[i]
+		samples[i] = current - float32(p.config.PreEmphasis)*prev
+		prev = current
 	}
 
-	return result
+	return samples
 }
 
 // stft performs Short-Time Fourier Transform
@@ -332,12 +375,12 @@ func (p *Processor) fft(samples []float32) []complex128 {
 // linearToMel converts linear spectrogram to mel scale
 func (p *Processor) linearToMel(spectrogram [][]float32) [][]float32 {
 	numFrames := len(spectrogram)
-	
+
 	// Pre-allocate entire result matrix
 	result := make([][]float32, numFrames)
 	for i := 0; i < numFrames; i++ {
 		result[i] = make([]float32, p.config.NumMelBins)
-		
+
 		// Apply mel filterbank
 		for j := 0; j < p.config.NumMelBins; j++ {
 			sum := float32(0.0)
@@ -485,6 +528,7 @@ func ExtractMelWindow(melSpec [][]float32, startFrame, numFrames int) ([][]float
 
 // TransposeForEncoder transposes mel-spectrogram for audio encoder
 // From [numFrames, numMelBins] to [numMelBins, numFrames]
+// NOTE: Caller should NOT return the result to pool - it's managed internally by the encoder
 func TransposeForEncoder(melWindow [][]float32) [][]float32 {
 	numFrames := len(melWindow)
 	if numFrames == 0 {
@@ -492,14 +536,21 @@ func TransposeForEncoder(melWindow [][]float32) [][]float32 {
 	}
 
 	numMelBins := len(melWindow[0])
-	transposed := make([][]float32, numMelBins)
+	
+	// Get pooled transpose matrix
+	transposed := transposedMelPool.Get().([][]float32)
 
-	for i := 0; i < numMelBins; i++ {
-		transposed[i] = make([]float32, numFrames)
-		for j := 0; j < numFrames; j++ {
+	// Fill it (assuming standard size of [80][16])
+	for i := 0; i < numMelBins && i < 80; i++ {
+		for j := 0; j < numFrames && j < 16; j++ {
 			transposed[i][j] = melWindow[j][i]
 		}
 	}
 
 	return transposed
+}
+
+// ReturnTransposedMel returns a transposed mel matrix back to the pool
+func ReturnTransposedMel(transposed [][]float32) {
+	transposedMelPool.Put(transposed)
 }

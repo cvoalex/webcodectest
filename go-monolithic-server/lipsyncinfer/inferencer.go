@@ -192,7 +192,7 @@ func (inf *Inferencer) InferBatch(visualInput, audioInput []float32, batchSize i
 
 		outputStart := i * outputFrameSize
 		copy(outputs[outputStart:outputStart+outputFrameSize], output)
-		
+
 		// Return the pooled buffer after copying
 		outputBufferPool.Put(output)
 	}

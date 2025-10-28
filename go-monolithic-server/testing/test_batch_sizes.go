@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"time"
 
 	pb "go-monolithic-server/proto"

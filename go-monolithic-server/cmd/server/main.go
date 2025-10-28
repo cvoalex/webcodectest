@@ -340,13 +340,8 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 				}
 			}
 
-			// Copy window for storage (we'll return the pooled one later)
-			windowCopy := make([][]float32, 80)
-			for i := 0; i < 80; i++ {
-				windowCopy[i] = make([]float32, 16)
-				copy(windowCopy[i], window[i])
-			}
-			allMelWindows = append(allMelWindows, windowCopy)
+			// Store the window directly (we're not returning it to pool, we need it for inference)
+			allMelWindows = append(allMelWindows, window)
 
 			// DEBUG: Save first few mel windows for comparison with Python
 			if frameIdx < 10 {
@@ -738,7 +733,7 @@ func compositeFrame(background *image.RGBA, mouthRegion []float32, cropRect imag
 	bgBounds := background.Bounds()
 	result := getPooledImageForSize(bgBounds.Dx(), bgBounds.Dy())
 	defer returnPooledImageForSize(result, bgBounds.Dx(), bgBounds.Dy())
-	
+
 	draw.Draw(result, result.Bounds(), background, image.Point{}, draw.Src)
 
 	// Paste resized mouth region onto background
@@ -845,7 +840,7 @@ func resizeImagePooled(src *image.RGBA, targetWidth, targetHeight int) *image.RG
 
 	// Get pooled image (400x400 max)
 	dst := rgbaPoolResize.Get().(*image.RGBA)
-	
+
 	// Verify the pooled image is large enough
 	if targetWidth > 400 || targetHeight > 400 {
 		// Fallback to regular allocation for oversized requests
@@ -898,7 +893,7 @@ func getPooledImageForSize(width, height int) *image.RGBA {
 	if width == 1920 && height == 1080 {
 		return rgbaPoolFullHD.Get().(*image.RGBA)
 	}
-	
+
 	// For other sizes, allocate (could add more pools for common sizes)
 	// In production you might want to add pools for 1280x720, 2560x1440, etc.
 	return image.NewRGBA(image.Rect(0, 0, width, height))

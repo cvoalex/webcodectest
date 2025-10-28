@@ -75,12 +75,12 @@ var melWindowPool = sync.Pool{
 
 type monolithicServer struct {
 	pb.UnimplementedMonolithicServiceServer
-	modelRegistry  *registry.ModelRegistry
-	imageRegistry  *registry.ImageRegistry
-	cfg            *config.Config
-	audioProcessor *audio.Processor
-	audioEncoder   *audio.AudioEncoder
-	logger         *logger.BufferedLogger
+	modelRegistry    *registry.ModelRegistry
+	imageRegistry    *registry.ImageRegistry
+	cfg              *config.Config
+	audioProcessor   *audio.Processor
+	audioEncoderPool *audio.AudioEncoderPool
+	logger           *logger.BufferedLogger
 }
 
 func main() {
@@ -141,13 +141,15 @@ func main() {
 	audioProcessor := audio.NewProcessor(nil)
 	log.Println("✅ Mel-spectrogram processor initialized")
 
-	audioEncoder, err := audio.NewAudioEncoder(cfg.ONNX.LibraryPath)
+	// Create audio encoder pool (4 instances for parallel processing)
+	encoderPoolSize := 4
+	audioEncoderPool, err := audio.NewAudioEncoderPool(encoderPoolSize, cfg.ONNX.LibraryPath)
 	if err != nil {
-		log.Printf("⚠️  Warning: Audio encoder not available: %v", err)
+		log.Printf("⚠️  Warning: Audio encoder pool not available: %v", err)
 		log.Println("   Server will require pre-computed audio features")
-		audioEncoder = nil
+		audioEncoderPool = nil
 	} else {
-		log.Println("✅ Audio encoder initialized (ONNX)")
+		log.Printf("✅ Audio encoder pool initialized (%d instances for parallel processing)", encoderPoolSize)
 	}
 
 	// Create gRPC server with keep-alive
@@ -180,12 +182,12 @@ func main() {
 	}
 
 	server := &monolithicServer{
-		modelRegistry:  modelReg,
-		imageRegistry:  imageReg,
-		cfg:            cfg,
-		audioProcessor: audioProcessor,
-		audioEncoder:   audioEncoder,
-		logger:         bufferedLog,
+		modelRegistry:    modelReg,
+		imageRegistry:    imageReg,
+		cfg:              cfg,
+		audioProcessor:   audioProcessor,
+		audioEncoderPool: audioEncoderPool,
+		logger:           bufferedLog,
 	}
 
 	pb.RegisterMonolithicServiceServer(grpcServer, server)
@@ -253,10 +255,10 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 
 	if len(req.RawAudio) > 0 {
 		// Process raw audio through mel-spectrogram -> audio encoder
-		if s.audioProcessor == nil || s.audioEncoder == nil {
+		if s.audioProcessor == nil || s.audioEncoderPool == nil {
 			return &pb.CompositeBatchResponse{
 				Success: false,
-				Error:   "Raw audio processing not available (audio encoder not initialized)",
+				Error:   "Raw audio processing not available (audio encoder pool not initialized)",
 			}, nil
 		}
 
@@ -343,8 +345,8 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 			// Store the window directly (we're not returning it to pool, we need it for inference)
 			allMelWindows = append(allMelWindows, window)
 
-			// DEBUG: Save first few mel windows for comparison with Python
-			if frameIdx < 10 {
+			// DEBUG: Save first few mel windows for comparison with Python (only if enabled)
+			if s.cfg.Logging.SaveDebugFiles && frameIdx < 10 {
 				os.MkdirAll("test_output/mel_windows_go", 0755)
 				melFile := fmt.Sprintf("test_output/mel_windows_go/frame_%d.bin", frameIdx)
 				if f, err := os.Create(melFile); err == nil {
@@ -362,12 +364,12 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 			melWindowPool.Put(window)
 		}
 
-		log.Printf("🎵 Encoding %d mel windows to audio features...", len(allMelWindows))
+		log.Printf("🎵 Encoding %d mel windows to audio features (parallel processing)...", len(allMelWindows))
 
-		// Encode all windows to get 512-dim features per frame
+		// Encode all windows to get 512-dim features per frame (PARALLEL via encoder pool)
 		// This matches: outputs = torch.cat([model(mel) for mel in data_loader])
 		// Result: [num_frames, 512]
-		allFrameFeatures, err = s.audioEncoder.EncodeBatch(allMelWindows)
+		allFrameFeatures, err = s.audioEncoderPool.EncodeBatch(allMelWindows)
 		if err != nil {
 			log.Printf("❌ Audio encoding failed: %v", err)
 			return &pb.CompositeBatchResponse{
@@ -472,55 +474,57 @@ func (s *monolithicServer) InferBatchComposite(ctx context.Context, req *pb.Comp
 
 		audioProcessingTime = time.Since(audioStart)
 
-		// DEBUG: Save audio tensors for each frame for comparison with PyTorch
-		os.MkdirAll("test_output", 0755)
-		for batchIdx := 0; batchIdx < int(req.BatchSize) && batchIdx < 10; batchIdx++ {
-			frameIdx := batchIdx
-			outputOffset := batchIdx * audioFrameSize
+		// DEBUG: Save audio tensors for each frame for comparison with PyTorch (only if enabled)
+		if s.cfg.Logging.SaveDebugFiles {
+			os.MkdirAll("test_output", 0755)
+			for batchIdx := 0; batchIdx < int(req.BatchSize) && batchIdx < 10; batchIdx++ {
+				frameIdx := batchIdx
+				outputOffset := batchIdx * audioFrameSize
 
-			debugFile := fmt.Sprintf("test_output/audio_tensor_frame_%d.bin", frameIdx)
-			if f, err := os.Create(debugFile); err == nil {
-				// Write 8192 floats (32*16*16) for this frame
-				for i := 0; i < 8192; i++ {
-					binary.Write(f, binary.LittleEndian, audioData[outputOffset+i])
-				}
-				f.Close()
+				debugFile := fmt.Sprintf("test_output/audio_tensor_frame_%d.bin", frameIdx)
+				if f, err := os.Create(debugFile); err == nil {
+					// Write 8192 floats (32*16*16) for this frame
+					for i := 0; i < 8192; i++ {
+						binary.Write(f, binary.LittleEndian, audioData[outputOffset+i])
+					}
+					f.Close()
 
-				// Also save as JSON metadata
-				jsonFile := fmt.Sprintf("test_output/audio_tensor_frame_%d.json", frameIdx)
-				min, max, sum := audioData[outputOffset], audioData[outputOffset], float32(0)
-				nonzero := 0
-				for i := 0; i < audioFrameSize; i++ {
-					v := audioData[outputOffset+i]
-					if v < min {
-						min = v
+					// Also save as JSON metadata
+					jsonFile := fmt.Sprintf("test_output/audio_tensor_frame_%d.json", frameIdx)
+					min, max, sum := audioData[outputOffset], audioData[outputOffset], float32(0)
+					nonzero := 0
+					for i := 0; i < audioFrameSize; i++ {
+						v := audioData[outputOffset+i]
+						if v < min {
+							min = v
+						}
+						if v > max {
+							max = v
+						}
+						sum += v
+						if v != 0 {
+							nonzero++
+						}
 					}
-					if v > max {
-						max = v
-					}
-					sum += v
-					if v != 0 {
-						nonzero++
-					}
-				}
-				mean := sum / float32(audioFrameSize)
+					mean := sum / float32(audioFrameSize)
 
-				metadata := map[string]interface{}{
-					"frame_index":    frameIdx,
-					"shape":          []int{1, 32, 16, 16},
-					"mean":           mean,
-					"min":            min,
-					"max":            max,
-					"nonzero_count":  nonzero,
-					"total_elements": audioFrameSize,
-				}
-				if jsonData, err := json.MarshalIndent(metadata, "", "  "); err == nil {
-					os.WriteFile(jsonFile, jsonData, 0644)
+					metadata := map[string]interface{}{
+						"frame_index":    frameIdx,
+						"shape":          []int{1, 32, 16, 16},
+						"mean":           mean,
+						"min":            min,
+						"max":            max,
+						"nonzero_count":  nonzero,
+						"total_elements": audioFrameSize,
+					}
+					if jsonData, err := json.MarshalIndent(metadata, "", "  "); err == nil {
+						os.WriteFile(jsonFile, jsonData, 0644)
+					}
 				}
 			}
-		}
-		if req.BatchSize > 0 {
-			log.Printf("🔍 DEBUG: Saved %d audio tensors to test_output/", min(int(req.BatchSize), 10))
+			if req.BatchSize > 0 {
+				log.Printf("🔍 DEBUG: Saved %d audio tensors to test_output/", min(int(req.BatchSize), 10))
+			}
 		}
 
 		if s.cfg.Logging.LogInferenceTimes {

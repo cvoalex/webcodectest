@@ -33,6 +33,7 @@ logging:
   log_level: "info"
   log_compositing_times: true # Log compositing times
   log_cache_stats: true       # Log cache statistics
+  save_debug_files: false     # Save mel windows and audio tensors to disk (slow - for debugging only)
   
   # Buffered logging - ZERO impact on request latency!
   # Logs are accumulated in memory and flushed asynchronously

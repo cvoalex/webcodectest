@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	ort "github.com/yalue/onnxruntime_go"
 )
@@ -214,4 +215,115 @@ func (e *AudioEncoder) Close() error {
 // Destroy is an alias for Close to match ONNX runtime naming
 func (e *AudioEncoder) Destroy() error {
 	return e.Close()
+}
+
+// AudioEncoderPool manages a pool of audio encoder instances for parallel processing
+type AudioEncoderPool struct {
+	encoders    chan *AudioEncoder
+	size        int
+	libraryPath string
+}
+
+// NewAudioEncoderPool creates a pool of audio encoders
+func NewAudioEncoderPool(size int, libraryPath string) (*AudioEncoderPool, error) {
+	if size < 1 {
+		size = 1
+	}
+	if size > 8 {
+		size = 8 // Cap at 8 to avoid excessive memory usage
+	}
+
+	pool := &AudioEncoderPool{
+		encoders:    make(chan *AudioEncoder, size),
+		size:        size,
+		libraryPath: libraryPath,
+	}
+
+	// Create encoder instances
+	for i := 0; i < size; i++ {
+		encoder, err := NewAudioEncoder(libraryPath)
+		if err != nil {
+			// Clean up any encoders we've already created
+			pool.Close()
+			return nil, fmt.Errorf("failed to create encoder %d/%d: %w", i+1, size, err)
+		}
+		pool.encoders <- encoder
+	}
+
+	fmt.Printf("✅ Created audio encoder pool with %d instances\n", size)
+	return pool, nil
+}
+
+// EncodeBatch processes multiple mel windows in parallel using the encoder pool
+func (p *AudioEncoderPool) EncodeBatch(melWindows [][][]float32) ([][]float32, error) {
+	numWindows := len(melWindows)
+	if numWindows == 0 {
+		return [][]float32{}, nil
+	}
+
+	// Pre-allocate result array
+	features := make([][]float32, numWindows)
+
+	// Use worker pool pattern
+	numWorkers := p.size
+	if numWorkers > numWindows {
+		numWorkers = numWindows
+	}
+
+	var wg sync.WaitGroup
+	windowChan := make(chan int, numWindows)
+	errChan := make(chan error, numWorkers)
+
+	// Spawn workers
+	for w := 0; w < numWorkers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			// Get an encoder from the pool
+			encoder := <-p.encoders
+			defer func() {
+				// Return encoder to pool
+				p.encoders <- encoder
+			}()
+
+			// Process windows assigned to this worker
+			for i := range windowChan {
+				feat, err := encoder.Encode(melWindows[i])
+				if err != nil {
+					errChan <- fmt.Errorf("failed to encode window %d: %w", i, err)
+					return
+				}
+				features[i] = feat
+			}
+		}()
+	}
+
+	// Feed windows to workers
+	for i := 0; i < numWindows; i++ {
+		windowChan <- i
+	}
+	close(windowChan)
+
+	// Wait for all workers to complete
+	wg.Wait()
+	close(errChan)
+
+	// Check for errors
+	if err := <-errChan; err != nil {
+		return nil, err
+	}
+
+	return features, nil
+}
+
+// Close releases all encoder resources
+func (p *AudioEncoderPool) Close() error {
+	close(p.encoders)
+	for encoder := range p.encoders {
+		if encoder != nil {
+			encoder.Close()
+		}
+	}
+	return nil
 }

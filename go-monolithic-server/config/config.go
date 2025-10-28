@@ -65,6 +65,7 @@ type LoggingConfig struct {
 	SampleRate          int    `yaml:"sample_rate"`
 	AutoFlush           bool   `yaml:"auto_flush"`
 	FlushIntervalMs     int    `yaml:"flush_interval_ms"`
+	SaveDebugFiles      bool   `yaml:"save_debug_files"` // Save mel windows and audio tensors to disk
 }
 
 type ModelConfig struct {

@@ -339,3 +339,81 @@ func clampFloat(val float32) float32 {
 func bytesToFloat32(b []byte) []float32 {
 	return unsafe.Slice((*float32)(unsafe.Pointer(&b[0])), len(b)/4)
 }
+
+// ============================================================================
+// OPTIMIZATION #4: Parallel Mel Window Extraction
+// ============================================================================
+
+// extractMelWindowsParallel extracts mel windows in parallel using 8 workers
+// Expected speedup: 6-8x over sequential extraction
+func extractMelWindowsParallel(melSpec [][]float32, numMelFrames, numVideoFrames int, allMelWindows [][][]float32, saveDebugFiles bool) {
+	const numWorkers = 8
+	var wg sync.WaitGroup
+
+	// Calculate frames per worker
+	framesPerWorker := numVideoFrames / numWorkers
+	extraFrames := numVideoFrames % numWorkers
+
+	for workerID := 0; workerID < numWorkers; workerID++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+
+			// Calculate frame range for this worker
+			startFrame := id * framesPerWorker
+			if id < extraFrames {
+				startFrame += id
+			} else {
+				startFrame += extraFrames
+			}
+
+			endFrame := startFrame + framesPerWorker
+			if id < extraFrames {
+				endFrame++
+			}
+
+			// Process frames assigned to this worker
+			for frameIdx := startFrame; frameIdx < endFrame; frameIdx++ {
+				// Calculate mel-spec window for this video frame
+				startIdx := int(float64(80*frameIdx) / 25.0)
+				endIdx := startIdx + 16
+
+				// Boundary check
+				if endIdx > numMelFrames {
+					endIdx = numMelFrames
+					startIdx = endIdx - 16
+				}
+				if startIdx < 0 {
+					startIdx = 0
+				}
+
+				// Log first few windows for debugging (thread-safe)
+				if frameIdx < 5 {
+					log.Printf("   Frame %d: mel window [%d:%d] (worker %d)", frameIdx, startIdx, endIdx, id)
+				}
+
+				// Extract 16-step mel window [16, 80] and transpose to [80, 16]
+				window := melWindowPool.Get().([][]float32)
+
+				for step := 0; step < 16; step++ {
+					srcIdx := startIdx + step
+					if srcIdx >= numMelFrames {
+						srcIdx = numMelFrames - 1
+					}
+					for m := 0; m < 80; m++ {
+						window[m][step] = melSpec[srcIdx][m]
+					}
+				}
+
+				// Store the window (thread-safe - each worker writes to different index)
+				allMelWindows[frameIdx] = window
+
+				// DEBUG: Save first few mel windows (skip in parallel to avoid file conflicts)
+				// This is disabled in parallel mode to prevent race conditions on file writes
+				_ = saveDebugFiles // Use variable to avoid unused warning
+			}
+		}(workerID)
+	}
+
+	wg.Wait()
+}

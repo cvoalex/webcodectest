@@ -67,13 +67,13 @@ func TestCalculateWorkerRows(t *testing.T) {
 func TestExtractBGRPixel(t *testing.T) {
 	// Create test data: 320x320 image with known values
 	bgrData := make([]float32, 3*320*320)
-	
+
 	// Set specific pixel (100, 50) to known values
 	x, y := 100, 50
 	offset := y*320 + x
-	bgrData[0*320*320+offset] = 0.5  // B = 127
-	bgrData[1*320*320+offset] = 1.0  // G = 255
-	bgrData[2*320*320+offset] = 0.0  // R = 0
+	bgrData[0*320*320+offset] = 0.5 // B = 127
+	bgrData[1*320*320+offset] = 1.0 // G = 255
+	bgrData[2*320*320+offset] = 0.0 // R = 0
 
 	pixel := extractBGRPixel(bgrData, x, y)
 
@@ -94,14 +94,14 @@ func TestExtractBGRPixel(t *testing.T) {
 // Test extractBGRPixel with clamping - pure function, edge cases
 func TestExtractBGRPixelClamping(t *testing.T) {
 	bgrData := make([]float32, 3*320*320)
-	
+
 	x, y := 0, 0
 	offset := y*320 + x
-	
+
 	// Test clamping: values outside [0, 1] range
-	bgrData[0*320*320+offset] = -0.5  // Should clamp to 0
-	bgrData[1*320*320+offset] = 1.5   // Should clamp to 255
-	bgrData[2*320*320+offset] = 0.5   // Normal value
+	bgrData[0*320*320+offset] = -0.5 // Should clamp to 0
+	bgrData[1*320*320+offset] = 1.5  // Should clamp to 255
+	bgrData[2*320*320+offset] = 0.5  // Normal value
 
 	pixel := extractBGRPixel(bgrData, x, y)
 
@@ -120,7 +120,7 @@ func TestExtractBGRPixelClamping(t *testing.T) {
 func BenchmarkConvertBGRToRGBAParallel(b *testing.B) {
 	bgrData := make([]float32, 3*320*320)
 	img := image.NewRGBA(image.Rect(0, 0, 320, 320))
-	
+
 	// Initialize with some data
 	for i := range bgrData {
 		bgrData[i] = 0.5
@@ -213,12 +213,12 @@ func TestClampFloat(t *testing.T) {
 func TestWorkerRowCoverage(t *testing.T) {
 	totalRows := 320
 	totalWorkers := 8
-	
+
 	covered := make([]bool, totalRows)
-	
+
 	for worker := 0; worker < totalWorkers; worker++ {
 		start, end := calculateWorkerRows(worker, totalWorkers, totalRows)
-		
+
 		// Mark rows as covered
 		for row := start; row < end; row++ {
 			if covered[row] {
@@ -227,7 +227,7 @@ func TestWorkerRowCoverage(t *testing.T) {
 			covered[row] = true
 		}
 	}
-	
+
 	// Check all rows are covered
 	for row := 0; row < totalRows; row++ {
 		if !covered[row] {
@@ -239,14 +239,14 @@ func TestWorkerRowCoverage(t *testing.T) {
 // Example test showing how the functional approach enables easy testing
 func Example_extractBGRPixel() {
 	bgrData := make([]float32, 3*320*320)
-	
+
 	// Set pixel at (0, 0) to cyan (full green + blue)
-	bgrData[0] = 1.0  // B channel
-	bgrData[320*320] = 1.0  // G channel
-	bgrData[2*320*320] = 0.0  // R channel
-	
+	bgrData[0] = 1.0         // B channel
+	bgrData[320*320] = 1.0   // G channel
+	bgrData[2*320*320] = 0.0 // R channel
+
 	pixel := extractBGRPixel(bgrData, 0, 0)
-	
+
 	// Output shows RGB values
 	_ = pixel // RGBA{R:0, G:255, B:255, A:255} - Cyan color
 }
@@ -298,7 +298,7 @@ func TestBilinearSampleEdgeClamping(t *testing.T) {
 func BenchmarkResizeImageParallel(b *testing.B) {
 	src := image.NewRGBA(image.Rect(0, 0, 320, 320))
 	dst := image.NewRGBA(image.Rect(0, 0, 300, 200))
-	
+
 	// Fill with test data
 	for y := 0; y < 320; y++ {
 		for x := 0; x < 320; x++ {
@@ -316,7 +316,7 @@ func BenchmarkResizeImageParallel(b *testing.B) {
 func BenchmarkResizeImage_Workers1(b *testing.B) {
 	src := image.NewRGBA(image.Rect(0, 0, 320, 320))
 	dst := image.NewRGBA(image.Rect(0, 0, 300, 200))
-	
+
 	for y := 0; y < 320; y++ {
 		for x := 0; x < 320; x++ {
 			src.SetRGBA(x, y, color.RGBA{R: 128, G: 128, B: 128, A: 255})
@@ -332,7 +332,7 @@ func BenchmarkResizeImage_Workers1(b *testing.B) {
 func BenchmarkResizeImage_Workers4(b *testing.B) {
 	src := image.NewRGBA(image.Rect(0, 0, 320, 320))
 	dst := image.NewRGBA(image.Rect(0, 0, 300, 200))
-	
+
 	for y := 0; y < 320; y++ {
 		for x := 0; x < 320; x++ {
 			src.SetRGBA(x, y, color.RGBA{R: 128, G: 128, B: 128, A: 255})
@@ -348,7 +348,7 @@ func BenchmarkResizeImage_Workers4(b *testing.B) {
 func BenchmarkResizeImage_Workers8(b *testing.B) {
 	src := image.NewRGBA(image.Rect(0, 0, 320, 320))
 	dst := image.NewRGBA(image.Rect(0, 0, 300, 200))
-	
+
 	for y := 0; y < 320; y++ {
 		for x := 0; x < 320; x++ {
 			src.SetRGBA(x, y, color.RGBA{R: 128, G: 128, B: 128, A: 255})
@@ -364,7 +364,7 @@ func BenchmarkResizeImage_Workers8(b *testing.B) {
 func BenchmarkResizeImage_Workers16(b *testing.B) {
 	src := image.NewRGBA(image.Rect(0, 0, 320, 320))
 	dst := image.NewRGBA(image.Rect(0, 0, 300, 200))
-	
+
 	for y := 0; y < 320; y++ {
 		for x := 0; x < 320; x++ {
 			src.SetRGBA(x, y, color.RGBA{R: 128, G: 128, B: 128, A: 255})
@@ -451,7 +451,7 @@ func TestCopyAudioFeatures(t *testing.T) {
 // Benchmark zeroPadAudioFeatures
 func BenchmarkZeroPadAudioFeatures(b *testing.B) {
 	audioData := make([]float32, 16*512) // Typical size
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		zeroPadAudioFeatures(audioData, 0, 16, 512)

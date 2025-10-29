@@ -60,9 +60,9 @@ func compositeFrame(background *image.RGBA, mouthRegion []float32, cropRect imag
 
 // Image conversion constants
 const (
-	imageWidth   = 320
-	imageHeight  = 320
-	numWorkers   = 8  // Parallel workers for image processing
+	imageWidth  = 320
+	imageHeight = 320
+	numWorkers  = 8 // Parallel workers for image processing
 )
 
 // outputToImage converts model output float32 data to RGBA image
@@ -81,7 +81,7 @@ func convertBGRToRGBAParallel(bgrData []float32, img *image.RGBA, workers int) {
 	for worker := 0; worker < workers; worker++ {
 		wg.Add(1)
 		startY, endY := calculateWorkerRows(worker, workers, imageHeight)
-		
+
 		go processImageRows(bgrData, img, startY, endY, &wg)
 	}
 
@@ -94,12 +94,12 @@ func calculateWorkerRows(workerID, totalWorkers, totalRows int) (startRow, endRo
 	rowsPerWorker := totalRows / totalWorkers
 	startRow = workerID * rowsPerWorker
 	endRow = startRow + rowsPerWorker
-	
+
 	// Last worker handles remainder
 	if workerID == totalWorkers-1 {
 		endRow = totalRows
 	}
-	
+
 	return startRow, endRow
 }
 
@@ -210,8 +210,8 @@ func resizeImageParallel(src, dst *image.RGBA, targetWidth, targetHeight, worker
 	for worker := 0; worker < workers; worker++ {
 		wg.Add(1)
 		startY, endY := calculateWorkerRows(worker, workers, targetHeight)
-		
-		go processResizeRows(src, dst, srcWidth, srcHeight, targetWidth, 
+
+		go processResizeRows(src, dst, srcWidth, srcHeight, targetWidth,
 			xRatio, yRatio, startY, endY, &wg)
 	}
 
@@ -234,9 +234,9 @@ func processResizeRows(src, dst *image.RGBA, srcWidth, srcHeight, targetWidth in
 
 // bilinearSample samples a pixel using bilinear interpolation
 // Pure function - testable without side effects
-func bilinearSample(src *image.RGBA, srcWidth, srcHeight, dstX, dstY int, 
+func bilinearSample(src *image.RGBA, srcWidth, srcHeight, dstX, dstY int,
 	xRatio, yRatio float32) color.RGBA {
-	
+
 	srcX := float32(dstX) * xRatio
 	srcY := float32(dstY) * yRatio
 
@@ -277,12 +277,12 @@ func zeroPadAudioFeatures(audioData []float32, offset, count, featureSize int) {
 	if count <= 0 {
 		return
 	}
-	
+
 	// Calculate total elements to zero
 	totalElements := count * featureSize
 	destStart := offset
 	destEnd := offset + totalElements
-	
+
 	// Use range-based zeroing (optimized by Go compiler)
 	for i := destStart; i < destEnd; i++ {
 		audioData[i] = 0.0

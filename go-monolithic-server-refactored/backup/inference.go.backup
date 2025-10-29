@@ -223,26 +223,32 @@ func (s *Server) InferBatchComposite(ctx context.Context, req *pb.CompositeBatch
 			// Extract frames with zero-padding
 			frameCounter := 0
 
-			// Pad left with zeros (optimized bulk operation)
-			if padLeft > 0 {
+			// Pad left with zeros
+			for i := 0; i < padLeft; i++ {
 				destOffset := outputOffset + frameCounter*512
-				zeroPadAudioFeatures(audioData, destOffset, padLeft, 512)
-				frameCounter += padLeft
+				// Zero out 512 features
+				for j := 0; j < 512; j++ {
+					audioData[destOffset+j] = 0.0
+				}
+				frameCounter++
 			}
 
 			// Copy actual frames
 			for srcFrame := left; srcFrame < right; srcFrame++ {
 				features := paddedFeatures[srcFrame]
 				destOffset := outputOffset + frameCounter*512
-				copyAudioFeatures(audioData, destOffset, features)
+				copy(audioData[destOffset:destOffset+512], features)
 				frameCounter++
 			}
 
-			// Pad right with zeros (optimized bulk operation)
-			if padRight > 0 {
+			// Pad right with zeros
+			for i := 0; i < padRight; i++ {
 				destOffset := outputOffset + frameCounter*512
-				zeroPadAudioFeatures(audioData, destOffset, padRight, 512)
-				frameCounter += padRight
+				// Zero out 512 features
+				for j := 0; j < 512; j++ {
+					audioData[destOffset+j] = 0.0
+				}
+				frameCounter++
 			}
 
 			if batchIdx == 0 {

@@ -181,8 +181,14 @@ func resizeImage(src *image.RGBA, targetWidth, targetHeight int) *image.RGBA {
 }
 
 // resizeImagePooled resizes an image using bilinear interpolation with pooled destination
-// OPTIMIZED: Parallel row processing with configurable workers for ~4-6x speedup
 func resizeImagePooled(src *image.RGBA, targetWidth, targetHeight int) *image.RGBA {
+	srcBounds := src.Bounds()
+	srcWidth := srcBounds.Dx()
+	srcHeight := srcBounds.Dy()
+
+	// Get pooled image (400x400 max)
+	dst := rgbaPoolResize.Get().(*image.RGBA)
+
 	// Verify the pooled image is large enough
 	if targetWidth > 400 || targetHeight > 400 {
 		// Fallback to regular allocation for oversized requests
@@ -190,109 +196,43 @@ func resizeImagePooled(src *image.RGBA, targetWidth, targetHeight int) *image.RG
 		return resizeImage(src, targetWidth, targetHeight)
 	}
 
-	dst := rgbaPoolResize.Get().(*image.RGBA)
-	resizeImageParallel(src, dst, targetWidth, targetHeight, numWorkers)
-	return dst
-}
-
-// resizeImageParallel performs parallel bilinear interpolation resize
-// This function is testable and can be benchmarked independently
-func resizeImageParallel(src, dst *image.RGBA, targetWidth, targetHeight, workers int) {
-	srcBounds := src.Bounds()
-	srcWidth := srcBounds.Dx()
-	srcHeight := srcBounds.Dy()
-
 	xRatio := float32(srcWidth) / float32(targetWidth)
 	yRatio := float32(srcHeight) / float32(targetHeight)
 
-	var wg sync.WaitGroup
-
-	for worker := 0; worker < workers; worker++ {
-		wg.Add(1)
-		startY, endY := calculateWorkerRows(worker, workers, targetHeight)
-		
-		go processResizeRows(src, dst, srcWidth, srcHeight, targetWidth, 
-			xRatio, yRatio, startY, endY, &wg)
-	}
-
-	wg.Wait()
-}
-
-// processResizeRows processes a range of rows for image resizing
-// Functional unit that can be tested independently
-func processResizeRows(src, dst *image.RGBA, srcWidth, srcHeight, targetWidth int,
-	xRatio, yRatio float32, startY, endY int, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	for dstY := startY; dstY < endY; dstY++ {
+	for dstY := 0; dstY < targetHeight; dstY++ {
 		for dstX := 0; dstX < targetWidth; dstX++ {
-			pixel := bilinearSample(src, srcWidth, srcHeight, dstX, dstY, xRatio, yRatio)
-			dst.SetRGBA(dstX, dstY, pixel)
+			srcX := float32(dstX) * xRatio
+			srcY := float32(dstY) * yRatio
+
+			x0 := int(srcX)
+			y0 := int(srcY)
+			x1 := x0 + 1
+			y1 := y0 + 1
+
+			if x1 >= srcWidth {
+				x1 = srcWidth - 1
+			}
+			if y1 >= srcHeight {
+				y1 = srcHeight - 1
+			}
+
+			xWeight := srcX - float32(x0)
+			yWeight := srcY - float32(y0)
+
+			c00 := src.RGBAAt(x0, y0)
+			c10 := src.RGBAAt(x1, y0)
+			c01 := src.RGBAAt(x0, y1)
+			c11 := src.RGBAAt(x1, y1)
+
+			r := bilinearInterp(c00.R, c10.R, c01.R, c11.R, xWeight, yWeight)
+			g := bilinearInterp(c00.G, c10.G, c01.G, c11.G, xWeight, yWeight)
+			b := bilinearInterp(c00.B, c10.B, c01.B, c11.B, xWeight, yWeight)
+
+			dst.SetRGBA(dstX, dstY, color.RGBA{R: r, G: g, B: b, A: 255})
 		}
 	}
-}
 
-// bilinearSample samples a pixel using bilinear interpolation
-// Pure function - testable without side effects
-func bilinearSample(src *image.RGBA, srcWidth, srcHeight, dstX, dstY int, 
-	xRatio, yRatio float32) color.RGBA {
-	
-	srcX := float32(dstX) * xRatio
-	srcY := float32(dstY) * yRatio
-
-	x0 := int(srcX)
-	y0 := int(srcY)
-	x1 := x0 + 1
-	y1 := y0 + 1
-
-	// Clamp to source bounds
-	if x1 >= srcWidth {
-		x1 = srcWidth - 1
-	}
-	if y1 >= srcHeight {
-		y1 = srcHeight - 1
-	}
-
-	xWeight := srcX - float32(x0)
-	yWeight := srcY - float32(y0)
-
-	// Get four neighboring pixels
-	c00 := src.RGBAAt(x0, y0)
-	c10 := src.RGBAAt(x1, y0)
-	c01 := src.RGBAAt(x0, y1)
-	c11 := src.RGBAAt(x1, y1)
-
-	// Interpolate each channel
-	return color.RGBA{
-		R: bilinearInterp(c00.R, c10.R, c01.R, c11.R, xWeight, yWeight),
-		G: bilinearInterp(c00.G, c10.G, c01.G, c11.G, xWeight, yWeight),
-		B: bilinearInterp(c00.B, c10.B, c01.B, c11.B, xWeight, yWeight),
-		A: 255,
-	}
-}
-
-// zeroPadAudioFeatures efficiently zero-pads audio features
-// Pure function - optimized with bulk operations instead of loops
-func zeroPadAudioFeatures(audioData []float32, offset, count, featureSize int) {
-	if count <= 0 {
-		return
-	}
-	
-	// Calculate total elements to zero
-	totalElements := count * featureSize
-	destStart := offset
-	destEnd := offset + totalElements
-	
-	// Use range-based zeroing (optimized by Go compiler)
-	for i := destStart; i < destEnd; i++ {
-		audioData[i] = 0.0
-	}
-}
-
-// copyAudioFeatures efficiently copies audio features
-// Pure function - wrapper around copy for consistency
-func copyAudioFeatures(audioData []float32, destOffset int, features []float32) {
-	copy(audioData[destOffset:destOffset+len(features)], features)
+	return dst
 }
 
 // getPooledImageForSize returns a pooled image appropriate for the given size

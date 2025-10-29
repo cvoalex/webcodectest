@@ -7,7 +7,6 @@ import (
 	"image/draw"
 	"image/jpeg"
 	"log"
-	"sync"
 	"unsafe"
 )
 
@@ -58,79 +57,30 @@ func compositeFrame(background *image.RGBA, mouthRegion []float32, cropRect imag
 	return jpegData, nil
 }
 
-// Image conversion constants
-const (
-	imageWidth   = 320
-	imageHeight  = 320
-	numWorkers   = 8  // Parallel workers for image processing
-)
-
 // outputToImage converts model output float32 data to RGBA image
-// OPTIMIZED: Parallel row processing with configurable workers for ~3-5x speedup
 func outputToImage(outputData []float32) *image.RGBA {
+	// Get image from pool
 	img := rgbaPool320.Get().(*image.RGBA)
-	convertBGRToRGBAParallel(outputData, img, numWorkers)
-	return img
-}
 
-// convertBGRToRGBAParallel converts BGR float32 [0,1] to RGBA bytes [0,255] using parallel workers
-// This function is testable and can be benchmarked independently
-func convertBGRToRGBAParallel(bgrData []float32, img *image.RGBA, workers int) {
-	var wg sync.WaitGroup
+	// Convert BGR float32 [0,1] to RGB bytes [0,255]
+	// Model outputs BGR in [C, H, W] format: [3, 320, 320] (same as OpenCV input)
+	for y := 0; y < 320; y++ {
+		for x := 0; x < 320; x++ {
+			// BGR order from ONNX model (OpenCV convention)
+			b := outputData[0*320*320+y*320+x]
+			g := outputData[1*320*320+y*320+x]
+			r := outputData[2*320*320+y*320+x]
 
-	for worker := 0; worker < workers; worker++ {
-		wg.Add(1)
-		startY, endY := calculateWorkerRows(worker, workers, imageHeight)
-		
-		go processImageRows(bgrData, img, startY, endY, &wg)
-	}
+			// Clamp and convert to bytes
+			rByte := uint8(clampFloat(r * 255.0))
+			gByte := uint8(clampFloat(g * 255.0))
+			bByte := uint8(clampFloat(b * 255.0))
 
-	wg.Wait()
-}
-
-// calculateWorkerRows determines the row range for a worker
-// Pure function - easy to test
-func calculateWorkerRows(workerID, totalWorkers, totalRows int) (startRow, endRow int) {
-	rowsPerWorker := totalRows / totalWorkers
-	startRow = workerID * rowsPerWorker
-	endRow = startRow + rowsPerWorker
-	
-	// Last worker handles remainder
-	if workerID == totalWorkers-1 {
-		endRow = totalRows
-	}
-	
-	return startRow, endRow
-}
-
-// processImageRows processes a range of rows, converting BGR to RGBA
-// Functional unit that can be tested independently
-func processImageRows(bgrData []float32, img *image.RGBA, startY, endY int, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	for y := startY; y < endY; y++ {
-		for x := 0; x < imageWidth; x++ {
-			pixel := extractBGRPixel(bgrData, x, y)
-			img.SetRGBA(x, y, pixel)
+			img.SetRGBA(x, y, color.RGBA{R: rByte, G: gByte, B: bByte, A: 255})
 		}
 	}
-}
 
-// extractBGRPixel extracts a single pixel from BGR float32 data and converts to RGBA
-// Pure function - testable without side effects
-func extractBGRPixel(bgrData []float32, x, y int) color.RGBA {
-	// Model outputs BGR in [C, H, W] format: [3, 320, 320] (OpenCV convention)
-	offset := y*imageWidth + x
-	b := bgrData[0*imageWidth*imageHeight+offset]
-	g := bgrData[1*imageWidth*imageHeight+offset]
-	r := bgrData[2*imageWidth*imageHeight+offset]
-
-	return color.RGBA{
-		R: uint8(clampFloat(r * 255.0)),
-		G: uint8(clampFloat(g * 255.0)),
-		B: uint8(clampFloat(b * 255.0)),
-		A: 255,
-	}
+	return img
 }
 
 // resizeImage resizes an image using bilinear interpolation
@@ -181,8 +131,14 @@ func resizeImage(src *image.RGBA, targetWidth, targetHeight int) *image.RGBA {
 }
 
 // resizeImagePooled resizes an image using bilinear interpolation with pooled destination
-// OPTIMIZED: Parallel row processing with configurable workers for ~4-6x speedup
 func resizeImagePooled(src *image.RGBA, targetWidth, targetHeight int) *image.RGBA {
+	srcBounds := src.Bounds()
+	srcWidth := srcBounds.Dx()
+	srcHeight := srcBounds.Dy()
+
+	// Get pooled image (400x400 max)
+	dst := rgbaPoolResize.Get().(*image.RGBA)
+
 	// Verify the pooled image is large enough
 	if targetWidth > 400 || targetHeight > 400 {
 		// Fallback to regular allocation for oversized requests
@@ -190,109 +146,43 @@ func resizeImagePooled(src *image.RGBA, targetWidth, targetHeight int) *image.RG
 		return resizeImage(src, targetWidth, targetHeight)
 	}
 
-	dst := rgbaPoolResize.Get().(*image.RGBA)
-	resizeImageParallel(src, dst, targetWidth, targetHeight, numWorkers)
-	return dst
-}
-
-// resizeImageParallel performs parallel bilinear interpolation resize
-// This function is testable and can be benchmarked independently
-func resizeImageParallel(src, dst *image.RGBA, targetWidth, targetHeight, workers int) {
-	srcBounds := src.Bounds()
-	srcWidth := srcBounds.Dx()
-	srcHeight := srcBounds.Dy()
-
 	xRatio := float32(srcWidth) / float32(targetWidth)
 	yRatio := float32(srcHeight) / float32(targetHeight)
 
-	var wg sync.WaitGroup
-
-	for worker := 0; worker < workers; worker++ {
-		wg.Add(1)
-		startY, endY := calculateWorkerRows(worker, workers, targetHeight)
-		
-		go processResizeRows(src, dst, srcWidth, srcHeight, targetWidth, 
-			xRatio, yRatio, startY, endY, &wg)
-	}
-
-	wg.Wait()
-}
-
-// processResizeRows processes a range of rows for image resizing
-// Functional unit that can be tested independently
-func processResizeRows(src, dst *image.RGBA, srcWidth, srcHeight, targetWidth int,
-	xRatio, yRatio float32, startY, endY int, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	for dstY := startY; dstY < endY; dstY++ {
+	for dstY := 0; dstY < targetHeight; dstY++ {
 		for dstX := 0; dstX < targetWidth; dstX++ {
-			pixel := bilinearSample(src, srcWidth, srcHeight, dstX, dstY, xRatio, yRatio)
-			dst.SetRGBA(dstX, dstY, pixel)
+			srcX := float32(dstX) * xRatio
+			srcY := float32(dstY) * yRatio
+
+			x0 := int(srcX)
+			y0 := int(srcY)
+			x1 := x0 + 1
+			y1 := y0 + 1
+
+			if x1 >= srcWidth {
+				x1 = srcWidth - 1
+			}
+			if y1 >= srcHeight {
+				y1 = srcHeight - 1
+			}
+
+			xWeight := srcX - float32(x0)
+			yWeight := srcY - float32(y0)
+
+			c00 := src.RGBAAt(x0, y0)
+			c10 := src.RGBAAt(x1, y0)
+			c01 := src.RGBAAt(x0, y1)
+			c11 := src.RGBAAt(x1, y1)
+
+			r := bilinearInterp(c00.R, c10.R, c01.R, c11.R, xWeight, yWeight)
+			g := bilinearInterp(c00.G, c10.G, c01.G, c11.G, xWeight, yWeight)
+			b := bilinearInterp(c00.B, c10.B, c01.B, c11.B, xWeight, yWeight)
+
+			dst.SetRGBA(dstX, dstY, color.RGBA{R: r, G: g, B: b, A: 255})
 		}
 	}
-}
 
-// bilinearSample samples a pixel using bilinear interpolation
-// Pure function - testable without side effects
-func bilinearSample(src *image.RGBA, srcWidth, srcHeight, dstX, dstY int, 
-	xRatio, yRatio float32) color.RGBA {
-	
-	srcX := float32(dstX) * xRatio
-	srcY := float32(dstY) * yRatio
-
-	x0 := int(srcX)
-	y0 := int(srcY)
-	x1 := x0 + 1
-	y1 := y0 + 1
-
-	// Clamp to source bounds
-	if x1 >= srcWidth {
-		x1 = srcWidth - 1
-	}
-	if y1 >= srcHeight {
-		y1 = srcHeight - 1
-	}
-
-	xWeight := srcX - float32(x0)
-	yWeight := srcY - float32(y0)
-
-	// Get four neighboring pixels
-	c00 := src.RGBAAt(x0, y0)
-	c10 := src.RGBAAt(x1, y0)
-	c01 := src.RGBAAt(x0, y1)
-	c11 := src.RGBAAt(x1, y1)
-
-	// Interpolate each channel
-	return color.RGBA{
-		R: bilinearInterp(c00.R, c10.R, c01.R, c11.R, xWeight, yWeight),
-		G: bilinearInterp(c00.G, c10.G, c01.G, c11.G, xWeight, yWeight),
-		B: bilinearInterp(c00.B, c10.B, c01.B, c11.B, xWeight, yWeight),
-		A: 255,
-	}
-}
-
-// zeroPadAudioFeatures efficiently zero-pads audio features
-// Pure function - optimized with bulk operations instead of loops
-func zeroPadAudioFeatures(audioData []float32, offset, count, featureSize int) {
-	if count <= 0 {
-		return
-	}
-	
-	// Calculate total elements to zero
-	totalElements := count * featureSize
-	destStart := offset
-	destEnd := offset + totalElements
-	
-	// Use range-based zeroing (optimized by Go compiler)
-	for i := destStart; i < destEnd; i++ {
-		audioData[i] = 0.0
-	}
-}
-
-// copyAudioFeatures efficiently copies audio features
-// Pure function - wrapper around copy for consistency
-func copyAudioFeatures(audioData []float32, destOffset int, features []float32) {
-	copy(audioData[destOffset:destOffset+len(features)], features)
+	return dst
 }
 
 // getPooledImageForSize returns a pooled image appropriate for the given size

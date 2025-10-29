@@ -59,14 +59,14 @@ func main() {
 		len(audioSamples), audioDuration, sampleRate)
 
 	// Create output directory
-	outputDir := "test_output/batch_8_real"
+	outputDir := "test_output/batch_25_real"
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		log.Fatalf("Failed to create output directory: %v", err)
 	}
 	fmt.Printf("\n📁 Output directory: %s\n", outputDir)
 
 	// Generate batch of 25
-	batchSize := 8
+	batchSize := 25
 	fmt.Printf("\n🚀 Generating %d frames...\n", batchSize)
 
 	// Load REAL visual frames

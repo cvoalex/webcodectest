@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-	serverAddr := "localhost:50054"
+	serverAddr := "localhost:50053"
 	modelID := "sanders"
 
 	fmt.Println("🎬 BATCH 8 REAL DATA TEST - Monolithic Server")
@@ -51,7 +51,7 @@ func main() {
 		healthResp.LoadedModels, healthResp.MaxModels, healthResp.GpuIds)
 
 	// Load audio
-	audioFile := "../aud.wav"
+	audioFile := "../go-monolithic-server/aud.wav"
 	fmt.Printf("\n🎵 Loading REAL audio file: %s\n", audioFile)
 	audioSamples, sampleRate, err := readWAVFile(audioFile)
 	if err != nil {
@@ -63,14 +63,14 @@ func main() {
 		len(audioSamples), audioDuration, sampleRate)
 
 	// Create output directory
-	outputDir := "test_output/batch_8_real"
+	outputDir := "test_output/batch_25_real"
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		log.Fatalf("Failed to create output directory: %v", err)
 	}
 	fmt.Printf("\n📁 Output directory: %s\n", outputDir)
 
 	// Generate batch of 25
-	batchSize := 8
+	batchSize := 25
 	fmt.Printf("\n🚀 Generating %d frames...\n", batchSize)
 
 	// Load REAL visual frames
@@ -148,8 +148,10 @@ func main() {
 
 // loadRealVisualFrames loads actual frames from the sanders crop and ROI videos using Python helper
 func loadRealVisualFrames(startFrame, batchSize int) ([][]byte, [][]byte, error) {
-	// Call Python script to load frames
+	// Call Python script to load frames from real video (same as original test)
+	// Must run from go-monolithic-server/testing directory for relative paths to work
 	cmd := exec.Command("python", "load_frames.py", fmt.Sprintf("%d", startFrame), fmt.Sprintf("%d", batchSize))
+	cmd.Dir = "../go-monolithic-server/testing" // Set working directory
 	output, err := cmd.Output()
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {

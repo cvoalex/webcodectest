@@ -57,7 +57,7 @@ models:
     rois_frames_dir: "sanders/rois_frames"            # Auto-extract ROIs
     crop_rects_path: "sanders/crop_rects.json"
     num_frames: 523
-    preload_backgrounds: false   # DISABLED TO TEST
+    preload_backgrounds: true   # ENABLED for proper performance
     preload_model: true         # ✅ PRELOAD ONNX MODEL
     preferred_gpu: 0
     

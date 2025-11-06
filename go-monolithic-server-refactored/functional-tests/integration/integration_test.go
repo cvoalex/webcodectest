@@ -19,10 +19,10 @@ func TestFullPipelineFlow(t *testing.T) {
 	defer cleanupTestData(testDataDir)
 
 	tests := []struct {
-		name       string
-		batchSize  int
-		numFrames  int
-		videoWidth int
+		name        string
+		batchSize   int
+		numFrames   int
+		videoWidth  int
 		videoHeight int
 	}{
 		{

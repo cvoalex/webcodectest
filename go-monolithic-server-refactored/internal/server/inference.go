@@ -98,18 +98,18 @@ func (s *Server) InferBatchComposite(ctx context.Context, req *pb.CompositeBatch
 			numVideoFrames = int(req.BatchSize) + 16
 		}
 
-	log.Printf("🎵 Will encode %d video frames from %d mel frames", numVideoFrames, numMelFrames)
+		log.Printf("🎵 Will encode %d video frames from %d mel frames", numVideoFrames, numMelFrames)
 
-	// Encode each video frame's mel window to get [512] features
-	allFrameFeatures := make([][]float32, 0, numVideoFrames)
-	allMelWindows := make([][][]float32, numVideoFrames)
+		// Encode each video frame's mel window to get [512] features
+		allFrameFeatures := make([][]float32, 0, numVideoFrames)
+		allMelWindows := make([][][]float32, numVideoFrames)
 
-	log.Printf("🎵 Extracting %d mel windows (parallel)...", numVideoFrames)
+		log.Printf("🎵 Extracting %d mel windows (parallel)...", numVideoFrames)
 
-	// OPTIMIZATION #4: Parallelize mel window extraction
-	extractMelWindowsParallel(melSpec, numMelFrames, numVideoFrames, allMelWindows, s.cfg.Logging.SaveDebugFiles)
+		// OPTIMIZATION #4: Parallelize mel window extraction
+		extractMelWindowsParallel(melSpec, numMelFrames, numVideoFrames, allMelWindows, s.cfg.Logging.SaveDebugFiles)
 
-	log.Printf("🎵 Encoding %d mel windows to audio features (parallel processing)...", len(allMelWindows))
+		log.Printf("🎵 Encoding %d mel windows to audio features (parallel processing)...", len(allMelWindows))
 
 		// Encode all windows to get 512-dim features per frame (PARALLEL via encoder pool)
 		// This matches: outputs = torch.cat([model(mel) for mel in data_loader])

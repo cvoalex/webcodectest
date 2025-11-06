@@ -134,13 +134,13 @@ func TestParallelImageProcessing(t *testing.T) {
 		for x := 0; x < width; x++ {
 			offset := (y*width + x) * 3
 			if y < height/2 {
-				bgrData[offset] = 0      // B
-				bgrData[offset+1] = 0    // G
-				bgrData[offset+2] = 255  // R
+				bgrData[offset] = 0     // B
+				bgrData[offset+1] = 0   // G
+				bgrData[offset+2] = 255 // R
 			} else {
-				bgrData[offset] = 255    // B
-				bgrData[offset+1] = 0    // G
-				bgrData[offset+2] = 0    // R
+				bgrData[offset] = 255 // B
+				bgrData[offset+1] = 0 // G
+				bgrData[offset+2] = 0 // R
 			}
 		}
 	}

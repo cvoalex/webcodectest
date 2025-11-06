@@ -28,7 +28,7 @@ func TestBoundaryConditions(t *testing.T) {
 func testZeroDimensionImage(t *testing.T) {
 	// Go's image.NewRGBA actually handles zero dimensions gracefully
 	img := image.NewRGBA(image.Rect(0, 0, 0, 0))
-	
+
 	// Verify it creates an empty image
 	if img.Bounds().Dx() != 0 || img.Bounds().Dy() != 0 {
 		t.Errorf("Zero dimension image should have 0x0 bounds, got %dx%d",
